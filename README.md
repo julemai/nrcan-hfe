@@ -14,5 +14,9 @@ pip install numpy
 pip install geopandas
 pip install netCDF4
 pip install pygrib
+pip install matplotlib
+
+# optional
+pip install ipython
 ```
 
