@@ -15,7 +15,7 @@ pip install geopandas
 pip install netCDF4
 pip install pygrib
 pip install matplotlib
-pip install cartopy
+python -m pip install basemap
 
 # optional
 pip install ipython
