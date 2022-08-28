@@ -8,7 +8,6 @@ RDRS v2.1 from CaSPAr. Only the precipitation variable based on CaPA
 1, 1980 to Dec 31, 2018). 
 
 <p align="center">
-   <img src="https://github.com/julemai/nrcan-hfe/doc/figures/caspar-request-hfe.png" width="45%" />
    <img src="https://github.com/julemai/nrcan-hfe/blob/main/doc/figures/caspar-request-hfe.png" width="45%" />
 </p>
 
