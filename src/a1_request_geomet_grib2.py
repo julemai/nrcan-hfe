@@ -60,26 +60,33 @@ def request_geomet_grib2(product=None,date=None,bbox=None,crs='EPSG:4326',filena
                                             "rdpa:10km:24f" ... RDPA 10km 24h accumulation
                                             "rdpa:10km:6f"  ... RDPA 10km  6h accumulation
                                         Default: None
+
         date            datetime or     Datetime object specifying time to request data for
                         list(datetime)  (i.e., end of accumulation period). The date will
                                         be used in the filename. Hence only one filename
                                         (i.e., basename) needs to be provided.
                                         Default: None
-        bbox            dict            Dictiornary specifying the bounding box, i.e.,
+
+        bbox            dict            Dictionary specifying the bounding box, i.e.,
                                           {"lat":{"min":min_lat,"max":max_lat},
                                            "lon":{"min":min_lon,"max":max_lon}}
                                         Default: None
+
         crs             string          String specifying coordinate reference system (CRS).
                                         Default: "EPSG:4326"
+
         filename        string or       Filename of where to store retrieved file. The filename
                                         can be a path but is expected to not contain the file ending.
                                         The filename provided will be appended by the date in format
                                         YYYYMMDDHH.
                                         Default: "/tmp/test"
+
         overwrite       Boolean         If file already exists at specified location (filename) it
                                         will not be overwritten; unless overwrite is set to True.
                                         Default: False
+
         silent          Boolean         If set to True, nothing will be printed to terminal.
+                                        Default: True
 
         Output          Format          Description
         -----           -----           -----------
