@@ -9,6 +9,7 @@ RDRS v2.1 from CaSPAr. Only the precipitation variable based on CaPA
 
 <p align="center">
    <img src="https://github.com/julemai/nrcan-hfe/doc/figures/caspar-request-hfe.png" width="45%" />
+   <img src="https://github.com/julemai/nrcan-hfe/blob/main/doc/figures/caspar-request-hfe.png" width="45%" />
 </p>
 
 Each file contains 24 time steps (1pm UTC until noon UTC the day after).
