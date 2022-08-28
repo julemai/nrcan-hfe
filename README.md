@@ -13,6 +13,7 @@ pip install argparse
 pip install numpy
 pip install geopandas
 pip install netCDF4
+pip install xarray
 pip install pygrib
 pip install matplotlib
 python -m pip install basemap
