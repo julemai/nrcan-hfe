@@ -48,7 +48,7 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
 
         Definition
         ----------
-        def read_geomet_grib2(filename)
+        def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=False,cities=True,bbox=None,basefilename='/tmp/test',silent=True)
 
 
         Input           Format         Description
@@ -258,7 +258,7 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
         date = np.array( [date] )
 
         # dimensions
-        ntime = np.shape(var)[0]
+        ntime = 1
         nlat = np.shape(var)[1]
         nlon = np.shape(var)[2]
 
