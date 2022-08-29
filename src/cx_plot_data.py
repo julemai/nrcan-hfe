@@ -180,7 +180,7 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
         >>> from b2_read_caspar_nc import read_caspar_nc
         >>> product='RDRS_v2.1'
         >>> variable='RDRS_v2.1_A_PR0_SFC'
-        >>> dates=[ datetime.datetime(1980,1,14,17,0) + datetime.timedelta(hours=ii) for ii in range(3) ]
+        >>> dates=[ datetime.datetime(2018,8,8,15,0) + datetime.timedelta(days=ii) for ii in range(2) ]
         >>> bbox={"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
         >>> foldername='test-data/'
         >>> lintransform={'a':1000.0,'b':0.0}  # convert from m/h to mm/h
@@ -194,7 +194,7 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
 
         >>> plot_caspar = plot_data( var=data_caspar["var"], lat=data_caspar["lat"], lon=data_caspar["lon"], date=dates, png=True, gif=True, legend=True, cities=True,bbox=bbox, basefilename='/tmp/test_2dates_caspar', silent=True)
         >>> print("All files created: ", plot_caspar)
-        All files created:  {'png': ['/tmp/test_2dates_caspar_1980011417.png', '/tmp/test_2dates_caspar_1980011418.png', '/tmp/test_2dates_caspar_1980011419.png'], 'gif': ['/tmp/test_2dates_caspar.gif'], 'legend': ['/tmp/test_2dates_caspar_legend.png']}
+        All files created:  {'png': ['/tmp/test_2dates_caspar_2018080815.png', '/tmp/test_2dates_caspar_2018080915.png'], 'gif': ['/tmp/test_2dates_caspar.gif'], 'legend': ['/tmp/test_2dates_caspar_legend.png']}
 
 
         License
@@ -675,7 +675,7 @@ if __name__ == '__main__':
     # from b2_read_caspar_nc import read_caspar_nc
     # product='RDRS_v2.1'
     # variable='RDRS_v2.1_A_PR0_SFC'
-    # dates=[ datetime.datetime(1980,1,14,15,0) + datetime.timedelta(hours=ii) for ii in range(6) ]
+    # dates=[ date=[datetime.datetime(2018,8,9,7,0) + datetime.timedelta(hours=ii) for ii in range(6) ]
     # bbox={"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
     # foldername='test-data/'
     # lintransform={'a':1000.0,'b':0.0}  # convert from m/h to mm/h

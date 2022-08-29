@@ -122,10 +122,10 @@ def request_geomet_grib2(product=None,date=None,bbox=None,crs='EPSG:4326',filena
 
         >>> dates = [ datetime.datetime(2022,8,24,0,0) + datetime.timedelta(hours=6*ii) for ii in range(4) ]
         >>> bbox = {"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
-        >>> filename = 'test-data/test'
+        >>> filename = 'test-data/rdpa-6h'
         >>> file_geomet = request_geomet_grib2(product='rdpa:10km:6f',date=dates,bbox=bbox,crs='EPSG:4326',filename=filename,overwrite=False)
         >>> print('file_geomet = ',file_geomet)
-        file_geomet = ['test-data/test_2022082400.grib2', 'test-data/test_2022082406.grib2', 'test-data/test_2022082412.grib2', 'test-data/test_2022082418.grib2']
+        file_geomet = ['test-data/rdpa-6h_2022082400.grib2', 'test-data/rdpa-6h_2022082406.grib2', 'test-data/rdpa-6h_2022082412.grib2', 'test-data/rdpa-6h_2022082418.grib2']
 
 
         License

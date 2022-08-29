@@ -295,7 +295,7 @@ if __name__ == '__main__':
 
     # product='RDRS_v2.1'
     # variable='RDRS_v2.1_A_PR0_SFC'
-    # date=datetime.datetime(1980,1,13,16,0)
+    # date=date=datetime.datetime(2018,8,9,7,0)
     # bbox=None
     # bbox={"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
     # foldername='test-data/'
