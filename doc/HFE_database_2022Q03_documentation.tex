@@ -124,9 +124,9 @@
 	see specifically OGC API:\\
 	\url{https://eccc-msc.github.io/open-data/msc-geomet/web-services_en/#ogc-api-features}
 \end{itemize}
+\pagebreak
 
-
-\section{Obtain data from GeoMet}
+\section{Request, read, and plot data from GeoMet}
 
 The assumption is that we want to retrieve CaPA data (RDPA; 24h total precipitation) from GeoMet for Aug 24, 2022 around Montreal ($\mathrm{lat} = 45.5019^{\circ}\mathrm{N}$, $\mathrm{lon}=-73.5674^{\circ}\mathrm{E}$). 
 
@@ -138,7 +138,7 @@ This returns the following JSON string (not geo-referenced):
 		\texttt{\{"type": "Coverage", "domain": \{"type": "Domain", "domainType": "Grid", "axes": \{"x": \{"start": -74.0, "stop": -73.0, "num": 15\}, "y": \{"start": 46.0, "stop": 45.0, "num": 16\}\}, "referencing": [\{"coordinates": ["x", "y"], "system": \{"type": "GeographicCRS", "id": "http://www.opengis.net/def/crs/OGC/1.3/CRS84"\}\}]\}, "parameters": \{"APCP": \{"type": "Parameter", "description": "Total precipitation [kg/(m\^{}2)]", "unit": \{"symbol": "[kg/(m\^{}2)]"\}, "observedProperty": \{"id": "0-SFC", "label": \{"en": "Total precipitation [kg/(m\^{}2)]"\}\}\}\}, "ranges": \{"APCP": \{"type": "NdArray", "dataType": "float", "axisNames": ["y", "x"], "shape": [16, 15], "values": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 9.300250053405762, 12.344250679016113, null, null, null, null, null, null, null, null, null, null, null, null, 5.607500076293945, 9.330750465393066, 13.382000923156738, 16.639751434326172, null, null, null, null, null, null, $\ldots$ , null, null, null, null, null, null, null, 10.574250221252441, 11.665250778198242, 11.032000541687012, null, null, null, null, null, null, null, null, null, null, null, null, 9.582500457763672, 10.17750072479248, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]\}\}\}}\\
 \end{framed}
 
-This corresponds to the following 2D view of the data:
+This corresponds to the following 2D view of the data (not geo-referenced):
 \begin{table}[h]
 	\begin{tabular}{R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}R{0.5cm}}
 - & - & - & - & - & - & - & - & - & - & - & - & - & - & -\\
@@ -161,7 +161,7 @@ This corresponds to the following 2D view of the data:
 \end{table}
 \pagebreak
 
-To retrieve the corresponding PNG file for this data use (see Fig.~\ref{fig:plot_example:geo-weather}):
+To retrieve the corresponding PNG file for this data use (see Fig.~\ref{fig:plot_example:geo-weather}) (not geo-referenced):
 \begin{framed}
 \url{https://geo.weather.gc.ca/geomet?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=RDPA.24F_PR&STYLES=RDPA-WXO&CRS=EPSG:4326&BBOX=45,-74,46,-73&WIDTH=400&HEIGHT=400&FORMAT=image/png&TIME=2022-08-24T12:00:00Z&DIM_REFERENCE_TIME=2022-08-24T12:00:00Z}
 \end{framed}
@@ -169,27 +169,6 @@ To retrieve the legend use (see Fig.~\ref{fig:plot_example:geo-weather}):
 \begin{framed}
 	\url{https://geo.weather.gc.ca/geomet?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYERS=RDPA.24F_PR&STYLES=RDPA-WXO&CRS=EPSG:4326&BBOX=45,-74,46,-73&WIDTH=400&HEIGHT=400&FORMAT=image/png&TIME=2022-08-24T12:00:00Z&DIM_REFERENCE_TIME=2022-08-24T12:00:00Z}
 \end{framed}
-\begin{figure}[h]
-	\begin{subfigure}[b]{0.45\textwidth}
-		\centering
-		\includegraphics[height=0.6\linewidth]{figures/test-map-geo-weather.png}
-		\hspace*{0.5cm}
-		\includegraphics[height=0.6\linewidth]{figures/test-legend-geo-weather.png}
-		\caption{PNG and legend retrieved using \url{https://geo.weather.gc.ca}\\(only displayed for reference)}
-		\label{fig:plot_example:geo-weather}
-	\end{subfigure}
-	\hspace*{0.05\textwidth}
-	\begin{subfigure}[b]{0.45\textwidth}
-		\centering
-		\includegraphics[height=0.6\linewidth]{figures/test-map-api-weather-nrcan-hfe.png}
-		\hspace*{0.5cm}
-		\includegraphics[height=0.6\linewidth]{figures/test-legend-api-weather-nrcan-hfe.png}
-		\caption{PNG and legend produced using NRCan-HFE library based on GRIB2 data retrieved using \url{https://api.weather.gc.ca/}}
-		\label{fig:plot_example:api-weather}
-	\end{subfigure}
-	\caption{RDPA (24h total precipitation) on Aug 24, 2022 (noon UTC) around Montreal}
-	\label{fig:plot_example}
-\end{figure}
 
 To actually retrieve the geo-referenced data used for those plots, the GRIB2 file needs to be retrieved using the following command:
 \begin{framed}
@@ -207,9 +186,11 @@ This seems to be the only possibility to obtain geo-referenced data. The library
 		from a1\_request\_geomet\_grib2 import request\_geomet\_grib2\\
 		\\
 		files\_geomet = request\_geomet\_grib2(\\
+		\> \GRAU{\# Mandatory arguments:}\\
 		\> product=\textit{product}, \> \GRAU{\# name of product, e.g., ``rdpa:10km:24f''}\\
 		\> date=\textit{date},\> \GRAU{\# datetime object specifying date (can be list of dates)}\\
 		\> bbox=\textit{bbox},\> \GRAU{\# dictionary specifying bounding box}\\
+		\> \GRAU{\# Optional arguments:}\\
 		\> crs=\textit{crs},\> \GRAU{\# coordinate reference system, e.g., ``EPSG:4326''}\\
 		\> filename=\textit{filename},\> \GRAU{\# base filename of output file (can include path but no}\\
 		\>                           \> \GRAU{\# file extension); date will be added to filename}\\
@@ -222,17 +203,21 @@ This seems to be the only possibility to obtain geo-referenced data. The library
 \vspace*{-0.3cm}
 The return variable \texttt{files\_geomet} is a list of files requested and downloaded. If the file already existed, it will not be overwritten unless \texttt{overwrite} is set to \texttt{True}. The filename will be returned nonetheless. 
 
-\textbf{Step A2:} Read data from files requested.
+\textbf{Step B1:} Read data from files requested.
 \begin{framed}
 	\vspace*{-1.2cm}
 	\begin{ttfont}
 		\begin{tabbing}
 			\hspace{1.0cm} \= \hspace{5.2cm} \= \kill \\[4pt]
 			\GRAU{\# see module for detailed documentation and example}\\
-			from a2\_read\_geomet\_grib2 import read\_geomet\_grib2\\
+			from b1\_read\_geomet\_grib2 import read\_geomet\_grib2\\
 			\\
 			data\_geomet = read\_geomet\_grib2(\\
+			\> \GRAU{\# Mandatory arguments:}\\
 			\> filenames=\textit{files\_geomet}, \> \GRAU{\# list of GRIB2 files to read}\\
+			\> \GRAU{\# Optional arguments:}\\
+			\> lintransform=\textit{lintransform}, \> \GRAU{\# dictionary to specify linear transform of}\\
+			\>  \> \GRAU{\# data, e.g., to allow for unit conversions}\\
 			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
 			\> ) \> 
 		\end{tabbing}
@@ -242,24 +227,27 @@ The return variable \texttt{files\_geomet} is a list of files requested and down
 \vspace*{-0.3cm}
 The returned variable \texttt{data\_geomet} is a dictionary that will contain the attributes \texttt{lat}, \texttt{lon}, and \texttt{var}. The latter will be 3-dimensional if several files were read. The latitude and longitudes of the files are checked for consistency.
 
-\textbf{Step A3:} Plot data.
+\textbf{Step Cx:} Plot data.
 \begin{framed}
 	\vspace*{-1.2cm}
 	\begin{ttfont}
 		\begin{tabbing}
 			\hspace{1.0cm} \= \hspace{5.2cm} \= \kill \\[4pt]
 			\GRAU{\# see module for detailed documentation and example}\\
-			from a3\_plot\_geomet\_grib2 import plot\_geomet\_grib2\\
+			from cx\_plot\_data import plot\_data\\
 			\\
-			plot\_geomet = plot\_geomet\_grib2(\\
+			plot\_geomet = plot\_data(\\
+			\> \GRAU{\# Mandatory arguments:}\\
 			\> var=\textit{var}, \> \GRAU{\# 2D/3D array of values for variable}\\
 			\> lat=\textit{lat}, \> \GRAU{\# 2D array of latitudes}\\
 			\> lon=\textit{lon}, \> \GRAU{\# 2D array of longitudes}\\
 			\> date=\textit{date}, \> \GRAU{\# date or list of dates as datetime objects}\\
+			\> \GRAU{\# Optional arguments:}\\
 			\> png=\textit{png}, \> \GRAU{\# True if PNG file(s) should be created}\\
 			\> gif=\textit{gif}, \> \GRAU{\# True if GIF should be created}\\
 			\> legend=\textit{legend}, \> \GRAU{\# True if PNG of legend should be created}\\
 			\> cities=\textit{cities}, \> \GRAU{\# True to display cities on maps}\\
+			\> bbox=\textit{bbox}, \> \GRAU{\# Bounding box will be plotted if provided}\\
 			\> basefilename=\textit{basefilename}, \> \GRAU{\# String specifying basename of files created}\\
 			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
 			\> ) \> 
@@ -269,6 +257,55 @@ The returned variable \texttt{data\_geomet} is a dictionary that will contain th
 \end{framed}
 \vspace*{-0.3cm}
 The returned variable \texttt{plot\_geomet} is a dictionary that will contain the attributes \texttt{png}, \texttt{gif}, and \texttt{legend}. Each of them are assigned list of the according files created. If no file was created (e.g., no legend), the list will be empty.
+
+\begin{figure}[h]
+	\begin{subfigure}[b]{0.45\textwidth}
+		\centering
+		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-geo-weather_2022082412.png}
+		\hspace*{0.5cm}
+		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-geo-weather_legend.png}
+		\caption{Raw PNG and legend for RDPA data retrieved using \url{https://geo.weather.gc.ca}\\(only displayed for reference)}
+		\label{fig:plot_example:geo-weather}
+	\end{subfigure}
+	\hspace*{0.05\textwidth}
+	\begin{subfigure}[b]{0.45\textwidth}
+		\centering
+		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-nrcan-hfe_2022082412.png}
+		\hspace*{0.5cm}
+		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-nrcan-hfe_legend.png}
+		\caption{PNG and legend produced using NRCan-HFE library based on GRIB2 data (RDPA) retrieved using \url{https://api.weather.gc.ca/}}
+		\label{fig:plot_example:api-weather}
+	\end{subfigure}
+	\caption{RDPA (24h total precipitation) on Aug 24, 2022 (noon UTC) around Montreal}
+	\label{fig:plot_example_geomet-api_vs_geomet-nrcan-hfe}
+\end{figure}
+
+\pagebreak
+
+\section{Request, read, and plot data from CaSPAr}
+
+
+\begin{figure}[h]
+	\begin{subfigure}[b]{0.45\textwidth}
+		\centering
+		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-nrcan-hfe_2022082412.png}
+		\hspace*{0.5cm}
+		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-nrcan-hfe_legend.png}
+		\caption{PNG and legend produced using NRCan-HFE library based on GRIB2 data (RDPA) retrieved using \url{https://api.weather.gc.ca/}}
+		\label{fig:plot_example:api-weather:2nd}
+	\end{subfigure}
+	\hspace*{0.05\textwidth}
+	\begin{subfigure}[b]{0.45\textwidth}
+		\centering
+		\includegraphics[height=0.58\linewidth]{figures/test-map-caspar-nrcan-hfe_1980011418.png}
+		\hspace*{0.5cm}
+		\includegraphics[height=0.58\linewidth]{figures/test-map-caspar-nrcan-hfe_legend.png}
+		\caption{PNG and legend produced using NRCan-HFE library based on NetCDF data (RDRS v2.1) retrieved using \url{https://caspar-data.ca}}
+		\label{fig:plot_example:caspar}
+	\end{subfigure}
+	\caption{RDPA (24h total precipitation) from Geomet and RDRS\_v2.1\_A\_PR0\_SFC (1h accumulations) from CaSPAr for two different days (since no overlap between Geomet RDPA and CaSPAr RDRS v2.1) but requested for the same bounding box around Montreal. The panel in Fig.~\ref{fig:plot_example:api-weather:2nd} is the same as panel in Fig.~\ref{fig:plot_example:api-weather}.}
+	\label{fig:plot_example_geomet-nrcan-hfe_vs_caspar-nrcan-hfe}
+\end{figure}
 
 \newpage
 \section{Time sheet}
@@ -281,8 +318,11 @@ Listed hours spend per day with a brief description of activities are provided i
 		\hline
 		Aug 25, 2022 & 4 & Kick-off meeting; collecting resources; discussion GeoMet requests; documentation \\
 		Aug 26, 2022 & 3 & discussion GeoMet requests; documentation \\
-		Aug 27, 2022 & 12 & coding Geomet functions (a1, a2, a3); documentation \\		  
+		Aug 27, 2022 & 12 & coding Geomet functions (a1, b1) and function to plot data (cx); documentation \\		
+		Aug 28, 2022 & 12 & coding CaSPAr functions (a2, b2); refactor Geomet functions (a1, b1) and plotting (cx) for consistency; documentation \\	  
 		\hline
+		Sum & 31 & of 144 hrs in agreement\\
+		\hline\hline
 	\end{tabular}
 	\caption{Project time sheet for Juliane Mai}
 	\label{tab:hours}

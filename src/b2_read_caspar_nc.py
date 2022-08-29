@@ -246,8 +246,10 @@ def read_caspar_nc(product=None,variable=None,date=None,bbox=None,foldername='/t
                 else:
                     # this is where the actual magic happens
                     idx = np.where((lat >= bbox["lat"]["min"]) & (lat <= bbox["lat"]["max"]) & (lon >= bbox["lon"]["min"]) & (lon <= bbox["lon"]["max"]))
-                    latidx = slice(np.min(idx[0]),np.max(idx[0])+1)  # this is just returning a rectangle around the identified bounding box (same as Geomet)
-                    lonidx = slice(np.min(idx[1]),np.max(idx[1])+1)  # this is just returning a rectangle around the identified bounding box (same as Geomet)
+                    # this is just returning a rectangle around the identified bounding box (same as Geomet)
+                    # -1 and +1 is to have one grid-cell buffer
+                    latidx = slice(np.min(idx[0])-1,np.max(idx[0])+2)
+                    lonidx = slice(np.min(idx[1])-1,np.max(idx[1])+2)
                 slices = (tidx, latidx, lonidx)
                 var = ds[variable][slices[0]][slices[1],slices[2]].data * lintransform['a'] + lintransform['b']
                 lat = lat[slices[1],slices[2]].data
