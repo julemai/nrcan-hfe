@@ -1,0 +1,90 @@
+{
+	"type" : "FeatureCollection",
+	"name" : "small_historical_flood_event_sample",
+	"features" : [
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ -65.2912076171, 44.8415912664 ]
+			},
+			"properties" : {
+				"OBJECTID" : 111,
+				"uuid" : "eb365d5e-1551-4a8b-ace9-cb57cb684660",
+				"event_id" : "2fc66df8-786e-413b-8425-63fe9dcdc27e",
+				"event_name" : null,
+				"year" : 1891,
+				"start_date" : "1891-09-08",
+				"end_date" : null,
+				"season" : "autumn",
+				"flood_cause" : "heavy rain",
+				"flood_cause_description" : "The temporary inundation by water of normally dry land,  whether adjacent to a river or not, caused by heavy rainfall events. Heavy rainfall flooding is common in urban areas where water temporarily accumulates due to more precipitation than can be removed by infiltration into the ground (e.g., due to impervious surfaces where infiltration is limited) or by drainage through infrastructure or the river system. Heavy precipitation and storm surges can be accompanied by high winds, as in the case of post-tropical cyclones. In mountainous areas, heavy precipitation accompanied by a rise in temperature will have an impact on the supply of meltwater from the snow cover on the peaks.",
+				"death" : "unknown",
+				"evacuation" : "unknown",
+				"comment" : "Hurricane. Extensive damage. Worst storm to hit Province in several years. Carried off mill dams, bridges, washout of roads.",
+				"link_1" : "http://nsfloodhistory.management.dal.ca/",
+				"link_2" : null,
+				"source_1" : "NS_FLOOD_HISTORY",
+				"source_1_description" : "Nova Scotia Environment, The Chronicle Herald, Dalhousie University",
+				"source_2" : null,
+				"source_2_description" : null
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ -64.3858313494, 45.9186204767 ]
+			},
+			"properties" : {
+				"OBJECTID" : 849,
+				"uuid" : "48ca7a78-a699-43a3-a039-1b192090cbbf",
+				"event_id" : "78f64408-51b2-4aad-8e52-d89d2053ddd3",
+				"event_name" : null,
+				"year" : 1869,
+				"start_date" : "1869-11-20",
+				"end_date" : "1869-11-21",
+				"season" : "autumn",
+				"flood_cause" : "heavy rain",
+				"flood_cause_description" : "The temporary inundation by water of normally dry land,  whether adjacent to a river or not, caused by heavy rainfall events. Heavy rainfall flooding is common in urban areas where water temporarily accumulates due to more precipitation than can be removed by infiltration into the ground (e.g., due to impervious surfaces where infiltration is limited) or by drainage through infrastructure or the river system. Heavy precipitation and storm surges can be accompanied by high winds, as in the case of post-tropical cyclones. In mountainous areas, heavy precipitation accompanied by a rise in temperature will have an impact on the supply of meltwater from the snow cover on the peaks.",
+				"death" : "no",
+				"evacuation" : "unknown",
+				"comment" : "Sackville Area: The November 25, 1869 edition of The Borderer reported that two days of very heavy rain resulted in several mill dams being carried away by a great freshet.",
+				"link_1" : "https://www.elgegl.gnb.ca/0001/en/Flood/Details/21",
+				"link_2" : null,
+				"source_1" : "FHDNB",
+				"source_1_description" : "Flood History Database of New-Brunswick",
+				"source_2" : null,
+				"source_2_description" : null
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ -63.7160180781, 44.8667523017 ]
+			},
+			"properties" : {
+				"OBJECTID" : 153,
+				"uuid" : "ac595ea3-5ba0-40ca-88df-58a05da488fa",
+				"event_id" : "50ea416b-b29d-4e9f-88ac-37276afeebbb",
+				"event_name" : null,
+				"year" : 1875,
+				"start_date" : "1875-10-10",
+				"end_date" : null,
+				"season" : "autumn",
+				"flood_cause" : "heavy rain",
+				"flood_cause_description" : "The temporary inundation by water of normally dry land,  whether adjacent to a river or not, caused by heavy rainfall events. Heavy rainfall flooding is common in urban areas where water temporarily accumulates due to more precipitation than can be removed by infiltration into the ground (e.g., due to impervious surfaces where infiltration is limited) or by drainage through infrastructure or the river system. Heavy precipitation and storm surges can be accompanied by high winds, as in the case of post-tropical cyclones. In mountainous areas, heavy precipitation accompanied by a rise in temperature will have an impact on the supply of meltwater from the snow cover on the peaks.",
+				"death" : "unknown",
+				"evacuation" : "unknown",
+				"comment" : "Flooding in streets due to drains blockage. Damaged streets estimated to coat $1,000. ",
+				"link_1" : "http://nsfloodhistory.management.dal.ca/",
+				"link_2" : null,
+				"source_1" : "NS_FLOOD_HISTORY",
+				"source_1_description" : "Nova Scotia Environment, The Chronicle Herald, Dalhousie University",
+				"source_2" : null,
+				"source_2_description" : null
+			}
+		}
+	]
+}
