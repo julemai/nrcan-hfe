@@ -11,6 +11,7 @@ pyenv activate env-3.8.5-nrcan
 pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
 pip install argparse
 pip install numpy
+pip install scipy
 pip install geopandas
 pip install netCDF4
 pip install xarray
