@@ -5,7 +5,7 @@ Common folder to potentially hold data downloaded from HFE database.
 The documentation ("HFE_ProductSpecifications.pdf") was obtained from
 https://open.canada.ca/data/en/dataset/fe83a604-aa5a-4e46-903c-685f8b0cc33c.
 
-The database in JSON format was porvided by Philippe Aussant
+The database in JSON format was provided by Philippe Aussant
 (philippe.aussant@NRCan-RNCan.gc.ca) on Aug 29, 2022.
 
 The following data were provided:
@@ -27,4 +27,4 @@ The following data were provided:
 * ``small_historical_flood_event_sample.json`` ... As discussed in the
   kickoff meeting, this file contains a sample of the
   ``historical_flood_event`` layer. It has three small flood events
-  that contain only one occurence.
+  that contain only one occurrence.
