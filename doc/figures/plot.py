@@ -42,19 +42,19 @@ sys.path.append(dir_path+'/../../src')
 
 # ---------------------------------
 # create:
-#   'test-map-geomet-geo-weather_2022082412.png'
-#   'test-map-geomet-geo-weather_legend.png'
+#   'test-map-geomet-geo-weather-rdpa24_2018080912.png'
+#   'test-map-geomet-geo-weather-rdpa24_legend.png'
 # ---------------------------------
 
 plot_api = {'png': [], 'gif': [], 'legend': []}
 
-api_str = "https://geo.weather.gc.ca/geomet?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=RDPA.24F_PR&STYLES=RDPA-WXO&CRS=EPSG:4326&BBOX=45,-74,46,-73&WIDTH=400&HEIGHT=400&FORMAT=image/png&TIME=2022-08-24T12:00:00Z&DIM_REFERENCE_TIME=2022-08-24T12:00:00Z"
-ifilename = 'test-map-geomet-geo-weather_2022082412.png'
+api_str = "https://geo.weather.gc.ca/geomet?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=RDPA.24F_PR&STYLES=RDPA-WXO&CRS=EPSG:4326&BBOX=45,-74,46,-73&WIDTH=400&HEIGHT=400&FORMAT=image/png&TIME=2018-08-09T12:00:00Z&DIM_REFERENCE_TIME=2018-08-09T12:00:00Z"
+ifilename = 'test-map-geomet-geo-weather-rdpa24_2018080912.png'
 urllib.request.urlretrieve(api_str, ifilename)
 plot_api['png'] = [ifilename]
 
-api_str = "https://geo.weather.gc.ca/geomet?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYERS=RDPA.24F_PR&STYLES=RDPA-WXO&CRS=EPSG:4326&BBOX=45,-74,46,-73&WIDTH=400&HEIGHT=400&FORMAT=image/png&TIME=2022-08-24T12:00:00Z&DIM_REFERENCE_TIME=2022-08-24T12:00:00Z"
-ifilename = 'test-map-geomet-geo-weather_legend.png'
+api_str = "https://geo.weather.gc.ca/geomet?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYERS=RDPA.24F_PR&STYLES=RDPA-WXO&CRS=EPSG:4326&BBOX=45,-74,46,-73&WIDTH=400&HEIGHT=400&FORMAT=image/png&TIME=2018-08-09T12:00:00Z&DIM_REFERENCE_TIME=2018-08-09T12:00:00Z"
+ifilename = 'test-map-geomet-geo-weather-rdpa24_legend.png'
 urllib.request.urlretrieve(api_str, ifilename)
 plot_api['legend'] = [ifilename]
 
@@ -63,8 +63,29 @@ print("All files created: ", plot_api)
 
 # ---------------------------------
 # create:
-#   'test-map-geomet-nrcan-hfe_2022082412.png'
-#   'test-map-geomet-nrcan-hfe_legend.png'
+#   'test-map-geomet-geo-weather-rdpa6_2018080906.png'
+#   'test-map-geomet-geo-weather-rdpa6_legend.png'
+# ---------------------------------
+
+plot_api = {'png': [], 'gif': [], 'legend': []}
+
+api_str = "https://geo.weather.gc.ca/geomet?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=RDPA.6F_PR&STYLES=RDPA-WXO&CRS=EPSG:4326&BBOX=45,-74,46,-73&WIDTH=400&HEIGHT=400&FORMAT=image/png&TIME=2018-08-09T06:00:00Z&DIM_REFERENCE_TIME=2018-08-09T06:00:00Z"
+ifilename = 'test-map-geomet-geo-weather-rdpa6_2018080906.png'
+urllib.request.urlretrieve(api_str, ifilename)
+plot_api['png'] = [ifilename]
+
+api_str = "https://geo.weather.gc.ca/geomet?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYERS=RDPA.6F_PR&STYLES=RDPA-WXO&CRS=EPSG:4326&BBOX=45,-74,46,-73&WIDTH=400&HEIGHT=400&FORMAT=image/png&TIME=2018-08-09T06:00:00Z&DIM_REFERENCE_TIME=2018-08-09T06:00:00Z"
+ifilename = 'test-map-geomet-geo-weather-rdpa6_legend.png'
+urllib.request.urlretrieve(api_str, ifilename)
+plot_api['legend'] = [ifilename]
+
+print("All files created: ", plot_api)
+
+
+# ---------------------------------
+# create:
+#   'test-map-geomet-nrcan-hfe-rdpa24_2018080912.png'
+#   'test-map-geomet-nrcan-hfe-rdpa24_legend.png'
 # ---------------------------------
 
 from a1_request_geomet_grib2 import request_geomet_grib2
@@ -74,11 +95,11 @@ from cx_plot_data import plot_data
 product = 'rdpa:10km:24f'
 crs = 'EPSG:4326'
 bbox = {"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
-dates = [ datetime.datetime(2022,8,24,12,0) ]
-lintransform={'a':1.0,'b':0.0}  # convert from m/h to mm/h
+dates = [ datetime.datetime(2018,8,9,12,0) ]
+lintransform={'a':1.0,'b':0.0}  # no convert of units
 
 # request data
-filename = '/tmp/test-map-geomet-nrcan-hfe'
+filename = '/tmp/test-map-geomet-nrcan-hfe-rdpa24'
 files_geomet = request_geomet_grib2(product=product,date=dates,bbox=bbox,crs=crs,overwrite=True,filename=filename)
 
 # read data
@@ -97,14 +118,55 @@ plot_geomet = plot_data(
     legend=True,
     cities=True,
     bbox=bbox,
-    basefilename='test-map-geomet-nrcan-hfe',
+    basefilename='test-map-geomet-nrcan-hfe-rdpa24',
     silent=True)
 print("All files created: ", plot_geomet)
 
 
 # ---------------------------------
 # create:
-#     'test-map-caspar-nrcan-hfe_1980011418.png'
+#   'test-map-geomet-nrcan-hfe-rdpa6_2018080906.png'
+#   'test-map-geomet-nrcan-hfe-rdpa6_legend.png'
+# ---------------------------------
+
+from a1_request_geomet_grib2 import request_geomet_grib2
+from b1_read_geomet_grib2 import read_geomet_grib2
+from cx_plot_data import plot_data
+
+product = 'rdpa:10km:6f'
+crs = 'EPSG:4326'
+bbox = {"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
+dates = [ datetime.datetime(2018,8,9,6,0) ]
+lintransform={'a':1.0,'b':0.0}  # no convert of units
+
+# request data
+filename = '/tmp/test-map-geomet-nrcan-hfe-rdpa6'
+files_geomet = request_geomet_grib2(product=product,date=dates,bbox=bbox,crs=crs,overwrite=True,filename=filename)
+
+# read data
+data_geomet = read_geomet_grib2(
+    files_geomet,
+    lintransform=lintransform)
+
+# plot (1 time step)
+plot_geomet = plot_data(
+    var=data_geomet["var"],
+    lat=data_geomet["lat"],
+    lon=data_geomet["lon"],
+    date=dates,
+    png=True,
+    gif=False,
+    legend=True,
+    cities=True,
+    bbox=bbox,
+    basefilename='test-map-geomet-nrcan-hfe-rdpa6',
+    silent=True)
+print("All files created: ", plot_geomet)
+
+
+# ---------------------------------
+# create:
+#     'test-map-caspar-nrcan-hfe_2018080907.png'
 #     'test-map-caspar-nrcan-hfe_legend.png'
 # ---------------------------------
 
@@ -113,7 +175,7 @@ from cx_plot_data import plot_data
 
 product='RDRS_v2.1'
 variable='RDRS_v2.1_A_PR0_SFC'
-dates=[ datetime.datetime(1980,1,14,18,0) ]
+dates=[ datetime.datetime(2018,8,9,7,0) ]
 bbox={"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
 foldername='../../src/test-data/'
 lintransform={'a':1000.0,'b':0.0}  # convert from m/h to mm/h

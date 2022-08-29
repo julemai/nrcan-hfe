@@ -128,7 +128,7 @@
 
 \section{Request, read, and plot data from GeoMet}
 
-The assumption is that we want to retrieve CaPA data (RDPA; 24h total precipitation) from GeoMet for Aug 24, 2022 around Montreal ($\mathrm{lat} = 45.5019^{\circ}\mathrm{N}$, $\mathrm{lon}=-73.5674^{\circ}\mathrm{E}$). 
+The assumption is that we want to retrieve CaPA data (RDPA; 24h total precipitation) from GeoMet for Aug 9, 2018 around Montreal ($\mathrm{lat} = 45.5019^{\circ}\mathrm{N}$, $\mathrm{lon}=-73.5674^{\circ}\mathrm{E}$). 
 
 The URL to request is the following:
 \url{https://api.weather.gc.ca/collections/weather:rdpa:10km:24f/coverage?f=json&datetime=2022-08-24T12Z&CRS=EPSG:4326&bbox=-74,45,-73,46}
@@ -256,27 +256,27 @@ The returned variable \texttt{data\_geomet} is a dictionary that will contain th
 	\vspace*{-0.3cm}
 \end{framed}
 \vspace*{-0.3cm}
-The returned variable \texttt{plot\_geomet} is a dictionary that will contain the attributes \texttt{png}, \texttt{gif}, and \texttt{legend}. Each of them are assigned list of the according files created. If no file was created (e.g., no legend), the list will be empty.
+The returned variable \texttt{plot\_geomet} is a dictionary that will contain the attributes \texttt{png}, \texttt{gif}, and \texttt{legend}. Each of them are assigned list of the according files created. If no file was created (e.g., no legend), the respective list will be empty.
 
 \begin{figure}[h]
 	\begin{subfigure}[b]{0.45\textwidth}
 		\centering
-		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-geo-weather_2022082412.png}
+		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-geo-weather-rdpa24_2018080912.png}
 		\hspace*{0.5cm}
-		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-geo-weather_legend.png}
-		\caption{Raw PNG and legend for RDPA data retrieved using \url{https://geo.weather.gc.ca}\\(only displayed for reference)}
+		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-geo-weather-rdpa24_legend.png}
+		\caption{Raw PNG and legend for RDPA-24h data retrieved using \url{https://geo.weather.gc.ca}\\(only displayed for reference)}
 		\label{fig:plot_example:geo-weather}
 	\end{subfigure}
 	\hspace*{0.05\textwidth}
 	\begin{subfigure}[b]{0.45\textwidth}
 		\centering
-		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-nrcan-hfe_2022082412.png}
+		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-nrcan-hfe-rdpa24_2018080912.png}
 		\hspace*{0.5cm}
-		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-nrcan-hfe_legend.png}
-		\caption{PNG and legend produced using NRCan-HFE library based on GRIB2 data (RDPA) retrieved using \url{https://api.weather.gc.ca/}}
+		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-nrcan-hfe-rdpa24_legend.png}
+		\caption{PNG and legend produced using NRCan-HFE library based on GRIB2 data (RDPA-24h) retrieved using \url{https://api.weather.gc.ca/}}
 		\label{fig:plot_example:api-weather}
 	\end{subfigure}
-	\caption{RDPA (24h total precipitation) on Aug 24, 2022 (noon UTC) around Montreal}
+	\caption{RDPA (24h total precipitation) on Aug 9, 2018 (noon UTC) around Montreal}
 	\label{fig:plot_example_geomet-api_vs_geomet-nrcan-hfe}
 \end{figure}
 
@@ -284,30 +284,122 @@ The returned variable \texttt{plot\_geomet} is a dictionary that will contain th
 
 \section{Request, read, and plot data from CaSPAr}
 
+\textbf{Step A2:} Request data using CaSPAr (\url{https://caspar-data.ca/caspar}).
 
+The following function is just a dummy to provide some information on how to retrieve data from CaSPAr manually. Fig.~\ref{fig:request_data_caspar} shows the setting used to retrieve RDRS-v2.1 data from CaSPAr. The shapefile containing the domain of the HFE database is provided under \texttt{data/caspar/RDRS\_v21\_hfe\_outline.zip}. Some example data are made available (see \texttt{src/test-data/*.nc}). See more information on how to create a CaSPar account, request and dwonload data under \url{https://github.com/julemai/CaSPAr/wiki/How-to-get-started-and-download-your-first-data}.
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.0cm} \= \hspace{3.2cm} \= \kill \\[4pt]
+			\GRAU{\# see module for detailed documentation and example}\\
+			from a2\_request\_caspar\_nc import request\_caspar\_nc\\
+			\\
+			files\_caspar = request\_caspar\_nc( ) \> 
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+The return variable \texttt{files\_caspar} is 0. The function will only display a warning that the data have to be requested and downloaded manually. 
 \begin{figure}[h]
-	\begin{subfigure}[b]{0.45\textwidth}
-		\centering
-		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-nrcan-hfe_2022082412.png}
-		\hspace*{0.5cm}
-		\includegraphics[height=0.58\linewidth]{figures/test-map-geomet-nrcan-hfe_legend.png}
-		\caption{PNG and legend produced using NRCan-HFE library based on GRIB2 data (RDPA) retrieved using \url{https://api.weather.gc.ca/}}
-		\label{fig:plot_example:api-weather:2nd}
-	\end{subfigure}
-	\hspace*{0.05\textwidth}
-	\begin{subfigure}[b]{0.45\textwidth}
-		\centering
-		\includegraphics[height=0.58\linewidth]{figures/test-map-caspar-nrcan-hfe_1980011418.png}
-		\hspace*{0.5cm}
-		\includegraphics[height=0.58\linewidth]{figures/test-map-caspar-nrcan-hfe_legend.png}
-		\caption{PNG and legend produced using NRCan-HFE library based on NetCDF data (RDRS v2.1) retrieved using \url{https://caspar-data.ca}}
-		\label{fig:plot_example:caspar}
-	\end{subfigure}
-	\caption{RDPA (24h total precipitation) from Geomet and RDRS\_v2.1\_A\_PR0\_SFC (1h accumulations) from CaSPAr for two different days (since no overlap between Geomet RDPA and CaSPAr RDRS v2.1) but requested for the same bounding box around Montreal. The panel in Fig.~\ref{fig:plot_example:api-weather:2nd} is the same as panel in Fig.~\ref{fig:plot_example:api-weather}.}
-	\label{fig:plot_example_geomet-nrcan-hfe_vs_caspar-nrcan-hfe}
+	\centering
+	\includegraphics[width=\linewidth]{figures/caspar-request-hfe.png}
+	\caption{Screenshot of CaSPAr (\url{https://caspar-data.ca/caspar}) frontend displaying setting to request RDRS-v2.1 for the HFE domain. The shapefile used to define the domain (blue highlighted area) within the data available for RDRS-v2.1 (turquoises highlighted area) is available under \texttt{data/caspar/RDRS\_v21\_hfe\_outline.zip} and has been used via file upload (top button in right top corner of the map).}
+	\label{fig:request_data_caspar}
 \end{figure}
 
-\newpage
+\textbf{Step B2:} Read data from CaSPAr files.
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.0cm} \= \hspace{5.2cm} \= \kill \\[4pt]
+			\GRAU{\# see module for detailed documentation and example}\\
+			from b2\_read\_caspar\_nc import read\_caspar\_nc\\
+			\\
+			data\_caspar = read\_caspar\_nc(\\
+			\> \GRAU{\# Mandatory arguments:}\\
+			\> product=\textit{product}, \> \GRAU{\# name of product in CaSPAr (e.g., 'RDRS-v2.1')}\\
+			\> variable=\textit{variable}, \> \GRAU{\# name of variable in CaSPAr}\\
+			\> \> \GRAU{\#  (e.g., 'RDRS\_v2.1\_A\_PR0\_SFC')}\\
+			\> date=\textit{date}, \> \GRAU{\# datetime object specifying date}\\
+			\> \> \GRAU{\#  (can be list of dates)}\\
+			\> \GRAU{\# Optional arguments:}\\
+			\> bbox=\textit{bbox}, \> \GRAU{\# dictionary specifying bounding box}\\
+			\> foldername=\textit{foldername}, \> \GRAU{\# name of folder that contains files requested}\\
+			\> \> \GRAU{\# and downloaded from CaSPAr (files not renamed)}\\
+			\> lintransform=\textit{lintransform}, \> \GRAU{\# dictionary to specify linear transform of}\\
+			\>  \> \GRAU{\# data, e.g., to allow for unit conversions}\\
+			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
+			\> ) \> 
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+The returned variable \texttt{data\_caspar} is a dictionary that will contain the attributes \texttt{lat}, \texttt{lon}, and \texttt{var}. The latter will be 3-dimensional if several dates were read. The latitude and longitudes of the files are checked for consistency.
+
+\textbf{Step Cx:} Plot data.
+
+Since the data \texttt{data\_caspar} have the same structure as the data read from Geomet (i.e., \texttt{data\_geomet}) the plotting of the data is now exactly the same. See \textbf{Step Cx} above. 
+
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.0cm} \= \hspace{5.2cm} \= \kill \\[4pt]
+			\GRAU{\# see module for detailed documentation and example}\\
+			from cx\_plot\_data import plot\_data\\
+			\\
+			plot\_caspar = plot\_data(\\
+			\> \GRAU{\# Mandatory arguments:}\\
+			\> var=data\_caspar["var"], \> \GRAU{\# 2D/3D array of values for variable}\\
+			\> lat=data\_caspar["lat"], \> \GRAU{\# 2D array of latitudes}\\
+			\> lon=data\_caspar["lon"], \> \GRAU{\# 2D array of longitudes}\\
+			\> ... \> \GRAU{\# see above "Step Cx" for more arguments }\\
+			\> ) \> 
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+The returned variable \texttt{plot\_caspar} is a dictionary that will contain the attributes \texttt{png}, \texttt{gif}, and \texttt{legend}. Each of them are assigned list of the according files created. If no file was created (e.g., no legend), the respective list will be empty.
+
+Fig.~\ref{fig:plot_example:caspar} shows the result of a plot of precipitation (\texttt{RDRS-v2.1\_A\_PR0\_SFC}) in the RDRS-v2.1 product for a domain around Montreal on Aug 9, 2018 at 7:00 am (UTC). For comparison, the other two panels in this figure (i.e., Fig.~\ref{fig:plot_example:api-weather:24h} and Fig.~\ref{fig:plot_example:api-weather:6h}) show the results of plotting data requested from Geomet for the same day but as 24-h and 6-h precipitation accumulations of the RDPA product.
+
+\begin{figure}[h]
+	\begin{subfigure}[a]{0.27\textwidth}
+		\centering
+		\includegraphics[height=0.9\linewidth]{figures/test-map-geomet-nrcan-hfe-rdpa24_2018080912.png}
+		\caption{PNG produced using NRCan-HFE library based on GRIB2 data (RDPA-24h) retrieved using \url{https://api.weather.gc.ca/}}
+		\label{fig:plot_example:api-weather:24h}
+	\end{subfigure}
+	\hspace*{0.02\textwidth}
+	\begin{subfigure}[a]{0.27\textwidth}
+		\centering
+		\includegraphics[height=0.9\linewidth]{figures/test-map-geomet-nrcan-hfe-rdpa6_2018080906.png}
+		\caption{PNG produced using NRCan-HFE library based on GRIB2 data (RDPA-6h) retrieved using \url{https://api.weather.gc.ca/}}
+		\label{fig:plot_example:api-weather:6h}
+	\end{subfigure}
+	\hspace*{0.02\textwidth}
+	\begin{subfigure}[a]{0.27\textwidth}
+		\centering
+		\includegraphics[height=0.9\linewidth]{figures/test-map-caspar-nrcan-hfe_2018080907.png}
+		\caption{PNG produced using NRCan-HFE library based on NetCDF data (RDRS v2.1-1h) retrieved using \url{https://caspar-data.ca}}
+		\label{fig:plot_example:caspar}
+	\end{subfigure}
+	\hspace*{0.02\textwidth}
+	\begin{subfigure}[a]{0.1\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/test-map-caspar-nrcan-hfe_legend.png}
+		\label{fig:plot_example:legend}
+	\end{subfigure}
+	\caption{RDPA (24h and 6h total precipitation) from Geomet and RDRS\_v2.1\_A\_PR0\_SFC (1h accumulations) from CaSPAr for data available for Aug 9, 2018. (a) RDPA-24h is accumulated precipitation for noon Aug 8, 2018 (UTC) until noon Aug 9, 2018 (UTC) \jm{(Vincent, RDPA-24h is period ending, right?)}, (b) RDPA-6h is accumulated precipitation for midnight Aug 9, 2018 (UTC) until 6am Aug 9, 2018 (UTC) \jm{(Vincent, RDPA-6h is period ending, right?)} while (c) RDRS-v2.1 is precipitation between Aug 9, 2018 6:00 am and 7:00 am (UTC) \jm{(Vincent, RDRS is period ending, right?)}. The same bounding box around Montreal has been requested from the three products. The panel in Fig.~\ref{fig:plot_example:api-weather:24h} is the same as panel in Fig.~\ref{fig:plot_example:api-weather}. The legend is the same for all plots.}
+	\label{fig:plot_example_geomet-nrcan-hfe_vs_caspar-nrcan-hfe}
+\end{figure}
+\clearpage 
+
 \section{Time sheet}
 
 Listed hours spend per day with a brief description of activities are provided in Table~\ref{tab:hours}.

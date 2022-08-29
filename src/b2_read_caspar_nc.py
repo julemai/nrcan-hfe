@@ -124,39 +124,39 @@ def read_caspar_nc(product=None,variable=None,date=None,bbox=None,foldername='/t
 
         Read data (1 file provided as string --> returns var as 2D array)
 
-        >>> date=datetime.datetime(1980,1,14,18,0)
+        >>> date=datetime.datetime(2018,8,9,7,0)
 
         >>> data_caspar = read_caspar_nc(product=product,variable=variable,date=date,bbox=bbox,foldername=foldername,lintransform=lintransform,silent=True)
         >>> print('var[8,0:4] = '+str(data_caspar["var"][8,0:4]))
-        var[8,0:4] = [0.53641945 0.46970782 0.48578462 0.50169617]
+        var[8,0:4] = [0.12983558 0.0376055  0.         0.        ]
         >>> print('lat[8,0:4] = '+str(data_caspar["lat"][8,0:4]))
-        lat[8,0:4] = [45.84939  45.825138 45.800735 45.776184]
+        lat[8,0:4] = [45.78684 45.76281 45.73859 45.71424]
         >>> print('lon[8,0:4] = '+str(data_caspar["lon"][8,0:4]))
-        lon[8,0:4] = [-73.99344 -73.87134 -73.74933 -73.62747]
+        lon[8,0:4] = [-74.150696 -74.02869  -73.9068   -73.785   ]
 
         Read data (1 file provided as list --> returns var as 3D array)
 
-        >>> date=[datetime.datetime(1980,1,14,18,0)]
+        >>> date=[datetime.datetime(2018,8,9,7,0)]
 
         >>> data_caspar = read_caspar_nc(product=product,variable=variable,date=date,bbox=bbox,foldername=foldername,lintransform=lintransform,silent=True)
         >>> print('var[0,8,0:4] = '+str(data_caspar["var"][0,8,0:4]))
-        var[0,8,0:4] = [0.53641945 0.46970782 0.48578462 0.50169617]
+        var[0,8,0:4] = [0.12983558 0.0376055  0.         0.        ]
         >>> print('lat[8,0:4] = '+str(data_caspar["lat"][8,0:4]))
-        lat[8,0:4] = [45.84939  45.825138 45.800735 45.776184]
+        lat[8,0:4] = [45.78684 45.76281 45.73859 45.71424]
         >>> print('lon[8,0:4] = '+str(data_caspar["lon"][8,0:4]))
-        lon[8,0:4] = [-73.99344 -73.87134 -73.74933 -73.62747]
+        lon[8,0:4] = [-74.150696 -74.02869  -73.9068   -73.785   ]
 
         Read data (2 files --> returns var as 3D array)
 
-        >>> date=[datetime.datetime(1980,1,14,18,0),datetime.datetime(1980,1,14,20,0)]
+        >>> date=[datetime.datetime(2018,8,9,7,0),datetime.datetime(2018,8,9,14,0)]
 
         >>> data_caspar = read_caspar_nc(product=product,variable=variable,date=date,bbox=bbox,foldername=foldername,lintransform=lintransform,silent=True)
         >>> print('var[0,8,0:4] = '+str(data_caspar["var"][0,8,0:4]))
-        var[0,8,0:4] = [0.53641945 0.46970782 0.48578462 0.50169617]
+        var[0,8,0:4] = [0.12983558 0.0376055  0.         0.        ]
         >>> print('lat[8,0:4] = '+str(data_caspar["lat"][8,0:4]))
-        lat[8,0:4] = [45.84939  45.825138 45.800735 45.776184]
+        lat[8,0:4] = [45.78684 45.76281 45.73859 45.71424]
         >>> print('lon[8,0:4] = '+str(data_caspar["lon"][8,0:4]))
-        lon[8,0:4] = [-73.99344 -73.87134 -73.74933 -73.62747]
+        lon[8,0:4] = [-74.150696 -74.02869  -73.9068   -73.785   ]
 
 
         License
