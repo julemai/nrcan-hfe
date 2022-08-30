@@ -210,4 +210,4 @@ print("All files created: ", plot_caspar)
 # ---------------------------------
 
 os.system('python plot_bilinear_interpolation_results.py > /dev/null 2>&1')
-print("All files created: {'png': ['test-bilinear-interpolation.png']}")
+print("All files created:  {'png': ['test-bilinear-interpolation.png']}")
