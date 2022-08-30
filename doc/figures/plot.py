@@ -39,7 +39,6 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path+'/../../src')
 
 
-
 # ---------------------------------
 # create:
 #   'test-map-geomet-geo-weather-rdpa24_2018080912.png'
@@ -203,3 +202,12 @@ plot_caspar = plot_data(
     basefilename='test-map-caspar-nrcan-hfe',
     silent=True)
 print("All files created: ", plot_caspar)
+
+
+# ---------------------------------
+# create:
+#     'test-bilinear-interpolation'
+# ---------------------------------
+
+os.system('python plot_bilinear_interpolation_results.py > /dev/null 2>&1')
+print("All files created: {'png': ['test-bilinear-interpolation.png']}")
