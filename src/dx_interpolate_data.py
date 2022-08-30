@@ -30,7 +30,7 @@ import scipy as scipy
 __all__ = ['interpolate_data']
 
 
-def interpolate_data(var=None,lat=None,lon=None,locations=None, bbox=None,return_tmp=False,silent=True):
+def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_tmp=False,silent=True):
     """
         Plot data retrieved from either Geomet or CaSPAr (data will be all formatted the same by now).
 
@@ -66,7 +66,10 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None, bbox=None,return
         bbox            dict           Dictionary specifying the bounding box, i.e.,
                                          {"lat":{"min":min_lat,"max":max_lat},
                                           "lon":{"min":min_lon,"max":max_lon}}
-                                       If provided, the outline of the bouding box will be added to the plot.
+                                       If provided, the location will be checked to fall into the bounding box.
+                                       Error generated if not; even if data might be available in vicinity of the
+                                       bounding box. In any case the code will check that data are available for
+                                       locations. The bounding box check is only an additional safety check.
                                        Default: None
 
         return_tmp      Boolean        If set to True a "tmp" attribute will be returned containing a dictionary
@@ -226,13 +229,13 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None, bbox=None,return
 
     # checking inputs
     if var is None:
-        raise ValueError("plot_data: variable needs to be specified")
+        raise ValueError("interpolate_data: variable needs to be specified")
     if lat is None:
-        raise ValueError("plot_data: latitude needs to be specified")
+        raise ValueError("interpolate_data: latitude needs to be specified")
     if lon is None:
-        raise ValueError("plot_data: longitude needs to be specified")
+        raise ValueError("interpolate_data: longitude needs to be specified")
     if locations is None:
-        raise ValueError("plot_data: locations needs to be specified")
+        raise ValueError("interpolate_data: locations needs to be specified")
 
     location_was_scalar = False
     if type(locations["lat"]) == float:
@@ -242,7 +245,7 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None, bbox=None,return
         location_was_scalar = True
 
     if len(locations["lat"]) != len(locations["lon"]):
-        raise ValueError("Lat (n={}) and lon (n={}) of locations are not of the same shape.".format(len(locations["lat"]),len(locations["lon"])))
+        raise ValueError("interpolate_data: Lat (n={}) and lon (n={}) of locations are not of the same shape.".format(len(locations["lat"]),len(locations["lon"])))
     else:
         nlocations = len(locations["lat"])
 
@@ -256,9 +259,9 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None, bbox=None,return
         nlon = np.shape(var)[2]
 
         if list(np.shape(lat)) != [nlat,nlon]:
-            raise ValueError("Shape of 'lat' ({}) not matching shape of 'var' ({}).".format(np.shape(lat),np.shape(var)[1:]))
+            raise ValueError("interpolate_data: Shape of 'lat' ({}) not matching shape of 'var' ({}).".format(np.shape(lat),np.shape(var)[1:]))
         if list(np.shape(lon)) != [nlat,nlon]:
-            raise ValueError("Shape of 'lon' ({}) not matching shape of 'var' ({}).".format(np.shape(lon),np.shape(var)[1:]))
+            raise ValueError("interpolate_data: Shape of 'lon' ({}) not matching shape of 'var' ({}).".format(np.shape(lon),np.shape(var)[1:]))
 
     elif len(np.shape(var)) == 2: # only one time step provided
         # if only one date provided make a dummy dimension is added where needed
@@ -270,12 +273,28 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None, bbox=None,return
         nlon = np.shape(var)[2]
 
         if list(np.shape(lat)) != [nlat,nlon]:
-            raise ValueError("Shape of 'lat' ({}) not matching shape of 'var' ({}).".format(np.shape(lat),np.shape(var)[1:]))
+            raise ValueError("interpolate_data: Shape of 'lat' ({}) not matching shape of 'var' ({}).".format(np.shape(lat),np.shape(var)[1:]))
         if list(np.shape(lon)) != [nlat,nlon]:
-            raise ValueError("Shape of 'lon' ({}) not matching shape of 'var' ({}).".format(np.shape(lon),np.shape(var)[1:]))
+            raise ValueError("interpolate_data: Shape of 'lon' ({}) not matching shape of 'var' ({}).".format(np.shape(lon),np.shape(var)[1:]))
 
     else:
-        raise ValueError("Unknown shape of variable. Needs to be 2D or 3D.")
+        raise ValueError("interpolate_data: Unknown shape of variable. Needs to be 2D or 3D.")
+
+    # check if locations are in bounding box
+    if not(bbox is None):
+
+        for ilocation in range(nlocations):
+
+            if (        (locations["lat"][ilocation] < bbox["lat"]["min"]) or
+                        (locations["lat"][ilocation] > bbox["lat"]["max"]) or
+                        (locations["lon"][ilocation] < bbox["lon"]["min"]) or
+                        (locations["lon"][ilocation] > bbox["lon"]["max"])):
+                raise ValueError("interpolate_data: location (lat={},lon={}) is not within the bounding box {}. The data might still contain the grid cell. Try to run without using 'bbox' argument in 'interplolate_data'. The function will crash if the location is also not available in the dataset.".format(locations["lat"][ilocation],locations["lon"][ilocation],bbox))
+
+
+
+    if not(silent): print("nlat=",nlat)
+    if not(silent): print("nlon=",nlon)
 
     # initialize return
     result = {}
@@ -288,6 +307,12 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None, bbox=None,return
     for ilocation in range(nlocations):
 
         [ii, jj] = get_index_of_latlon_location(lat, lon, locations["lat"][ilocation], locations["lon"][ilocation])
+
+        if ii < 1 or ii > nlat-1:
+            raise ValueError("interpolate_data: Location too close to edge. (lat, ii={})".format(ii))
+        if jj < 1 or jj > nlon-1:
+            raise ValueError("interpolate_data: Location too close to edge. (lon, jj={})".format(jj))
+
         neighbors_lon = np.array([ [ lon[iii,jjj] for jjj in range(jj-1,jj+2) ] for iii in range(ii-1,ii+2) ])
         neighbors_lat = np.array([ [ lat[iii,jjj] for jjj in range(jj-1,jj+2) ] for iii in range(ii-1,ii+2) ])
         neighbors_var = np.array([ [ [ var[itime,iii,jjj] for jjj in range(jj-1,jj+2) ] for iii in range(ii-1,ii+2) ] for itime in range(ntime) ])
@@ -311,7 +336,14 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None, bbox=None,return
 
             zz = neighbors_var[itime].flatten()
 
-            ff = scipy.interpolate.interp2d(xx, yy, zz, kind='linear', copy=True, bounds_error=False, fill_value=None)
+            # bounds_error (bool, optional):
+            #       If True, when interpolated values are requested outside of the domain of the
+            #       input data (x,y), a ValueError is raised. If False, then fill_value is used.
+            # fill_value (number, optional):
+            #       If provided, the value to use for points outside of the interpolation domain.
+            #       If omitted (None), values outside the domain are extrapolated via nearest-neighbor
+            #       extrapolation.
+            ff = scipy.interpolate.interp2d(xx, yy, zz, kind='linear', copy=True, bounds_error=True, fill_value=None)
             izz = ff(locations["lon"][ilocation], locations["lat"][ilocation])[0]
 
             interpol.append( izz ) # interpol.append( np.diagonal(ii) )
@@ -326,6 +358,9 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None, bbox=None,return
     result['lat'] = locations["lat"]
     result['lon'] = locations["lon"]
     if return_tmp:
+        results_tmp['lat'] = np.array(results_tmp['lat'])
+        results_tmp['lon'] = np.array(results_tmp['lon'])
+        results_tmp['var'] = np.array(results_tmp['var'])
         result['tmp'] = results_tmp
 
     # ----------------------------------------------------
