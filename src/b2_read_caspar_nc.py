@@ -189,9 +189,9 @@ def read_caspar_nc(product=None,variable=None,date=None,bbox=None,foldername='/t
 
         # checking inputs
     if product is None:
-        raise ValueError("read_caspar_nc: product need to be specified")
+        raise ValueError("read_caspar_nc: product needs to be specified")
     if variable is None:
-        raise ValueError("read_caspar_nc: variable need to be specified")
+        raise ValueError("read_caspar_nc: variable needs to be specified")
     if date is None:
         raise ValueError("read_caspar_nc: date(s) need(s) to be specified")
 

@@ -114,7 +114,4 @@ if __name__ == '__main__':
     doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
 
 
-    # date = datetime.datetime(2022,8,24,12,0)
-    # bbox = {"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
-    # filename = '/tmp/tmf/test'
-    # file_geomet = request_geomet_grib2(product='rdpa:10km:6f',date=date,bbox=bbox,crs='EPSG:4326',filename=filename)
+    # file_caspar = request_caspar_nc()
