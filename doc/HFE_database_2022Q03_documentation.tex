@@ -89,7 +89,7 @@
 
 \section{Meetings}
 
-\subsection{Kick-off Meeting}
+\subsection{Kick-off meeting}
 \vspace*{-0.5cm}
 \begin{tabbing}
 	\hspace{2.8cm} \= \hspace{4cm} \= \kill \\
@@ -110,6 +110,25 @@
 	\item discussion of handling liquid/solid precipitation (Vincent suggested manuscript in preparation that will require humidity and temperature as additional variables to transform precipitation into components)
 	\item next meeting mid September will be scheduled by Dikra
 \end{itemize}
+
+\subsection{Mid-contract follow-up meeting}
+\vspace*{-0.5cm}
+\begin{tabbing}
+	\hspace{2.8cm} \= \hspace{4cm} \= \kill \\
+	\textbf{Date and time:} 	\> Sep 15, 2022 2-3pm\\
+%	\textbf{Attendees:} 	\> Dikra Khedhaouiria \> (dikraa.khedhaouiria@ec.gc.ca)\\
+%	\> Juliane Mai \> (juliane.mai@uwaterloo.ca)\\
+%	\> Marie-Eve Martin \> (marie-eve.martin@nrcan-rncan.gc.ca)\\
+%	\> Philippe Aussant \> (philippe.aussant@NRCan-RNCan.gc.ca)\\
+%	\> Pierre-Etienne Bonhomme \> (etienne.bonhomme@NRCan-RNCan.gc.ca)\\
+%	\> Vincent Fortin \> (vincent.fortin@ec.gc.ca)
+\end{tabbing}
+\vspace*{-0.5cm}
+%\textbf{Notes:}
+%\begin{itemize}
+%	\setlength\itemsep{-0.8em}
+%%	\item 
+%\end{itemize}
 
 \section{Resources}
 
@@ -368,7 +387,7 @@ The returned variable \texttt{plot\_caspar} is a dictionary that will contain th
 
 Fig.~\ref{fig:plot_example:caspar} shows the result of a plot of precipitation (\texttt{RDRS-v2.1\_A\_PR0\_SFC}) in the RDRS-v2.1 product for a domain around Montreal on Aug 9, 2018 at 7:00 am (UTC). For comparison, the other two panels in this figure (i.e., Fig.~\ref{fig:plot_example:api-weather:24h} and Fig.~\ref{fig:plot_example:api-weather:6h}) show the results of plotting data requested from Geomet for the same day but as 24-h and 6-h precipitation accumulations of the RDPA product.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\begin{subfigure}[a]{0.27\textwidth}
 		\centering
 		\includegraphics[height=0.9\linewidth]{figures/test-map-geomet-nrcan-hfe-rdpa24_2018080912.png}
@@ -398,27 +417,106 @@ Fig.~\ref{fig:plot_example:caspar} shows the result of a plot of precipitation (
 	\caption{RDPA (24h and 6h total precipitation) from Geomet and RDRS\_v2.1\_A\_PR0\_SFC (1h accumulations) from CaSPAr for data available for Aug 9, 2018. (a) RDPA-24h is accumulated precipitation for noon Aug 8, 2018 (UTC) until noon Aug 9, 2018 (UTC) \jm{(Vincent, RDPA-24h is period ending, right?)}, (b) RDPA-6h is accumulated precipitation for midnight Aug 9, 2018 (UTC) until 6am Aug 9, 2018 (UTC) \jm{(Vincent, RDPA-6h is period ending, right?)} while (c) RDRS-v2.1 is precipitation between Aug 9, 2018 6:00 am and 7:00 am (UTC) \jm{(Vincent, RDRS is period ending, right?)}. The same bounding box around Montreal has been requested from the three products. The panel in Fig.~\ref{fig:plot_example:api-weather:24h} is the same as panel in Fig.~\ref{fig:plot_example:api-weather}. The legend is the same for all plots.}
 	\label{fig:plot_example_geomet-nrcan-hfe_vs_caspar-nrcan-hfe}
 \end{figure}
+
+\section{Request, read, and plot data from HFE database}
+
+The database is available \href{https://open.canada.ca/data/en/dataset/fe83a604-aa5a-4e46-903c-685f8b0cc33c}{here}. It has a web map service (WMS) that can be used to retrieve a GeoJSON containing information about flood events. 
+
+However, the database in JSON format was provided by Philippe Aussant on Aug 29, 2022. The data are available under \texttt{data/hfe/}. The following data were provided:
+\begin{description}
+	\item[\texttt{historical\_flood.json \ldots}] This layer contains individual flood
+	occurrences (\texttt{points}). The points in this layer have a unique ID
+	(\texttt{uuid}) and a secondary key to their historical\_flood\_events
+	(\texttt{event\_id}). We need precipitation for these points. You can
+	write the precipitation for each in the \texttt{rainfall\_mm}
+	attribute. The maps produced in 2.4.1 of SOW are for these points.
+	\item[\texttt{historical\_flood\_event.json \ldots}] This layer contains the same
+	flood occurrences as the previous layer but now they are grouped
+	into events (\texttt{multipoints}). A flood event contains one or more
+	occurrence. The unique id of this layer is \texttt{event\_id}. The maps
+	produced in 2.4.2 and 2.4.3 of SOW are for these multipoints.
+	\item[\texttt{large\_historical\_flood\_event\_sample.json \ldots}] As discussed in the
+	kickoff meeting, this file contains a sample of the
+	\texttt{historical\_flood\_event} layer. It has three large flood events
+	that contain multiple flood occurrence.
+	\item[\texttt{small\_historical\_flood\_event\_sample.json \ldots}] As discussed in the
+	kickoff meeting, this file contains a sample of the
+	\texttt{historical\_flood\_event} layer. It has three small flood events
+	that contain only one occurrence.
+\end{description}
+
+To load the data in Python use:
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.0cm} \= \hspace{5.2cm} \= \kill \\[4pt]
+			\GRAU{\# see module for detailed documentation and example}\\
+			import json as json\\
+			\\
+			\GRAU{\# flood occurrences (points) }\\
+			with open('../data/hfe/historical\_flood\_event.json') as json\_file: \\
+			\> data\_occurrence = json.load(json\_file)\\
+			print("Number of flood occurrences: {}".format(len(data\_occurrence['features'])))\\
+			\GRAU{[Out]: Number of flood occurrences: 1904}\\
+			\> \> \\
+			\GRAU{\# flood events (multipoints) }\\
+			with open('../data/hfe/historical\_flood\_event.json') as json\_file: \\
+			\> data\_event = json.load(json\_file)\\
+			print("Number of flood events: {}".format(len(data\_event['features'])))\\
+			\GRAU{[Out]: Number of flood events: 487} 
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+
+\section{Bilinear interpolation}
+
+This method is used to extract time series for points defining the flooding event (located within the bounding box used to request data). The raster is interpolated at the flooding event points using bilinear interpolation. The base of this function is \texttt{scipy.interpolate.interp2d}. If a location is requested that is not available in data, an error is raised.
+
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.0cm} \= \hspace{4.2cm} \= \kill \\[4pt]
+			\GRAU{\# see module for detailed documentation and example}\\
+			from dx\_interpolate\_data import interpolate\_data\\
+			\\
+			interpolated\_points = interpolate\_data(\\
+			\> \GRAU{\# Mandatory arguments:}\\
+			\> var=\textit{var}, \> \GRAU{\# 2D/3D array of values for variable}\\
+			\> lat=\textit{lat}, \> \GRAU{\# 2D array of latitudes}\\
+			\> lon=\textit{lon}, \> \GRAU{\# 2D array of longitudes}\\
+			\> locations=\textit{locations}, \> \GRAU{\# dict containing "lat" as list of latitudes}\\
+			\> \> \GRAU{\# and "lon" as list of longitudes for points }\\
+			\> \> \GRAU{\# where field(s) of "var" will be interpolated }\\
+			\> \GRAU{\# Optional arguments:}\\
+			\> bbox=\textit{bbox}, \> \GRAU{\# if provided locations will be checked to fall}\\
+			\> \> \GRAU{\# within; in any case points that are not covered}\\
+			\> \> \GRAU{\# by the data will result in an error message of}\\
+			\> \> \GRAU{\# the function}\\
+			\> return\_tmp=\textit{return\_tmp}, \> \GRAU{\# if True, data and location of the points used}\\
+			\> \> \GRAU{\# for interpolation will be returned as dictionary}\\
+			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
+			\> ) \> 
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+The returned variable \texttt{interpolated\_points} is a dictionary that will contain the attributes \texttt{lat}, \texttt{lon}, and \texttt{var}. The latter will be 2-dimensional with the size of the first dimension being the number of time steps and the size of the second dimension being the number of locations. 
+
+Fig.~\ref{fig:plot_example:bilinear} is showing the result of a bilinear interpolation of two locations over the course of 9 days.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\linewidth]{figures/test-bilinear-interpolation.png}
+	\caption{RDPA (6h total precipitation) around Montreal requested from Geomet (\url{https://api.weather.gc.ca/}) is displayed for nine time steps (Aug 7, 2018 12:00 until Aug 9, 2018 12:00). The nine maps on the right show the spatial distribution of precipitation within the requested bounding box (outline of black rectangle) and beyond. The legend is the same for the nine plots showing maps. Two locations have been randomly selected and are displayed on the maps as well (black dots). The left two panels show the precipitation rate over time for the center cell that contains the locations (dashed black line) as well as the bilinearily interpolated precipitation rate at the exact location (solid black line). For reference also the other 8 neighboring cells used for the bilinear interpolation are shown (gray lines).}
+	\label{fig:plot_example:bilinear}
+\end{figure}
+
 \clearpage 
-
-\section{Time sheet}
-
-Listed hours spend per day with a brief description of activities are provided in Table~\ref{tab:hours}.
-\begin{table}[h]
-	\begin{tabular}{L{2cm}R{1cm}L{11.5cm}}
-		\hline
-		\textbf{Date} & \textbf{Hours} & \textbf{Description}\\
-		\hline
-		Aug 25, 2022 & 4 & Kick-off meeting; collecting resources; discussion GeoMet requests; documentation \\
-		Aug 26, 2022 & 3 & discussion GeoMet requests; documentation \\
-		Aug 27, 2022 & 12 & coding Geomet functions (a1, b1) and function to plot data (cx); documentation \\		
-		Aug 28, 2022 & 12 & coding CaSPAr functions (a2, b2); refactor Geomet functions (a1, b1) and plotting (cx) for consistency; documentation \\	  
-		\hline
-		Sum & 31 & of 144 hrs in agreement\\
-		\hline\hline
-	\end{tabular}
-	\caption{Project time sheet for Juliane Mai}
-	\label{tab:hours}
-\end{table}
 
 \end{document}
 
