@@ -211,3 +211,12 @@ print("All files created: ", plot_caspar)
 
 os.system('python plot_bilinear_interpolation_results.py > /dev/null 2>&1')
 print("All files created:  {'png': ['test-bilinear-interpolation.png']}")
+
+
+# ---------------------------------
+# create:
+#     'test-all-coordinates-in-hfe'
+# ---------------------------------
+
+os.system('python plot_all-coordinates-in-hfe.py > /dev/null 2>&1')
+print("All files created:  {'png': ['test-all-coordinates-in-hfe.png']}")
