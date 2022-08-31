@@ -30,7 +30,7 @@ import scipy as scipy
 __all__ = ['interpolate_data']
 
 
-def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_tmp=False,silent=True):
+def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_tmp=False,post_process=False,silent=True):
     """
         Plot data retrieved from either Geomet or CaSPAr (data will be all formatted the same by now).
 
@@ -77,6 +77,12 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
                                        nine cells used for interpolation of each station. Hence the shape of "lat_tmp"
                                        is (nlocations,3,3), "lon_tmp" is (nlocations,3,3), "var_tmp" is
                                        (nlocations,ntime,3,3).
+                                       Default: False
+
+        post_process    Boolean        If set to True, all interpolated values will be checked to be non-negative.
+                                       If negative they will be set to zero; unless they are smaller than -0.1 which
+                                       will raise an error. The error is raise because it is likely that the interpolation
+                                       is not working properly when returning large negative values (for precipitation).
                                        Default: False
 
         silent          Boolean        If set to True, nothing will be printed to terminal.
@@ -131,9 +137,9 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
         >>> # Interpolate data from Geomet
         >>> # --------------------------------------
 
-        >>> # 4 locations
+        >>> # 4 locations ; w/ post-process (negative values set to zero)
         >>> locations = {"lat":[45.25,45.5,45.75,45.75], "lon":[-73.5,-73.5,-73.5,-73.75]}
-        >>> interpolate_geomet = interpolate_data(var=data_geomet["var"],lat=data_geomet["lat"],lon=data_geomet["lon"],locations=locations,bbox=bbox,silent=True)
+        >>> interpolate_geomet = interpolate_data(var=data_geomet["var"],lat=data_geomet["lat"],lon=data_geomet["lon"],locations=locations,bbox=bbox,post_process=True,silent=True)
         >>> print("Interpolated data location #1: (", interpolate_geomet['lat'][0],",",interpolate_geomet['lon'][0],") --> time[0:2] = ",interpolate_geomet['var'][:,0])
         Interpolated data location #1: ( 45.25 , -73.5 ) --> time[0:2] =  [0.06768329 2.35446854]
         >>> print("Interpolated data location #2: (", interpolate_geomet['lat'][1],",",interpolate_geomet['lon'][1],") --> time[0:2] = ",interpolate_geomet['var'][:,1])
@@ -143,15 +149,15 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
         >>> print("Interpolated data location #4: (", interpolate_geomet['lat'][3],",",interpolate_geomet['lon'][3],") --> time[0:2] = ",interpolate_geomet['var'][:,3])
         Interpolated data location #4: ( 45.75 , -73.75 ) --> time[0:2] =  [0.00427919 0.02936855]
 
-        >>> # 1 location (as list)
+        >>> # 1 location (as list) ; w/ post-process (negative values set to zero)
         >>> locations = {"lat":[45.25], "lon":[-73.5]}
-        >>> interpolate_geomet = interpolate_data(var=data_geomet["var"],lat=data_geomet["lat"],lon=data_geomet["lon"],locations=locations,bbox=bbox,silent=True)
+        >>> interpolate_geomet = interpolate_data(var=data_geomet["var"],lat=data_geomet["lat"],lon=data_geomet["lon"],locations=locations,bbox=bbox,post_process=True,silent=True)
         >>> print("Interpolated data location #1: (", interpolate_geomet['lat'][0],",",interpolate_geomet['lon'][0],") --> time[0:2] = ",interpolate_geomet['var'][:,0])
         Interpolated data location #1: ( 45.25 , -73.5 ) --> time[0:2] =  [0.06768329 2.35446854]
 
-        >>> # 1 location (as scalar)
+        >>> # 1 location (as scalar) ; w/ post-process (negative values set to zero)
         >>> locations = {"lat":45.25, "lon":-73.5}
-        >>> interpolate_geomet = interpolate_data(var=data_geomet["var"],lat=data_geomet["lat"],lon=data_geomet["lon"],locations=locations,bbox=bbox,silent=True)
+        >>> interpolate_geomet = interpolate_data(var=data_geomet["var"],lat=data_geomet["lat"],lon=data_geomet["lon"],locations=locations,bbox=bbox,post_process=True,silent=True)
         >>> print("Interpolated data location #1: (", interpolate_geomet['lat'][0],",",interpolate_geomet['lon'][0],") --> time[0:2] = ",interpolate_geomet['var'][:,0])
         Interpolated data location #1: ( 45.25 , -73.5 ) --> time[0:2] =  [0.06768329 2.35446854]
 
@@ -174,9 +180,9 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
         >>> # Interpolate data from CaSPAr
         >>> # --------------------------------------
 
-        >>> # 4 locations
+        >>> # 4 locations; w/o post-process (leads to negative values)
         >>> locations = {"lat":[45.25,45.5,45.75,45.75], "lon":[-73.5,-73.5,-73.5,-73.75]}
-        >>> interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,bbox=bbox,silent=True)
+        >>> interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,bbox=bbox,post_process=False,silent=True)
         >>> print("Interpolated data location #1: (", interpolate_caspar['lat'][0],",",interpolate_caspar['lon'][0],") --> time[0:2] = ",interpolate_caspar['var'][:4,0])
         Interpolated data location #1: ( 45.25 , -73.5 ) --> time[0:2] =  [-0.00077367 -0.00034989 -0.00029589 -0.00056612]
         >>> print("Interpolated data location #2: (", interpolate_caspar['lat'][1],",",interpolate_caspar['lon'][1],") --> time[0:2] = ",interpolate_caspar['var'][:4,1])
@@ -186,17 +192,23 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
         >>> print("Interpolated data location #4: (", interpolate_caspar['lat'][3],",",interpolate_caspar['lon'][3],") --> time[0:2] = ",interpolate_caspar['var'][:4,3])
         Interpolated data location #4: ( 45.75 , -73.75 ) --> time[0:2] =  [7.03383407e-05 2.11351033e-02 1.49056495e-01 8.51443785e-02]
 
-        >>> # 1 location (as list)
+        >>> # 1 location (as list); w/o post-process (leads to negative values)
         >>> locations = {"lat":[45.25], "lon":[-73.5]}
-        >>> interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,bbox=bbox,silent=True)
+        >>> interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,bbox=bbox,post_process=False,silent=True)
         >>> print("Interpolated data location #1: (", interpolate_caspar['lat'][0],",",interpolate_caspar['lon'][0],") --> time[0:2] = ",interpolate_caspar['var'][:4,0])
         Interpolated data location #1: ( 45.25 , -73.5 ) --> time[0:2] =  [-0.00077367 -0.00034989 -0.00029589 -0.00056612]
 
-        >>> # 1 location (as scalar)
+        >>> # 1 location (as scalar); w/o post-process (leads to negative values)
         >>> locations = {"lat":45.25, "lon":-73.5}
-        >>> interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,bbox=bbox,return_tmp=True,silent=True)
+        >>> interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,bbox=bbox,return_tmp=False,post_process=False,silent=True)
         >>> print("Interpolated data location #1: (", interpolate_caspar['lat'][0],",",interpolate_caspar['lon'][0],") --> time[0:2] = ",interpolate_caspar['var'][:4,0])
         Interpolated data location #1: ( 45.25 , -73.5 ) --> time[0:2] =  [-0.00077367 -0.00034989 -0.00029589 -0.00056612]
+
+        >>> # 1 location (as scalar) ; w/ post-process (negative values set to zero)
+        >>> locations = {"lat":45.25, "lon":-73.5}
+        >>> interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,bbox=bbox,return_tmp=False,post_process=True,silent=True)
+        >>> print("Interpolated data location #1: (", interpolate_caspar['lat'][0],",",interpolate_caspar['lon'][0],") --> time[0:2] = ",interpolate_caspar['var'][:4,0])
+        Interpolated data location #1: ( 45.25 , -73.5 ) --> time[0:2] =  [0. 0. 0. 0.]
 
 
         License
@@ -345,6 +357,15 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
             #       extrapolation.
             ff = scipy.interpolate.interp2d(xx, yy, zz, kind='linear', copy=True, bounds_error=True, fill_value=None)
             izz = ff(locations["lon"][ilocation], locations["lat"][ilocation])[0]
+
+            if post_process:
+                # check if value is "too negative"
+                if izz < -0.1:
+                    raise ValueError("interpolate_data: very negative value obtained for interpolated data for location #{} (lat={},lon={}): value = {}. It seems that the interpolation is not working properly as it is based on 9 values that are all non-negative and therefore shouldn't produce large negative interpolated values.".format(ilocation, locations["lat"][ilocation], locations["lon"][ilocation], izz))
+
+                # set negative value to zero
+                if izz < 0.0:
+                    izz = 0.0
 
             interpol.append( izz ) # interpol.append( np.diagonal(ii) )
 
