@@ -68,7 +68,7 @@ data_geomet = read_geomet_grib2(
 
 # interpolate at three locations
 locations = {"lat":[46.1,45.4], "lon":[-73.5,-72.8]}
-interpolate_geomet = interpolate_data(var=data_geomet["var"],lat=data_geomet["lat"],lon=data_geomet["lon"],locations=locations,return_tmp=True,silent=True) # bbox=bbox,
+interpolate_geomet = interpolate_data(var=data_geomet["var"],lat=data_geomet["lat"],lon=data_geomet["lon"],locations=locations,return_tmp=True,post_process=True,silent=True) # bbox=bbox,
 
 
 
