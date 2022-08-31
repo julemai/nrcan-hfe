@@ -307,7 +307,7 @@ The returned variable \texttt{plot\_geomet} is a dictionary that will contain th
 
 \textbf{Step A2:} Request data using CaSPAr (\url{https://caspar-data.ca/caspar}).
 
-The following function is just a dummy to provide some information on how to retrieve data from CaSPAr manually. Fig.~\ref{fig:request_data_caspar} shows the setting used to retrieve RDRS-v2.1 data from CaSPAr. The shapefile containing the domain of the HFE database is provided under \texttt{data/caspar/RDRS\_v21\_hfe\_outline.zip}. Some example data are made available (see \texttt{src/test-data/*.nc}). See more information on how to create a CaSPar account, request and dwonload data under \url{https://github.com/julemai/CaSPAr/wiki/How-to-get-started-and-download-your-first-data}.
+The following function is just a dummy to provide some information on how to retrieve data from CaSPAr manually. Fig.~\ref{fig:request_data_caspar} shows the setting used to retrieve RDRS-v2.1 data from CaSPAr. The shapefile containing the domain of the HFE database is provided under \texttt{data/caspar/RDRS\_v21\_hfe\_outline.zip} (see shape as blue polygon in Fig.~\ref{fig:plot_example:location_points}). Some example data are made available (see \texttt{src/test-data/*.nc}). See more information on how to create a CaSPAr account, request and dwonload data under \url{https://github.com/julemai/CaSPAr/wiki/How-to-get-started-and-download-your-first-data}.
 \begin{framed}
 	\vspace*{-1.2cm}
 	\begin{ttfont}
@@ -329,6 +329,7 @@ The return variable \texttt{files\_caspar} is 0. The function will only display 
 	\caption{Screenshot of CaSPAr (\url{https://caspar-data.ca/caspar}) frontend displaying setting to request RDRS-v2.1 for the HFE domain. The shapefile used to define the domain (blue highlighted area) within the data available for RDRS-v2.1 (turquoises highlighted area) is available under \texttt{data/caspar/RDRS\_v21\_hfe\_outline.zip} and has been used via file upload (top button in right top corner of the map).}
 	\label{fig:request_data_caspar}
 \end{figure}
+\pagebreak
 
 \textbf{Step B2:} Read data from CaSPAr files.
 \begin{framed}
@@ -422,7 +423,7 @@ Fig.~\ref{fig:plot_example:caspar} shows the result of a plot of precipitation (
 \end{figure}
 \clearpage
 
-\section{Prepare, read, and check data from HFE database} 
+\section{Request and read data from HFE database} 
 
 \textbf{Step A3:} Request HFE database.
 
@@ -480,7 +481,7 @@ The following function is currently only checking if the files exist at the indi
 The returned variable \texttt{files\_hfe} is a dictionary with one key (\texttt{json}) containing the list of JSON files created (currently just found; not created).
 \clearpage
 
-\textbf{Step B2:} Read data from HFE files.
+\textbf{Step B3:} Read data from HFE files.
 \begin{framed}
 	\vspace*{-1.2cm}
 	\begin{ttfont}
@@ -494,8 +495,8 @@ The returned variable \texttt{files\_hfe} is a dictionary with one key (\texttt{
 			\> filename=\textit{filename}, \> \GRAU{\# Name of JSON file of HFE database to read} \\
 			\> \GRAU{\# Optional arguments:}\\
 			\> filtering=\textit{filtering}, \> \GRAU{\# if True, content of JSON will be checked}\\
-			\> \> \GRAU{\# to be consistent}\\
-			\> \> \GRAU{\# (checks applied are listed below)}\\
+			\> \> \GRAU{\# to be consistent and filtered dataset }\\
+			\> \> \GRAU{\# returned; checks applied are listed below}\\
 			\> polygon=\textit{polygon}, \> \GRAU{\# list of coordinates (lon,lat) of polygon;}\\
 			\> \> \GRAU{\# if specified and filtering is}\\
 			\> \> \GRAU{\# True, coordinates in JSON are located}\\
@@ -521,7 +522,7 @@ The checks currently applied when \texttt{filtering} is set to True are:
 	\item Points and multipoints are within the specified \texttt{polygon} if specified.
 \end{enumerate}
 
-Table~\ref{tab:HFE_JSON_feautues} shows the number of features available in the files provided. Different levels of checks are applied, i.e., no checking, checking everything but not location of coordinates within a polygon (check \#1 to \#3 but not \#4) and testing also the location of the coordinates of the features (checks \#1 to \#4). The polygon is set to the extend used to request the CaSPAr data (see \texttt{data/caspar/RDRS\_v21\_hfe\_outline.zip}).
+Table~\ref{tab:HFE_JSON_feautues} shows the number of features available in the files provided. Different levels of checks are applied, i.e., (i) no checking, (ii) checking everything but not location of coordinates within a polygon (check \#1 to \#3 but not \#4), and (iii) all checks including the test that the features are located within the specified polygon (checks \#1 to \#4). The polygon is set to the extent used to request the CaSPAr data (see \texttt{data/caspar/RDRS\_v21\_hfe\_outline.zip}). Fig.~\ref{fig:plot_example:location_points} shows the location of all events and occurrences as well as the polygon specifying the domain of interest for CaSPAr.
 
 \begin{table}
 \begin{tabular}{L{1cm}L{3cm}R{3cm}R{3cm}R{3cm}}
@@ -545,9 +546,19 @@ Table~\ref{tab:HFE_JSON_feautues} shows the number of features available in the 
 \caption{Features available in the HFE JSON files provided. Different degrees of filtering show how many features are not conform with requirements to extract precipitation data.}
 \label{tab:HFE_JSON_feautues}
 \end{table}
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{figures/test-all-coordinates-in-hfe.png}
+	\caption{Locations specified in HFE database as multi-point events (squares) or single-point occurrences (crosses) as well as the domain (blue polygon) used to request RDRS-v2.1 from CaSPAr.}
+	\label{fig:plot_example:location_points}
+\end{figure}
+
 \clearpage
 
 \section{Bilinear interpolation}
+
+\textbf{Step Dx:} Interpolate data to specific location.
 
 This method is used to extract time series for points defining the flooding event (located within the bounding box used to request data). The raster is interpolated at the flooding event points using bilinear interpolation. The base of this function is \texttt{scipy.interpolate.interp2d}. If a location is requested that is not available in data, an error is raised. It is recommended to set \textit{post\_process} to True which will round negative interpolated (precipitation) data to zero unless they are ``too negative''. The latter will raise an error indicating that the interpolation does not seem to work properly.
 
@@ -594,7 +605,6 @@ Fig.~\ref{fig:plot_example:bilinear} is showing the result of a bilinear interpo
 	\caption{RDPA (6h total precipitation) around Montreal requested from Geomet (\url{https://api.weather.gc.ca/}) is displayed for nine time steps (Aug 7, 2018 12:00 until Aug 9, 2018 12:00). The nine maps on the right show the spatial distribution of precipitation within the requested bounding box (outline of black rectangle) and beyond. The legend is the same for the nine plots showing maps (see Fig.~\ref{fig:plot_example:legend}). Two locations have been randomly selected and are displayed on the maps as well (black dots). The left two panels show the precipitation rate over time for the center cell that contains the locations (dashed black line) as well as the bilinearily interpolated precipitation rate at the exact location (solid black line). For reference also the other 8 neighboring cells used for the bilinear interpolation are shown (gray lines).}
 	\label{fig:plot_example:bilinear}
 \end{figure}
-
 \clearpage 
 
 \end{document}
