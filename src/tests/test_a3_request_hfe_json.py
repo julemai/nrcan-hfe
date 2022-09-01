@@ -22,7 +22,6 @@ from __future__ import print_function
 # along with The NRCan-HFE code library.
 # If not, see <https://github.com/julemai/nrcan-hfe/blob/main/LICENSE>.
 
-
 # -----------------------
 # add subolder scripts/lib to search path
 # -----------------------
@@ -32,31 +31,14 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path+'/../../src')
 
 
-from a1_request_geomet_grib2 import request_geomet_grib2
-import datetime as datetime
+from a3_request_hfe_json import request_hfe_json
 import pytest
 
 
-@pytest.mark.filterwarnings("ignore:request_geomet_grib2")
-def test_request_geomet_1file():
+@pytest.mark.filterwarnings("ignore:request_hfe_json")
+def test_request_hfe():
 
-    # Request data (1 file)
+    jsonfilebase = dir_path+'/../../data/hfe/historical_flood'
+    file_hfe = request_hfe_json(filename=None, jsonfilebase=jsonfilebase,silent=False)
 
-    date = datetime.datetime(2022,8,24,12,0)
-    bbox = {"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
-    filename = 'test-data/rdpa-6h'
-    file_geomet = request_geomet_grib2(product='rdpa:10km:6f',date=date,bbox=bbox,crs='EPSG:4326',filename=filename,overwrite=False)
-
-    assert file_geomet == ['test-data/rdpa-6h_2022082412.grib2']
-
-@pytest.mark.filterwarnings("ignore:request_geomet_grib2")
-def test_request_geomet_4files():
-
-    # Request data (4 files)
-
-    dates = [ datetime.datetime(2022,8,24,0,0) + datetime.timedelta(hours=6*ii) for ii in range(4) ]
-    bbox = {"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
-    filename = 'test-data/rdpa-6h'
-    file_geomet = request_geomet_grib2(product='rdpa:10km:6f',date=dates,bbox=bbox,crs='EPSG:4326',filename=filename,overwrite=False)
-
-    assert file_geomet == ['test-data/rdpa-6h_2022082400.grib2', 'test-data/rdpa-6h_2022082406.grib2', 'test-data/rdpa-6h_2022082412.grib2', 'test-data/rdpa-6h_2022082418.grib2']
+    assert file_hfe == {'json': [dir_path+'/../../data/hfe/historical_flood.json', dir_path+'/../../data/hfe/historical_flood.json']}

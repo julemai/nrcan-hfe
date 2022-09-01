@@ -101,7 +101,7 @@ def request_caspar_nc():
         Written,  Juliane Mai, August 2022
     """
 
-    warnings.warn("CaSPAr data need to be requested manually. Find information under 'https://github.com/julemai/nrcan-hfe/blob/main/data/caspar/README.md'.")
+    warnings.warn("request_caspar_nc: CaSPAr data need to be requested manually. Find information under 'https://github.com/julemai/nrcan-hfe/blob/main/data/caspar/README.md'.")
 
     filenames = None
 

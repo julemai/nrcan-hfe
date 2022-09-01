@@ -122,7 +122,7 @@ def request_hfe_json(filename=None, jsonfilebase=None,silent=True):
     """
 
     if filename is None:
-        warnings.warn("HFE data in JSON format are currently not produced. The function only checks if files exist at indicated location.")
+        warnings.warn("request_hfe_json: HFE data in JSON format are currently not produced. The function only checks if files exist at indicated location.")
 
     if jsonfilebase is None:
         raise ValueError('a3_request_hfe_json: Basename (w/o file extension) of JSON files to create needs to be specified.')

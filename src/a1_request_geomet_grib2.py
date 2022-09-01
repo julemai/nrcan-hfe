@@ -203,7 +203,7 @@ def request_geomet_grib2(product=None,date=None,bbox=None,crs='EPSG:4326',filena
             if not(silent): print("Downloading: {}".format(api_str))
             urllib.request.urlretrieve(api_str, ifilename)
         else:
-            warnings.warn("File '{}' already exists. Will not be downloaded again.".format(ifilename))
+            warnings.warn("request_geomet_grib2: File '{}' already exists. Will not be downloaded again.".format(ifilename))
 
         # append file to return
         filenames.append(ifilename)
