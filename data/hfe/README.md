@@ -20,11 +20,15 @@ The following data were provided:
   into events (``multipoints``). A flood event contains one or more
   occurrence. The unique id of this layer is ``event_id``. The maps
   produced in 2.4.2 and 2.4.3 of SOW are for these multipoints.
-* ``large_historical_flood_event_sample.json`` ... As discussed in the
+* ``large_historical_flood_event_sample.json`` ... [NOT USED] As discussed in the
   kickoff meeting, this file contains a sample of the
   ``historical_flood_event`` layer. It has three large flood events
   that contain multiple flood occurrence.
-* ``small_historical_flood_event_sample.json`` ... As discussed in the
+* ``small_historical_flood_event_sample.json`` ... [NOT USED] As discussed in the
   kickoff meeting, this file contains a sample of the
   ``historical_flood_event`` layer. It has three small flood events
   that contain only one occurrence.
+
+The two files above were used to create some test data under
+```src/test-data```. The first few features of each file was taken to
+create the sample files.

@@ -1,27 +1,89 @@
 {
 	"type" : "FeatureCollection",
-	"name" : "small_historical_flood_event_sample",
+	"name" : "historical_flood_event",
 	"features" : [
 		{
 			"type" : "Feature",
 			"geometry" : {
-				"type" : "Point",
-				"coordinates" : [ -65.2912076171, 44.8415912664 ]
+				"type" : "MultiPoint",
+				"coordinates" : [
+					[ -60.3678299724, 46.6919146749 ],
+					[ -60.1957238986, 46.1379345808 ],
+					[ -61.9915785085, 45.6227744657 ]
+				]
 			},
 			"properties" : {
-				"OBJECTID" : 111,
-				"uuid" : "eb365d5e-1551-4a8b-ace9-cb57cb684660",
-				"event_id" : "2fc66df8-786e-413b-8425-63fe9dcdc27e",
+				"OBJECTID" : 37,
+				"event_id" : "5a5ad015-1ba4-4d9b-b301-f4f781d0bd24",
 				"event_name" : null,
-				"year" : 1891,
-				"start_date" : "1891-09-08",
+				"year" : 2021,
+				"start_date" : "2021-11-24",
 				"end_date" : null,
 				"season" : "autumn",
 				"flood_cause" : "heavy rain",
 				"flood_cause_description" : "The temporary inundation by water of normally dry land,  whether adjacent to a river or not, caused by heavy rainfall events. Heavy rainfall flooding is common in urban areas where water temporarily accumulates due to more precipitation than can be removed by infiltration into the ground (e.g., due to impervious surfaces where infiltration is limited) or by drainage through infrastructure or the river system. Heavy precipitation and storm surges can be accompanied by high winds, as in the case of post-tropical cyclones. In mountainous areas, heavy precipitation accompanied by a rise in temperature will have an impact on the supply of meltwater from the snow cover on the peaks.",
 				"death" : "unknown",
 				"evacuation" : "unknown",
-				"comment" : "Hurricane. Extensive damage. Worst storm to hit Province in several years. Carried off mill dams, bridges, washout of roads.",
+				"comment" : null,
+				"link_1" : "https://511.novascotia.ca/en/index.html",
+				"link_2" : null,
+				"source_1" : "NS511",
+				"source_1_description" : "Nova Scotia Road Conditions",
+				"source_2" : null,
+				"source_2_description" : null
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "MultiPoint",
+				"coordinates" : [
+					[ -59.135288257, 47.5955904404 ]
+				]
+			},
+			"properties" : {
+				"OBJECTID" : 43,
+				"event_id" : "f5e710c5-f19d-436a-8f0c-fa55eff70845",
+				"event_name" : null,
+				"year" : 2021,
+				"start_date" : "2021-11-24",
+				"end_date" : null,
+				"season" : "autumn",
+				"flood_cause" : "heavy rain",
+				"flood_cause_description" : "The temporary inundation by water of normally dry land,  whether adjacent to a river or not, caused by heavy rainfall events. Heavy rainfall flooding is common in urban areas where water temporarily accumulates due to more precipitation than can be removed by infiltration into the ground (e.g., due to impervious surfaces where infiltration is limited) or by drainage through infrastructure or the river system. Heavy precipitation and storm surges can be accompanied by high winds, as in the case of post-tropical cyclones. In mountainous areas, heavy precipitation accompanied by a rise in temperature will have an impact on the supply of meltwater from the snow cover on the peaks.",
+				"death" : "unknown",
+				"evacuation" : "unknown",
+				"comment" : null,
+				"link_1" : "https://www.511nl.ca/en/index.html",
+				"link_2" : null,
+				"source_1" : "NL511",
+				"source_1_description" : "Newfoundland and Labrador Road Conditions",
+				"source_2" : null,
+				"source_2_description" : null
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "MultiPoint",
+				"coordinates" : [
+					[ -64.8921294866, 44.9791502994 ],
+					[ -64.7360934341, 45.0457523148 ]
+				]
+			},
+			"properties" : {
+				"OBJECTID" : 47,
+				"event_id" : "059221d9-7928-4db7-9929-d6606731d3f6",
+				"event_name" : null,
+				"year" : 1973,
+				"start_date" : "1973-07-12",
+				"end_date" : null,
+				"season" : "summer",
+				"flood_cause" : "heavy rain",
+				"flood_cause_description" : "The temporary inundation by water of normally dry land,  whether adjacent to a river or not, caused by heavy rainfall events. Heavy rainfall flooding is common in urban areas where water temporarily accumulates due to more precipitation than can be removed by infiltration into the ground (e.g., due to impervious surfaces where infiltration is limited) or by drainage through infrastructure or the river system. Heavy precipitation and storm surges can be accompanied by high winds, as in the case of post-tropical cyclones. In mountainous areas, heavy precipitation accompanied by a rise in temperature will have an impact on the supply of meltwater from the snow cover on the peaks.",
+				"death" : "unknown",
+				"evacuation" : "unknown",
+				"comment" : "Heavy rain resulting in swollen small streams, flooding. Berwick farmer reported that during his 27 years of agriculture in the Valley he never experienced these flood conditions. Crop damage.",
 				"link_1" : "http://nsfloodhistory.management.dal.ca/",
 				"link_2" : null,
 				"source_1" : "NS_FLOOD_HISTORY",
@@ -33,51 +95,24 @@
 		{
 			"type" : "Feature",
 			"geometry" : {
-				"type" : "Point",
-				"coordinates" : [ -64.3858313494, 45.9186204767 ]
+				"type" : "MultiPoint",
+				"coordinates" : [
+					[ -63.2798449453, 45.3649683992 ]
+				]
 			},
 			"properties" : {
-				"OBJECTID" : 849,
-				"uuid" : "48ca7a78-a699-43a3-a039-1b192090cbbf",
-				"event_id" : "78f64408-51b2-4aad-8e52-d89d2053ddd3",
+				"OBJECTID" : 48,
+				"event_id" : "05938eb5-b3d6-481c-b552-9380215d443d",
 				"event_name" : null,
-				"year" : 1869,
-				"start_date" : "1869-11-20",
-				"end_date" : "1869-11-21",
-				"season" : "autumn",
-				"flood_cause" : "heavy rain",
-				"flood_cause_description" : "The temporary inundation by water of normally dry land,  whether adjacent to a river or not, caused by heavy rainfall events. Heavy rainfall flooding is common in urban areas where water temporarily accumulates due to more precipitation than can be removed by infiltration into the ground (e.g., due to impervious surfaces where infiltration is limited) or by drainage through infrastructure or the river system. Heavy precipitation and storm surges can be accompanied by high winds, as in the case of post-tropical cyclones. In mountainous areas, heavy precipitation accompanied by a rise in temperature will have an impact on the supply of meltwater from the snow cover on the peaks.",
-				"death" : "no",
-				"evacuation" : "unknown",
-				"comment" : "Sackville Area: The November 25, 1869 edition of The Borderer reported that two days of very heavy rain resulted in several mill dams being carried away by a great freshet.",
-				"link_1" : "https://www.elgegl.gnb.ca/0001/en/Flood/Details/21",
-				"link_2" : null,
-				"source_1" : "FHDNB",
-				"source_1_description" : "Flood History Database of New-Brunswick",
-				"source_2" : null,
-				"source_2_description" : null
-			}
-		},
-		{
-			"type" : "Feature",
-			"geometry" : {
-				"type" : "Point",
-				"coordinates" : [ -63.7160180781, 44.8667523017 ]
-			},
-			"properties" : {
-				"OBJECTID" : 153,
-				"uuid" : "ac595ea3-5ba0-40ca-88df-58a05da488fa",
-				"event_id" : "50ea416b-b29d-4e9f-88ac-37276afeebbb",
-				"event_name" : null,
-				"year" : 1875,
-				"start_date" : "1875-10-10",
+				"year" : 1975,
+				"start_date" : "1975-12-23",
 				"end_date" : null,
-				"season" : "autumn",
+				"season" : "winter",
 				"flood_cause" : "heavy rain",
 				"flood_cause_description" : "The temporary inundation by water of normally dry land,  whether adjacent to a river or not, caused by heavy rainfall events. Heavy rainfall flooding is common in urban areas where water temporarily accumulates due to more precipitation than can be removed by infiltration into the ground (e.g., due to impervious surfaces where infiltration is limited) or by drainage through infrastructure or the river system. Heavy precipitation and storm surges can be accompanied by high winds, as in the case of post-tropical cyclones. In mountainous areas, heavy precipitation accompanied by a rise in temperature will have an impact on the supply of meltwater from the snow cover on the peaks.",
 				"death" : "unknown",
 				"evacuation" : "unknown",
-				"comment" : "Flooding in streets due to drains blockage. Damaged streets estimated to coat $1,000. ",
+				"comment" : "Rain, mild temperatures, melting snow resulting in runoff and flooding. 3.2 inches of rain was reported, 7 inches of snow fell on the weekend, worse since Feb. 1971. Estimate damage was report to reach the several hundred thousand dollars. ",
 				"link_1" : "http://nsfloodhistory.management.dal.ca/",
 				"link_2" : null,
 				"source_1" : "NS_FLOOD_HISTORY",

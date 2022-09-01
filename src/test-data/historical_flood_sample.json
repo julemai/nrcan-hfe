@@ -1,0 +1,111 @@
+{
+	"type" : "FeatureCollection",
+	"name" : "historical_flood_sample",
+	"features" : [
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ -126.5500168595, 52.3833383674 ]
+			},
+			"properties" : {
+				"OBJECTID" : 34,
+				"uuid" : "b47db144-eb94-4302-844c-bbee4a429716",
+				"event_id" : "7fe4d12a-fb34-48bc-9c9c-d24de67194e6",
+				"event_name" : null,
+				"year" : "2004",
+				"start_date" : "2004-11-04",
+				"end_date" : "2004-11-09",
+				"locality" : "Hagensborg",
+				"season" : "autumn",
+				"province_territory" : "BC",
+				"province_territory_description" : "British Columbia",
+				"flood_cause" : "heavy rain",
+				"flood_cause_description" : "The temporary inundation by water of normally dry land,  whether adjacent to a river or not, caused by heavy rainfall events. Heavy rainfall flooding is common in urban areas where water temporarily accumulates due to more precipitation than can be removed by infiltration into the ground (e.g., due to impervious surfaces where infiltration is limited) or by drainage through infrastructure or the river system. Heavy precipitation and storm surges can be accompanied by high winds, as in the case of post-tropical cyclones. In mountainous areas, heavy precipitation accompanied by a rise in temperature will have an impact on the supply of meltwater from the snow cover on the peaks.",
+				"rainfall_mm" : "",
+				"death" : "unknown",
+				"evacuation" : "unknown",
+				"comment" : "Bella Coola/Hagensborg, flood",
+				"link_1" : null,
+				"link_2" : null,
+				"source_1" : "EMBC_DFA",
+				"source_1_description" : "Emergency Management BC Disaster Financial Assistance",
+				"source_2" : null,
+				"source_2_description" : null,
+				"geometry_source" : "CGNDB",
+				"geometry_source_description" : "Canadian Geographical Names Database",
+				"weather_station" : "https://climat.meteo.gc.ca/historical_data/search_historic_data_stations_e.html?searchType=stnProx&timeframe=1&txtRadius=200&selCity=&selPark=&txtCentralLatDeg=&txtCentralLatMin=&txtCentralLatSec=&txtCentralLongDeg=&txtCentralLongMin=&txtCentralLongSec=&optProxType=decimal&txtLatDecDeg=52.383333&txtLongDecDeg=-126.55&StartYear=1840&EndYear=2021&optLimit=specDate&Year=2004&Month=11&Day=04&selRowPerPage=25"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ -127.0000168498, 52.1666723047 ]
+			},
+			"properties" : {
+				"OBJECTID" : 48,
+				"uuid" : "0098823f-6b99-48d0-9035-aa44be1a215e",
+				"event_id" : "b96a9b09-2846-4260-b00b-057c88770978",
+				"event_name" : null,
+				"year" : "2010",
+				"start_date" : "2010-09-24",
+				"end_date" : "2010-10-30",
+				"locality" : "Central Coast Regional District",
+				"season" : "autumn",
+				"province_territory" : "BC",
+				"province_territory_description" : "British Columbia",
+				"flood_cause" : "heavy rain",
+				"flood_cause_description" : "The temporary inundation by water of normally dry land,  whether adjacent to a river or not, caused by heavy rainfall events. Heavy rainfall flooding is common in urban areas where water temporarily accumulates due to more precipitation than can be removed by infiltration into the ground (e.g., due to impervious surfaces where infiltration is limited) or by drainage through infrastructure or the river system. Heavy precipitation and storm surges can be accompanied by high winds, as in the case of post-tropical cyclones. In mountainous areas, heavy precipitation accompanied by a rise in temperature will have an impact on the supply of meltwater from the snow cover on the peaks.",
+				"rainfall_mm" : "",
+				"death" : "unknown",
+				"evacuation" : "yes",
+				"comment" : "Columbia Shuswap Regional District (Electoral Areas A, E and F). Cariboo Regional District (Electoral Area J), Central Coast Regional District. Regional District of Mount Waddington, Strathcona Regional District.Flooding caused by heavy rainfall resulted in flooding that destroyed the highway leading into Bella Coola BC. Between September 24 and 25, 204 mm of rain fell in the region.Residents of Kingcome Inlet were evacuated by helicopter when water continued to rise. Approximately 100 people were evacuated from Bella Coola and another 75 people from Kingcome Inlet.",
+				"link_1" : null,
+				"link_2" : "https://cdd.publicsafety.gc.ca/dtpg-eng.aspx?eventId=1029&cultureCode=en-CA",
+				"source_1" : "EMBC_DFA",
+				"source_1_description" : "Emergency Management BC Disaster Financial Assistance",
+				"source_2" : "CDD",
+				"source_2_description" : "Canadian Disaster Database",
+				"geometry_source" : "CGNDB",
+				"geometry_source_description" : "Canadian Geographical Names Database",
+				"weather_station" : "https://climat.meteo.gc.ca/historical_data/search_historic_data_stations_e.html?searchType=stnProx&timeframe=1&txtRadius=200&selCity=&selPark=&txtCentralLatDeg=&txtCentralLatMin=&txtCentralLatSec=&txtCentralLongDeg=&txtCentralLongMin=&txtCentralLongSec=&optProxType=decimal&txtLatDecDeg=52.166667&txtLongDecDeg=-127&StartYear=1840&EndYear=2021&optLimit=specDate&Year=2010&Month=09&Day=24&selRowPerPage=25"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ -126.750016888, 52.3833383414 ]
+			},
+			"properties" : {
+				"OBJECTID" : 69,
+				"uuid" : "6fccc1a7-4875-44d0-bb4b-585b8f023711",
+				"event_id" : "7fe4d12a-fb34-48bc-9c9c-d24de67194e6",
+				"event_name" : null,
+				"year" : "2004",
+				"start_date" : "2004-11-04",
+				"end_date" : "2004-11-09",
+				"locality" : "Bella Coola",
+				"season" : "autumn",
+				"province_territory" : "BC",
+				"province_territory_description" : "British Columbia",
+				"flood_cause" : "heavy rain",
+				"flood_cause_description" : "The temporary inundation by water of normally dry land,  whether adjacent to a river or not, caused by heavy rainfall events. Heavy rainfall flooding is common in urban areas where water temporarily accumulates due to more precipitation than can be removed by infiltration into the ground (e.g., due to impervious surfaces where infiltration is limited) or by drainage through infrastructure or the river system. Heavy precipitation and storm surges can be accompanied by high winds, as in the case of post-tropical cyclones. In mountainous areas, heavy precipitation accompanied by a rise in temperature will have an impact on the supply of meltwater from the snow cover on the peaks.",
+				"rainfall_mm" : "",
+				"death" : "unknown",
+				"evacuation" : "unknown",
+				"comment" : "Bella Coola/Hagensborg, flood",
+				"link_1" : null,
+				"link_2" : null,
+				"source_1" : "EMBC_DFA",
+				"source_1_description" : "Emergency Management BC Disaster Financial Assistance",
+				"source_2" : null,
+				"source_2_description" : null,
+				"geometry_source" : "CGNDB",
+				"geometry_source_description" : "Canadian Geographical Names Database",
+				"weather_station" : "https://climat.meteo.gc.ca/historical_data/search_historic_data_stations_e.html?searchType=stnProx&timeframe=1&txtRadius=200&selCity=&selPark=&txtCentralLatDeg=&txtCentralLatMin=&txtCentralLatSec=&txtCentralLongDeg=&txtCentralLongMin=&txtCentralLongSec=&optProxType=decimal&txtLatDecDeg=52.383333&txtLongDecDeg=-126.75&StartYear=1840&EndYear=2021&optLimit=specDate&Year=2004&Month=11&Day=04&selRowPerPage=25"
+			}
+		}
+	]
+}
