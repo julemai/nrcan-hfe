@@ -220,3 +220,12 @@ print("All files created:  {'png': ['test-bilinear-interpolation.png']}")
 
 os.system('python plot_all-coordinates-in-hfe.py > /dev/null 2>&1')
 print("All files created:  {'png': ['test-all-coordinates-in-hfe.png']}")
+
+
+# ---------------------------------
+# create:
+#     'test-bounding-box'
+# ---------------------------------
+
+os.system('python plot_bounding-box.py > /dev/null 2>&1')
+print("All files created:  {'png': ['test-bounding-box.png']}")

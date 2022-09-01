@@ -607,6 +607,62 @@ Fig.~\ref{fig:plot_example:bilinear} is showing the result of a bilinear interpo
 \end{figure}
 \clearpage 
 
+\section{Bounding box}
+
+\textbf{Step Ex:} Determine bounding box of single-point occurrences or multi-point events.
+
+This function is to determine the bounding box \texttt{bbox} to request data from Geomet and read data retrieved from CaSPAr (see steps A1 and B2, respectively). The function is able to handle lists of latitudes and longitudes as well as features directly taken from the HFE database. The features can be single-point occurrences or multi-point events. The bounding box is by default the bounding box around all locations provided with an additional buffer \texttt{bbox\_buffer} of 0.5 degrees in all directions. The buffer can be set to any non-negative value.
+
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.0cm} \= \hspace{4.7cm} \= \kill \\[4pt]
+			\GRAU{\# see module for detailed documentation and example}\\
+			from ex\_determine\_bbox import determine\_bbox\\
+			\\
+			bbox = determine\_bbox(\\
+			\> \GRAU{\# Mandatory arguments:}\\
+			\> lat=\textit{lat}, \> \GRAU{\# list of latitude of location(s) that are}\\
+			\> \> \GRAU{\# required to be within the bounding box;}\\
+			\> \> \GRAU{\# can be scalar if bbox is determined for}\\
+			\> \> \GRAU{\# only one location}\\
+			\> \> \GRAU{\# either lat/lon \underline{or} feature needs to be specified}\\
+			\> lon=\textit{lon}, \> \GRAU{\# list of longitude of location(s) that are}\\
+			\> \> \GRAU{\# required to be within the bounding box;}\\
+			\> \> \GRAU{\# can be scalar if bbox is determined for}\\
+			\> \> \GRAU{\# only one location}\\
+			\> \> \GRAU{\# either lat/lon \underline{or} feature needs to be specified}\\
+			\> feature=\textit{feature}, \> \GRAU{\# dict containing feature as obtained from}\\
+			\> \> \GRAU{\# HFE database;}\\
+			\> \> \GRAU{\# either lat/lon \underline{or} feature needs to be specified}\\
+			\> \GRAU{\# Optional arguments:}\\
+			\> bbox\_buffer=\textit{bbox\_buffer}, \> \GRAU{\# minimum distance between locations provided and}\\
+			\> \> \GRAU{\# outline of bounding box (in degrees); needs to}\\
+			\> \> \GRAU{\# be non-negative; default 0.5}\\
+			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
+			\> ) \> 
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+The return value the bounding box in the format of a dictionary which is conform with what is needed for requesting data from Geomet (step A1; \texttt{request\_geomet\_grib2}), read data retrieved from CaSPAr (step B2; \texttt{read\_caspar\_nc}), plotting data (step Cx; \texttt{plot\_data}), and to interpolate data (step Dx; \texttt{interpolate\_data}). 
+
+Fig.~\ref{fig:plot_example:bounding_box} shows the bounding box derived for a single-point occurrence and a multi-point event using different settings for the bounding box buffer \texttt{bbox\_buffer}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/test-bounding-box.png}
+	\caption{Bounding box derived using \texttt{determine\_bbox} using different settings for the buffer between locations and bounding box, i.e., buffer of 0.1 (first column of panels), buffer of 0.5 (second column of panels), and buffer of 1.0 degrees (third column of panels). The results are shown for a single point defining flood occurrences (first row of panels) and multiple points defining flood events (second row).}
+	\label{fig:plot_example:bounding_box}
+\end{figure}
+\clearpage
+
+\section{Date range}
+
+\textbf{Step Fx:} Determine date range of single-point occurrences or multi-point events.
+
 \end{document}
 
 

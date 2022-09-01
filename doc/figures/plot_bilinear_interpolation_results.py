@@ -58,7 +58,7 @@ dates = [ datetime.datetime(2018,8,7,12,0) + datetime.timedelta(hours=ii) for ii
 lintransform={'a':1.0,'b':0.0}  # no convert of units
 
 # request data
-filename = '/tmp/test-map-geomet-nrcan-hfe-rdpa6'
+filename = '/tmp/test-map-geomet-nrcan-hfe-rdpa6-bilinear'
 files_geomet = request_geomet_grib2(product=product,date=dates,bbox=bbox,crs=crs,overwrite=False,filename=filename)
 
 # read data
