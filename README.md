@@ -26,6 +26,15 @@ pip install ipython
 
 ## Testing codes
 
+All tests for ```pytest``` are setup under ```src/tests```. Please run the following command to check that all tests pass before pushing any changes:
+```python
+# check all tests (before push to this repo)
+pytest
+
+# check specific test (for development)
+pytest src/tests/test_b1_read_geomet_grib2.py
+```
+
 All functions have build-in docstring tests that are checked by running the indiviudal scripts. They will result in error messages if any test fails.
 
 ```python
