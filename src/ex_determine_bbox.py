@@ -67,6 +67,7 @@ def determine_bbox(lat=None,lon=None,feature=None,bbox_buffer=0.5,silent=True):
                                        edge/vertex of bounding box. If set to positive value, points will be truly
                                        located within the bounding box with at least "bbox_buffer" distance to an
                                        edge/vertex. Negative values for bbox_buffer are not allowed.
+                                       Values are in [degree].
                                        Default: 0.5
 
         silent          Boolean        If set to True, nothing will be printed to terminal.

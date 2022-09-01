@@ -42,6 +42,7 @@
 
 %\newcommand{\footrulecolor}{myBlue}
 \rhead{}
+\lhead{}
 \chead{\textcolor{myBlue}{\footnotesize Project Documentation ``Improving characterization of flood-producing precipitation events in HFE database''}}
 \lfoot{\textcolor{myBlue}{\footnotesize Telephone: +1 (226) 505-5600}}
 \cfoot{\textcolor{myBlue}{\footnotesize e-mail: juliane.mai@uwaterloo.ca}}
@@ -86,8 +87,8 @@
 		Improving the characterization of the flood-producing precipitation events in the Historic Flood Event (HFE) database by using the CaPA reanalysis/analysis\\[4pt]
 	\end{center}
 	
-
-\vspace*{0cm}
+\tableofcontents
+\pagebreak
 
 \section{Meetings}
 
@@ -132,19 +133,19 @@
 %%	\item 
 %\end{itemize}
 
-\section{Resources}
-
-\begin{itemize}
-	\setlength\itemsep{-0.8em}
-	\item access to the HFE database:\\
-	\url{https://open.canada.ca/data/en/dataset/fe83a604-aa5a-4e46-903c-685f8b0cc33c}
-	\item query to obtain RDPA 24h total precipitation for a 1x1 degree box centered on Montreal:\\
-	\url{https://api.weather.gc.ca/collections/weather:rdpa:10km:24f/coverage?f=json&datetime=2017-05-12T12Z&CRS=EPSG:4326&bbox=-74,45,-73,46}
-	\item documentation of requests from GeoMet:\\
-	\url{https://eccc-msc.github.io/open-data/msc-geomet/web-services_en/}\\
-	see specifically OGC API:\\
-	\url{https://eccc-msc.github.io/open-data/msc-geomet/web-services_en/#ogc-api-features}
-\end{itemize}
+%\section{Resources}
+%
+%\begin{itemize}
+%	\setlength\itemsep{-0.8em}
+%	\item access to the HFE database:\\
+%	\url{https://open.canada.ca/data/en/dataset/fe83a604-aa5a-4e46-903c-685f8b0cc33c}
+%	\item query to obtain RDPA 24h total precipitation for a 1x1 degree box centered on Montreal:\\
+%	\url{https://api.weather.gc.ca/collections/weather:rdpa:10km:24f/coverage?f=json&datetime=2017-05-12T12Z&CRS=EPSG:4326&bbox=-74,45,-73,46}
+%	\item documentation of requests from GeoMet:\\
+%	\url{https://eccc-msc.github.io/open-data/msc-geomet/web-services_en/}\\
+%	see specifically OGC API:\\
+%	\url{https://eccc-msc.github.io/open-data/msc-geomet/web-services_en/#ogc-api-features}
+%\end{itemize}
 \pagebreak
 
 \section{Request, read, and plot data from GeoMet}
@@ -444,14 +445,14 @@ The following data were provided:
 	into events (\texttt{multipoints}). A flood event contains one or more
 	occurrence. The unique id of this layer is \texttt{event\_id}. The maps
 	produced in 2.4.2 and 2.4.3 of SOW are for these multipoints.
-	\item[\texttt{large\_historical\_flood\_event\_sample.json \ldots}] As discussed in the
-	kickoff meeting, this file contains a sample of the
-	\texttt{historical\_flood\_event} layer. It has three large flood events
-	that contain multiple flood occurrence.
-	\item[\texttt{small\_historical\_flood\_event\_sample.json \ldots}] As discussed in the
-	kickoff meeting, this file contains a sample of the
-	\texttt{historical\_flood\_event} layer. It has three small flood events
-	that contain only one occurrence.
+%	\item[\texttt{large\_historical\_flood\_event\_sample.json \ldots}] As discussed in the
+%	kickoff meeting, this file contains a sample of the
+%	\texttt{historical\_flood\_event} layer. It has three large flood events
+%	that contain multiple flood occurrence.
+%	\item[\texttt{small\_historical\_flood\_event\_sample.json \ldots}] As discussed in the
+%	kickoff meeting, this file contains a sample of the
+%	\texttt{historical\_flood\_event} layer. It has three small flood events
+%	that contain only one occurrence.
 \end{description}
 
 The two files above were used to create some test data under \texttt{src/test-data}. The first few features of each file was taken to create the sample files.
@@ -609,11 +610,13 @@ Fig.~\ref{fig:plot_example:bilinear} is showing the result of a bilinear interpo
 \end{figure}
 \clearpage 
 
-\section{Bounding box}
+\section{Determine bounding box to process}
 
 \textbf{Step Ex:} Determine bounding box of single-point occurrences or multi-point events.
 
-This function is to determine the bounding box \texttt{bbox} to request data from Geomet and read data retrieved from CaSPAr (see steps A1 and B2, respectively). The function is able to handle lists of latitudes and longitudes as well as features directly taken from the HFE database. The features can be single-point occurrences or multi-point events. The bounding box is by default the bounding box around all locations provided with an additional buffer \texttt{bbox\_buffer} of 0.5 degrees in all directions. The buffer can be set to any non-negative value.
+This function is to determine the bounding box \texttt{bbox} to request data from Geomet and read data retrieved from CaSPAr (see steps A1 and B2, respectively; function argument \texttt{bbox} for both functions). The function is able to handle lists of latitudes and longitudes as well as features directly taken from the HFE database. The features can be single-point occurrences or multi-point events. The bounding box is by default the bounding box around all locations provided with an additional buffer \texttt{bbox\_buffer} of 0.5 degrees in all directions. The buffer can be set to any non-negative value.
+
+\textbf{Note:} The approach might be adjusted/refined once we start processing all flood occurrences and events.
 
 \begin{framed}
 	\vspace*{-1.2cm}
@@ -641,7 +644,7 @@ This function is to determine the bounding box \texttt{bbox} to request data fro
 			\> \GRAU{\# Optional arguments:}\\
 			\> bbox\_buffer=\textit{bbox\_buffer}, \> \GRAU{\# minimum distance between locations provided and}\\
 			\> \> \GRAU{\# outline of bounding box (in degrees); needs to}\\
-			\> \> \GRAU{\# be non-negative; default 0.5}\\
+			\> \> \GRAU{\# be non-negative; unit: degree; default 0.5}\\
 			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
 			\> ) \> 
 		\end{tabbing}
@@ -661,9 +664,136 @@ Fig.~\ref{fig:plot_example:bounding_box} shows the bounding box derived for a si
 \end{figure}
 \clearpage
 
-\section{Date range}
+\section{Determine dates to process}
 
-\textbf{Step Fx:} Determine date range of single-point occurrences or multi-point events.
+\textbf{Step Fx:} Determine time steps for single-point occurrences or multi-point events.
+
+This function is to determine all time steps to request data from Geomet and read data retrieved from CaSPAr (see steps A1 and B2, respectively; function argument \texttt{date} for both functions). The function is aware of the timesteps that are available for different products (\texttt{product}) and will return only those valid time steps. A buffer before the specified start date (function argument \texttt{start\_date} or \texttt{feature} property \texttt{start\_date}) and after the specified end date (function argument \texttt{end\_date} or \texttt{feature} property \texttt{end\_date}) is specified via \texttt{dates\_buffer}. The dates are all assumed to be in UTC time. Start dates are assumed to be at 00:00 while end dates are assumed to be at 23:59.
+
+\textbf{Note:} The approach might be adjusted/refined once we start processing all flood occurrences and events.
+
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.0cm} \= \hspace{4.7cm} \= \kill \\[4pt]
+			\GRAU{\# see module for detailed documentation and example}\\
+			from fx\_determine\_dates import determine\_dates\\
+			\\
+			dates = determine\_dates(\\
+			\> \GRAU{\# Mandatory arguments:}\\
+			\> start\_date=\textit{start\_date}, \> \GRAU{\# start date of event/occurr. as datetime object;}\\
+			\> \> \GRAU{\# either start\_date \underline{or} start\_date and end\_date \underline{or}}\\
+			\> \> \GRAU{\# feature needs to be specified}\\
+			\> end\_date=\textit{end\_date}, \> \GRAU{\# end date of event/occurrence as datetime object;}\\
+			\> \> \GRAU{\# if not specified but start\_date is, end\_date will}\\
+			\> \> \GRAU{\# be set to start\_date + 1 day;}\\
+			\> \> \GRAU{\# either start\_date \underline{or} start\_date and end\_date \underline{or}}\\
+			\> \> \GRAU{\# feature needs to be specified}\\
+			\> feature=\textit{feature}, \> \GRAU{\# dict containing feature as obtained from}\\
+			\> \> \GRAU{\# HFE database; needs to contain feature property }\\
+			\> \> \GRAU{\# "start\_date" and "end\_date";}\\
+			\> \> \GRAU{\# either start\_date \underline{or} start\_date and end\_date \underline{or}}\\
+			\> \> \GRAU{\# feature needs to be specified}\\
+			\> product=\textit{product}, \> \GRAU{\# name of product, e.g., "rdpa:10km:24f"}\\
+			\> \> \GRAU{\# must be one of the following: }\\
+			\> \> \GRAU{\# [ "RDRS\_v2.1", "rdpa:10km:24f", "rdpa:10km:6f" ]}\\
+			\> \GRAU{\# Optional arguments:}\\
+			\> dates\_buffer=\textit{dates\_buffer}, \> \GRAU{\# used to offset start\_date to}\\
+			\> \> \GRAU{\# start\_date - dates\_buffer[0] and end\_date to }\\
+			\> \> \GRAU{\# end\_date + dates\_buffer[1] in order to retrieve}\\
+			\> \> \GRAU{\# precipitation data prior to and after flooding}\\
+			\> \> \GRAU{\# event; needs to be non-negative; unit: days}\\
+			\> \> \GRAU{\# default [3.0,1.0]}\\
+			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
+			\> ) \> 
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+The return value is a list of datetime objects which is conform with what is needed for requesting data from Geomet (step A1; \texttt{request\_geomet\_grib2}), reading data retrieved from CaSPAr (step B2; \texttt{read\_caspar\_nc}), and plotting data (step Cx; \texttt{plot\_data}). The function argument for these three functions is \texttt{date}.
+\pagebreak
+
+The following examples are to show the dates determined using this function.
+
+\textbf{Example 1a:} Dates to retrieve data from RDRS\_v2.1 (hourly dataset) without buffer.
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.5cm} \= \hspace{2.7cm} \= \hspace{4.7cm} \= \kill \\[4pt]
+			product = "RDRS\_v2.1"\\
+			dates\_buffer = [0.0,0.0]\\
+			period = [datetime.datetime(2000,5,28,3,0),datetime.datetime(2000,5,29,20,30)]\\
+			\\
+			\GRAU{\# call function}\\
+			tsteps = determine\_dates(start\_date=period[0],end\_date=period[1],\\
+			\> \> product=product,dates\_buffer=dates\_buffer)\\
+			print(tsteps)\\
+			\\
+			\GRAU{[Out]: [datetime.datetime(2000, 5, 28, 3, 0),}\\
+			\> 	\GRAU{ datetime.datetime(2000, 5, 28, 4, 0), ..., }\\
+			\> 	\GRAU{ datetime.datetime(2000, 5, 29, 20, 0) ]   }\\
+		\end{tabbing}
+	\end{ttfont}
+\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+
+\textbf{Example 1b:} Dates to retrieve data from RDRS\_v2.1 (hourly dataset) with buffer.
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.5cm} \= \hspace{2.7cm} \= \hspace{4.7cm} \= \kill \\[4pt]
+			product = "RDRS\_v2.1"\\
+			dates\_buffer = [3.0,1.0]\\
+			period = [datetime.datetime(2000,5,28,3,0),datetime.datetime(2000,5,29,20,30)]\\
+			\\
+			\GRAU{\# call function}\\
+			tsteps = determine\_dates(start\_date=period[0],end\_date=period[1],\\
+			\> \> product=product,dates\_buffer=dates\_buffer)\\
+			print(tsteps)\\
+			\\
+			\GRAU{[Out]: [datetime.datetime(2000, 5, 25, 3, 0),}\\
+			\> 	\GRAU{ datetime.datetime(2000, 5, 25, 4, 0), ..., }\\
+			\> 	\GRAU{ datetime.datetime(2000, 5, 30, 20, 0) ]   }\\
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+
+\textbf{Example 2a:} Dates to retrieve data from RDPA-6h (6-hourly dataset) without buffer.
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.5cm} \= \hspace{2.7cm} \= \hspace{4.7cm} \= \kill \\[4pt]
+			product = "rdpa:10km:6f"\\
+			dates\_buffer = [0.0,0.0]\\
+			period = [datetime.datetime(2000,5,28,3,0),datetime.datetime(2000,5,29,20,30)]\\
+			\\
+			\GRAU{\# call function}\\
+			tsteps = determine\_dates(start\_date=period[0],end\_date=period[1],\\
+			\> \> product=product,dates\_buffer=dates\_buffer)\\
+			print(tsteps)\\
+			\\
+			\GRAU{[Out]: [datetime.datetime(2000, 5, 28, 6, 0),}\\
+			\> 	\GRAU{ datetime.datetime(2000, 5, 28, 12, 0), ..., }\\
+			\> 	\GRAU{ datetime.datetime(2000, 5, 29, 18, 0) ]   }\\
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+
+%\textbf{Example 2b:} Dates to retrieve data from RDPA-6h (6-hourly dataset) with buffer.
+%
+%\textbf{Example 3a:} Dates to retrieve data from RDPA-24h (daily dataset; only available 12:00) without buffer.
+%
+%\textbf{Example 3b:} Dates to retrieve data from RDPA-24h (daily dataset; only available 12:00) with buffer.
 
 \end{document}
 
