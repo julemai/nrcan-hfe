@@ -18,6 +18,7 @@ pip install xarray
 pip install pygrib
 pip install matplotlib
 python -m pip install basemap
+pip install -U pytest
 
 # optional
 pip install ipython
