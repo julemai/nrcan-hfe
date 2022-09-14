@@ -11,6 +11,8 @@ doc/*.synctex.gz
 doc/*.pdf
 doc/*_timesheet.tex
 doc/presentation_nrcan/*
+doc/figures/slides/*
+doc/HFE_database_2022Q03_meeting_20220915.*
 
 # test-data
 src/test-data/CMC*.grib2

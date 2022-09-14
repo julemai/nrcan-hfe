@@ -201,12 +201,30 @@ def request_geomet_grib2(product=None,date=None,bbox=None,crs='EPSG:4326',filena
                 bbox["lon"]["max"],
                 bbox["lat"]["max"])
             if not(silent): print("Downloading: {}".format(api_str))
-            urllib.request.urlretrieve(api_str, ifilename)
+
+            try:
+                conn = urllib.request.urlretrieve(api_str, ifilename)
+            except urllib.error.HTTPError as e:
+                # Return code error (e.g. 404, 501, ...)
+                # ...
+                if not(silent): print('HTTPError: {}'.format(e.code))
+            except urllib.error.URLError as e:
+                # Not an HTTP-specific error (e.g. connection refused)
+                # ...
+                if not(silent): print('URLError: {}'.format(e.reason))
+            else:
+                # 200
+                # ...
+                if not(silent): print('Download successful.')
+
+                # append file to return
+                filenames.append(ifilename)
+
         else:
             warnings.warn("request_geomet_grib2: File '{}' already exists. Will not be downloaded again.".format(ifilename))
 
-        # append file to return
-        filenames.append(ifilename)
+            # append file to return
+            filenames.append(ifilename)
 
     return filenames
 
