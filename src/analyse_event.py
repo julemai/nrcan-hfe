@@ -270,7 +270,7 @@ if (product == 'rdpa:10km:6f') or (product == 'rdpa:10km:24f'):
     filename  = '/tmp/tmp/analyse_event_'+str(ifeature)+'/geomet'
     crs       = 'EPSG:4326'
     overwrite = False
-    silent    = True
+    silent    = False
     file_geomet = request_geomet_grib2(product=product,date=date,bbox=bbox,crs=crs,filename=filename,overwrite=overwrite,silent=silent)
 
     nfiles = len(file_geomet)

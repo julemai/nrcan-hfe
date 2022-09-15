@@ -585,7 +585,7 @@ Table~\ref{tab:HFE_JSON_feautues} shows the number of features available in the 
 
 \textbf{Step Dx:} Interpolate data to specific location.
 
-This method is used to extract time series for points defining the flooding event (located within the bounding box used to request data). The raster is interpolated at the flooding event points using bilinear interpolation. The base of this function is \texttt{scipy.interpolate.interp2d}. If a location is requested that is not available in data, an error is raised. It is recommended to set \textit{post\_process} to True which will round negative interpolated (precipitation) data to zero unless they are ``too negative''. The latter will raise an error indicating that the interpolation does not seem to work properly.
+This method is used to extract time series for points defining the flooding event (located within the bounding box used to request data). The raster is interpolated at the flooding event points using bilinear interpolation. The base of this function is \texttt{scipy.interpolate.interp2d}. If a location is requested that is not available in data, an error is raised. It is recommended to set \texttt{post\_process} to True which will round negative interpolated (precipitation) data to zero unless they are ``too negative''. The latter will raise an error indicating that the interpolation does not seem to work properly.
 
 \begin{framed}
 	\vspace*{-1.2cm}
