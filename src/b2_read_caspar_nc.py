@@ -187,7 +187,7 @@ def read_caspar_nc(product=None,variable=None,date=None,bbox=None,foldername='/t
         Written,  Juliane Mai, August 2022
     """
 
-        # checking inputs
+    # checking inputs
     if product is None:
         raise ValueError("read_caspar_nc: product needs to be specified")
     if variable is None:
@@ -201,6 +201,17 @@ def read_caspar_nc(product=None,variable=None,date=None,bbox=None,foldername='/t
         date = [ date ]
         date_was_string = True
     date = np.sort(date)
+
+    # make sure all files contain specified product
+    filenames = np.sort( glob.glob(foldername+'*.nc') )
+    for filename in filenames:
+
+        ds = xr.open_dataset(filename)
+        iproduct = ds.attrs['product']
+        if iproduct != product:
+            raise ValueError("read_caspar_nc: file {} does not contain specified product {}.".format(filename,product))
+
+        ds.close()
 
     # gather all time steps available in all files
     filenames = np.sort( glob.glob(foldername+'*.nc') )
@@ -236,6 +247,16 @@ def read_caspar_nc(product=None,variable=None,date=None,bbox=None,foldername='/t
 
                 # find grid cells within bounding box
                 ds = xr.open_dataset(filename)
+
+                # check that required variables exist
+                if not('lat' in list(ds.variables)):
+                    raise ValueError("read_caspar_nc: file {} does not contain variable 'lat'.".format(filename))
+                if not('lon' in list(ds.variables)):
+                    raise ValueError("read_caspar_nc: file {} does not contain variable 'lon'.".format(filename))
+                if not(variable in list(ds.variables)):
+                    raise ValueError("read_caspar_nc: file {} does not contain variable '{}'.".format(filename,variable))
+
+                # read data
                 lat = ds['lat']
                 lon = ds['lon']
                 nlat = np.shape(lat)[0]
