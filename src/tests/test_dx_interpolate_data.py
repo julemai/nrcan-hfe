@@ -56,7 +56,7 @@ def test_interpolate_geomet():
     dates = [ datetime.datetime(2022,8,24,12,0) + datetime.timedelta(hours=24*ii) for ii in range(2) ]
 
     # request data
-    filename = '/tmp/test'
+    filename = '/tmp/pytest_rdpa_10km_6f'
     files_geomet = request_geomet_grib2(product=product,date=dates,bbox=bbox,crs=crs,filename=filename,silent=True)
 
     # read data
@@ -68,24 +68,33 @@ def test_interpolate_geomet():
 
     # 4 locations ; w/ post-process (negative values set to zero)
     locations = {"lat":[45.25,45.5,45.75,45.75], "lon":[-73.5,-73.5,-73.5,-73.75]}
-    interpolate_geomet = interpolate_data(var=data_geomet["var"],lat=data_geomet["lat"],lon=data_geomet["lon"],locations=locations,
+    interpolate_geomet = interpolate_data(    var=data_geomet["var"],
+                                              lat=data_geomet["lat"],
+                                              lon=data_geomet["lon"],
+                                              locations=locations,
                                               bbox=bbox,post_process=True,silent=True)
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768329, 2.35446854] )
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,1], [0.03124098, 0.65609319] )
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,2], [0.00268678, 0.04813891] )
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,3], [0.00427919, 0.02936855] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768329, 2.86795733] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,1], [0.03124098, 0.13879879] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,2], [0.00268678, 0.0] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,3], [0.00427919, 0.0] )
 
     # 1 location (as list) ; w/ post-process (negative values set to zero)
     locations = {"lat":[45.25], "lon":[-73.5]}
-    interpolate_geomet = interpolate_data(var=data_geomet["var"],lat=data_geomet["lat"],lon=data_geomet["lon"],locations=locations,
+    interpolate_geomet = interpolate_data(    var=data_geomet["var"],
+                                              lat=data_geomet["lat"],
+                                              lon=data_geomet["lon"],
+                                              locations=locations,
                                               bbox=bbox,post_process=True,silent=True)
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768329, 2.35446854] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768329, 2.86795733] )
 
     # 1 location (as scalar) ; w/ post-process (negative values set to zero)
     locations = {"lat":45.25, "lon":-73.5}
-    interpolate_geomet = interpolate_data(var=data_geomet["var"],lat=data_geomet["lat"],lon=data_geomet["lon"],locations=locations,
+    interpolate_geomet = interpolate_data(    var=data_geomet["var"],
+                                              lat=data_geomet["lat"],
+                                              lon=data_geomet["lon"],
+                                              locations=locations,
                                               bbox=bbox,post_process=True,silent=True)
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768329, 2.35446854] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768329, 2.86795733] )
 
 
 @pytest.mark.filterwarnings("ignore:request_caspar_nc")
