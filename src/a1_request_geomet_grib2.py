@@ -75,7 +75,7 @@ def request_geomet_grib2(product=None,date=None,bbox=None,crs='EPSG:4326',filena
         crs             string          String specifying coordinate reference system (CRS).
                                         Default: "EPSG:4326"
 
-        filename        string or       Filename of where to store retrieved file. The filename
+        filename        string          Filename of where to store retrieved file. The filename
                                         can be a path but is expected to not contain the file ending.
                                         The filename provided will be appended by the date in format
                                         YYYYMMDDHH.
@@ -90,15 +90,22 @@ def request_geomet_grib2(product=None,date=None,bbox=None,crs='EPSG:4326',filena
 
         Output          Format          Description
         -----           -----           -----------
-        {var,lat,lon}   dict            Dictionary {"var":var,"lat":lat,"lon":lon}
-                                        containing first variable of file and latitudes
-                                        and longitudes of each grid cell
+        filenames       dict            Dictionary that provides the name of the file containing
+                                        each of the requested time setps:
+                                        filenames = { date_1: [ filename_1, filename_2 ],
+                                                      date_2: [ filename_2 ],
+                                                      date_3: [ ],
+                                                      ... }
+                                        date_1 is available in two files.
+                                        date_2 is available in one file.
+                                        date_3 is available in no file.
 
 
         Description
         -----------
         Requests GRIB2 file from Geomet for specified product ("product"), region ("bbox"), and time ("date").
-        It returns a string specifying where the retrieved file has been stored.
+        It returns a dictionary specifying which file has been downloaded for which time step and where is has
+        been stored.
 
 
         Restrictions
@@ -116,7 +123,7 @@ def request_geomet_grib2(product=None,date=None,bbox=None,crs='EPSG:4326',filena
         >>> filename = 'test-data/rdpa-6h'
         >>> file_geomet = request_geomet_grib2(product='rdpa:10km:6f',date=date,bbox=bbox,crs='EPSG:4326',filename=filename,overwrite=True)
         >>> print('file_geomet = '+str(file_geomet))
-        file_geomet = ['test-data/rdpa-6h_2022082412.grib2']
+        file_geomet = {datetime.datetime(2022, 8, 24, 12, 0): ['test-data/rdpa-6h_2022082412.grib2']}
 
         Request data (4 files)
 
@@ -125,7 +132,7 @@ def request_geomet_grib2(product=None,date=None,bbox=None,crs='EPSG:4326',filena
         >>> filename = 'test-data/rdpa-6h'
         >>> file_geomet = request_geomet_grib2(product='rdpa:10km:6f',date=dates,bbox=bbox,crs='EPSG:4326',filename=filename,overwrite=False)
         >>> print('file_geomet = ',file_geomet)
-        file_geomet = ['test-data/rdpa-6h_2022082400.grib2', 'test-data/rdpa-6h_2022082406.grib2', 'test-data/rdpa-6h_2022082412.grib2', 'test-data/rdpa-6h_2022082418.grib2']
+        file_geomet = {datetime.datetime(2022, 8, 24, 0, 0): ['test-data/rdpa-6h_2022082400.grib2'], datetime.datetime(2022, 8, 24, 6, 0): ['test-data/rdpa-6h_2022082406.grib2'], datetime.datetime(2022, 8, 24, 12, 0): ['test-data/rdpa-6h_2022082412.grib2'], datetime.datetime(2022, 8, 24, 18, 0): ['test-data/rdpa-6h_2022082418.grib2']}
 
 
         License
@@ -169,7 +176,7 @@ def request_geomet_grib2(product=None,date=None,bbox=None,crs='EPSG:4326',filena
         date = [ date ]
 
     # initialize return
-    filenames = []
+    filenames = {}
 
     for idate in date:
 
@@ -218,13 +225,17 @@ def request_geomet_grib2(product=None,date=None,bbox=None,crs='EPSG:4326',filena
                 if not(silent): print('Download successful.')
 
                 # append file to return
-                filenames.append(ifilename)
+                filenames[idate] = [ ifilename ]
 
         else:
             warnings.warn("request_geomet_grib2: File '{}' already exists. Will not be downloaded again.".format(ifilename))
 
             # append file to return
-            filenames.append(ifilename)
+            filenames[idate] = [ ifilename ]
+
+    # check if all lists of filenames are empty
+    if sum([ len(filenames[filename]) for filename in filenames ]) == 0:
+        raise ValueError("request_geomet_grib2: No file was found/requested. Maybe Geomet is not available right now or something in the request string is wrong.")
 
     return filenames
 

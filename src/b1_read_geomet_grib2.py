@@ -22,6 +22,8 @@ from __future__ import print_function
 # along with The NRCan-HFE code library.
 # If not, see <https://github.com/julemai/nrcan-hfe/blob/main/LICENSE>.
 
+import warnings
+import datetime as datetime
 import pygrib as pg
 from pathlib import Path
 import numpy as np
@@ -39,8 +41,17 @@ def read_geomet_grib2(filenames=None,lintransform={'a':1.0,'b':0.0},silent=True)
 
         Input           Format          Description
         -----           -----           -----------
-        filenames       string or       Name of file to read
-                        list(string)    Default: None
+        filenames       dict            Dictionary that provides the name of the file containing
+                                        each of the requested time steps:
+                                        filenames = { date_1: [ filename_1, filename_2 ],
+                                                      date_2: [ filename_2 ],
+                                                      date_3: [ ],
+                                                      ... }
+                                        --> date_1 is available in two files.
+                                        --> date_2 is available in one file.
+                                        --> date_3 is available in no file.
+                                        This variable is the output of "request_geomet_grib2()".
+                                        Default: None
 
         lintransform    dict            Dictionary containing slope (a) and intercept (b) of
                                         linear transform applied to data read for variable:
@@ -56,11 +67,11 @@ def read_geomet_grib2(filenames=None,lintransform={'a':1.0,'b':0.0},silent=True)
 
         Output          Format          Description
         -----           -----           -----------
-        {var,lat,lon}   dict            Dictionary {"var":var,"lat":lat,"lon":lon}
-                                        containing first variable of file and latitudes
+        {var,time,      dict            Dictionary {"var":var,"time":time,"lat":lat,"lon":lon}
+        lat,lon}                        containing first variable of file and latitudes
                                         and longitudes of each grid cell. If several files
                                         are read, "var" is returned as list of 2-dimensional
-                                        fields while "lat" and "lon" are expected to be
+                                        fields while "time", "lat", and "lon" are expected to be
                                         consistent across the files and will be only returned
                                         as 2-dimensional fields.
 
@@ -68,7 +79,8 @@ def read_geomet_grib2(filenames=None,lintransform={'a':1.0,'b':0.0},silent=True)
         Description
         -----------
         Reads a GRIB2 file(s) and returns dictionary containing gridded variable ("var")
-        and latitudes ("lat") and longitudes ("lon") of each grid cell.
+        and latitudes ("lat") and longitudes ("lon") of each grid cell as well
+        as the time steps ("time").
 
 
         Restrictions
@@ -81,19 +93,10 @@ def read_geomet_grib2(filenames=None,lintransform={'a':1.0,'b':0.0},silent=True)
         Examples
         --------
 
-        Read data (1 file provided as string --> returns var as 2D array)
+        >>> # Read data (1 file)
 
-        >>> data_geomet = read_geomet_grib2("test-data/rdpa-6h_2022082412.grib2")
-        >>> print('var[0,0:4] = '+str(data_geomet["var"][0,0:4]))
-        var[0,0:4] = [0.09765625 0.0625     0.09375    0.1015625 ]
-        >>> print('lat[0,0:4] = '+str(data_geomet["lat"][0,0:4]))
-        lat[0,0:4] = [45.359908   45.31104666 45.2620931  45.21304786]
-        >>> print('lon[0,0:4] = '+str(data_geomet["lon"][0,0:4]))
-        lon[0,0:4] = [-74.714051   -74.61954144 -74.52526103 -74.43120944]
-
-        Read data (1 file provided as list --> returns var as 3D array)
-
-        >>> data_geomet = read_geomet_grib2(["test-data/rdpa-6h_2022082412.grib2"])
+        >>> filenames = {datetime.datetime(2022, 8, 24, 12, 0): ['test-data/rdpa-6h_2022082412.grib2']}
+        >>> data_geomet = read_geomet_grib2(filenames)
         >>> print('var[0,0,0:4] = '+str(data_geomet["var"][0,0,0:4]))
         var[0,0,0:4] = [0.09765625 0.0625     0.09375    0.1015625 ]
         >>> print('lat[0,0:4] = '+str(data_geomet["lat"][0,0:4]))
@@ -101,8 +104,10 @@ def read_geomet_grib2(filenames=None,lintransform={'a':1.0,'b':0.0},silent=True)
         >>> print('lon[0,0:4] = '+str(data_geomet["lon"][0,0:4]))
         lon[0,0:4] = [-74.714051   -74.61954144 -74.52526103 -74.43120944]
 
-        Read data (4 files --> returns var as 3D array)
-        >>> data_geomet = read_geomet_grib2(["test-data/rdpa-6h_2022082400.grib2","test-data/rdpa-6h_2022082406.grib2", "test-data/rdpa-6h_2022082412.grib2","test-data/rdpa-6h_2022082418.grib2"])
+        >>> # Read data (4 files)
+
+        >>> filenames = {datetime.datetime(2022, 8, 24, 0, 0): ['test-data/rdpa-6h_2022082400.grib2'], datetime.datetime(2022, 8, 24, 6, 0): ['test-data/rdpa-6h_2022082406.grib2'], datetime.datetime(2022, 8, 24, 12, 0): ['test-data/rdpa-6h_2022082412.grib2'], datetime.datetime(2022, 8, 24, 18, 0): ['test-data/rdpa-6h_2022082418.grib2']}
+        >>> data_geomet = read_geomet_grib2(filenames)
         >>> print('var[0,0,0:4] = '+str(data_geomet["var"][0,0,0:4]))
         var[0,0,0:4] = [0.1875  0.125   0.34375 0.21875]
         >>> print('lat[0,0:4] = '+str(data_geomet["lat"][0,0:4]))
@@ -143,15 +148,17 @@ def read_geomet_grib2(filenames=None,lintransform={'a':1.0,'b':0.0},silent=True)
     if filenames is None:
         raise ValueError("read_geomet_grib2: filename needs to be specified")
 
-    # make sure filename input is always list
-    file_was_string = False
-    if type(filenames) == str:
-        filenames = [ filenames ]
-        file_was_string = True
-
-
     result = {}
-    for filename in filenames:
+    for idate in filenames:
+
+        if len(filenames[idate]) > 1:
+            warnings.warn("read_geomet_grib2: Date '{}' is available in several files. Only first file will be used.".format(idate))
+            filename = filenames[idate][0]
+        elif len(filenames[idate]) == 0:
+            warnings.warn("read_geomet_grib2: Date '{}' is not available in any file. Will be skipped.".format(idate))
+            continue
+        else:
+            filename = filenames[idate][0]
 
         # reading first variable of file
         if Path(filename).is_file():
@@ -164,6 +171,14 @@ def read_geomet_grib2(filenames=None,lintransform={'a':1.0,'b':0.0},silent=True)
 
         # unit conversion
         var = var * lintransform['a'] + lintransform['b']
+
+        # save time
+        if "time" in result.keys():
+            # append to existing time
+            result["time"] = np.append(result["time"], idate )
+        else:
+            # initialize time
+            result["time"] = np.array([ idate ])
 
         # save latitude (or check that it is consistent)
         if not( "lat" in result.keys() ):
@@ -187,10 +202,6 @@ def read_geomet_grib2(filenames=None,lintransform={'a':1.0,'b':0.0},silent=True)
             # initialize var
             result["var"] = np.array([ var ])
 
-    # make sure a 2D array is returned if only one filename (not in list) was requested
-    if file_was_string:
-        result["var"] = np.array(result["var"][0])
-
     # return dictionary
     return result
 
@@ -200,4 +211,4 @@ if __name__ == '__main__':
     import doctest
     doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
 
-    # filenames = ["test-data/test_2022082400.grib2","test-data/test_2022082406.grib2","test-data/test_2022082412.grib2","test-data/test_2022082418.grib2"]
+    # filenames = {datetime.datetime(2022, 8, 24, 0, 0): ['test-data/rdpa-6h_2022082400.grib2'], datetime.datetime(2022, 8, 24, 6, 0): ['test-data/rdpa-6h_2022082406.grib2'], datetime.datetime(2022, 8, 24, 12, 0): ['test-data/rdpa-6h_2022082412.grib2'], datetime.datetime(2022, 8, 24, 18, 0): ['test-data/rdpa-6h_2022082418.grib2']}

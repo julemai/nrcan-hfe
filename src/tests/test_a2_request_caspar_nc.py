@@ -33,13 +33,21 @@ sys.path.append(dir_path+'/../../src')
 
 
 from a2_request_caspar_nc import request_caspar_nc
+import datetime as datetime
 import pytest
 
 
 @pytest.mark.filterwarnings("ignore:request_caspar_nc")
 def test_request_caspar():
 
-    # just a warning
-    file_caspar = request_caspar_nc()
+    product    = 'RDRS_v2.1'
+    variable   = 'RDRS_v2.1_A_PR0_SFC'
+    date       = [ datetime.datetime(2018,8,9,7,0), datetime.datetime(2018,8,9,8,0), datetime.datetime(2018,8,10,7,0), datetime.datetime(2018,8,10,13,0) ]
+    foldername = 'test-data/'
 
-    assert file_caspar is None
+    file_caspar = request_caspar_nc(product=product,variable=variable,date=date,foldername=foldername,silent=True)
+
+    assert file_caspar[date[0]] == ['test-data/2018080812.nc']
+    assert file_caspar[date[1]] == ['test-data/2018080812.nc']
+    assert file_caspar[date[2]] == ['test-data/2018080912.nc']
+    assert file_caspar[date[3]] == []

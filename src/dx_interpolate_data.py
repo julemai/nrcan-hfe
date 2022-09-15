@@ -131,7 +131,7 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
         >>> files_geomet = request_geomet_grib2(product=product,date=dates,bbox=bbox,crs=crs,filename=filename,silent=True)
 
         >>> # read data
-        >>> data_geomet = read_geomet_grib2(files_geomet,silent=True)
+        >>> data_geomet = read_geomet_grib2(filenames=files_geomet,silent=True)
 
         >>> # --------------------------------------
         >>> # Interpolate data from Geomet
@@ -165,7 +165,9 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
         >>> # Request and read data from CaSPAr
         >>> # --------------------------------------
 
+        >>> from a2_request_caspar_nc import request_caspar_nc
         >>> from b2_read_caspar_nc import read_caspar_nc
+
         >>> product='RDRS_v2.1'
         >>> variable='RDRS_v2.1_A_PR0_SFC'
         >>> dates=[ datetime.datetime(2018,8,8,15,0) + datetime.timedelta(hours=ii) for ii in range(10) ]
@@ -174,7 +176,11 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
         >>> lintransform={'a':1000.0,'b':0.0}  # convert from m/h to mm/h
         >>> silent=False
 
-        >>> data_caspar = read_caspar_nc( product=product, variable=variable, date=dates, bbox=bbox, foldername=foldername, lintransform=lintransform, silent=True)
+        >>> # request data
+        >>> files_caspar = request_caspar_nc(product=product,variable=variable,date=dates,foldername=foldername,silent=True)
+
+        >>> # read data
+        >>> data_caspar = read_caspar_nc( variable=variable, filenames=files_caspar, bbox=bbox, lintransform=lintransform, silent=True)
 
         >>> # --------------------------------------
         >>> # Interpolate data from CaSPAr

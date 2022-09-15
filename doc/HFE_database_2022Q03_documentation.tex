@@ -223,7 +223,8 @@ This seems to be the only possibility to obtain geo-referenced data. The library
 	\vspace*{-0.3cm}
 \end{framed}
 \vspace*{-0.3cm}
-The return variable \texttt{files\_geomet} is a list of files requested and downloaded. If the file already existed, it will not be overwritten unless \texttt{overwrite} is set to \texttt{True}. The filename will be returned nonetheless. 
+The return variable \texttt{files\_geomet} is a dictionary where the keys are the provides date(s) and the values are lists of filenames that contain this time step. If the file already existed, it will not be overwritten unless \texttt{overwrite} is set to \texttt{True}. The filename will be returned nonetheless. In case no file is found for a date, the list will be empty. If the list contains multiple files, the time step was found in several files. If no file was found for any date, an error is raised since this indicates that something in the request string to Geomet is likely wrong. 
+\pagebreak
 
 \textbf{Step B1:} Read data from files requested.
 \begin{framed}
@@ -236,7 +237,12 @@ The return variable \texttt{files\_geomet} is a list of files requested and down
 			\\
 			data\_geomet = read\_geomet\_grib2(\\
 			\> \GRAU{\# Mandatory arguments:}\\
-			\> filenames=\textit{files\_geomet}, \> \GRAU{\# list of GRIB2 files to read}\\
+			\> filenames=\textit{filenames}, \> \GRAU{\# dictionary specifying filename per time}\\
+			\>  \> \GRAU{\# step, e.g.,}\\
+			\>  \> \GRAU{\#  \{ date\_1: [ filename\_1, filename\_2 ],}\\
+			\>  \> \GRAU{\# \hspace*{0.2cm}    date\_2: [ filename\_2 ],}\\
+			\>  \> \GRAU{\# \hspace*{0.2cm}    date\_3: [ ], ... \}}\\
+			\>  \> \GRAU{\# $\curvearrowright$ output of "request\_geomet\_grib2()"}\\
 			\> \GRAU{\# Optional arguments:}\\
 			\> lintransform=\textit{lintransform}, \> \GRAU{\# dictionary to specify linear transform of}\\
 			\>  \> \GRAU{\# data, e.g., to allow for unit conversions}\\
@@ -247,7 +253,7 @@ The return variable \texttt{files\_geomet} is a list of files requested and down
 	\vspace*{-0.3cm}
 \end{framed}
 \vspace*{-0.3cm}
-The returned variable \texttt{data\_geomet} is a dictionary that will contain the attributes \texttt{lat}, \texttt{lon}, and \texttt{var}. The latter will be 3-dimensional if several files were read. The latitude and longitudes of the files are checked for consistency.
+The returned variable \texttt{data\_geomet} is a dictionary that will contain the attributes \texttt{time}, \texttt{lat}, \texttt{lon}, and \texttt{var}. The latter will be 3-dimensional (time, lat, lon). The latitude and longitudes of the files are checked for consistency. The time steps returned are only the time steps where data was available.
 
 \textbf{Step Cx:} Plot data.
 \begin{framed}
@@ -271,6 +277,7 @@ The returned variable \texttt{data\_geomet} is a dictionary that will contain th
 			\> cities=\textit{cities}, \> \GRAU{\# True to display cities on maps}\\
 			\> bbox=\textit{bbox}, \> \GRAU{\# Bounding box will be plotted if provided}\\
 			\> basefilename=\textit{basefilename}, \> \GRAU{\# String specifying basename of files created}\\
+			\> overwrite=\textit{overwrite}, \> \GRAU{\# True to overwrite existing plots}\\
 			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
 			\> ) \> 
 		\end{tabbing}
@@ -309,21 +316,34 @@ The returned variable \texttt{plot\_geomet} is a dictionary that will contain th
 \textbf{Step A2:} Request data using CaSPAr (\url{https://caspar-data.ca/caspar}).
 
 The following function is just a dummy to provide some information on how to retrieve data from CaSPAr manually. Fig.~\ref{fig:request_data_caspar} shows the setting used to retrieve RDRS-v2.1 data from CaSPAr. The shapefile containing the domain of the HFE database is provided under \texttt{data/caspar/RDRS\_v21\_hfe\_outline.zip} (see shape as blue polygon in Fig.~\ref{fig:plot_example:location_points}). Some example data are made available (see \texttt{src/test-data/*.nc}). See more information on how to create a CaSPAr account, request and dwonload data under \url{https://github.com/julemai/CaSPAr/wiki/How-to-get-started-and-download-your-first-data}.
+
+This function basically only checks if the files for the product specified and the (list of)
+date(s) provided are available under the specified foldername.
 \begin{framed}
 	\vspace*{-1.2cm}
 	\begin{ttfont}
 		\begin{tabbing}
-			\hspace{1.0cm} \= \hspace{3.2cm} \= \kill \\[4pt]
+			\hspace{1.0cm} \= \hspace{4.1cm} \= \kill \\[4pt]
 			\GRAU{\# see module for detailed documentation and example}\\
 			from a2\_request\_caspar\_nc import request\_caspar\_nc\\
 			\\
-			files\_caspar = request\_caspar\_nc( ) \> 
+			files\_caspar = request\_caspar\_nc( \\
+				\> \GRAU{\# Mandatory arguments:}\\
+				\> product=\textit{product}, \> \GRAU{\# name of product in CaSPAr (e.g., 'RDRS-v2.1')} \\
+				\> variable=\textit{variable}, \> \GRAU{\# name of variable in CaSPAr}\\
+				\> \> \GRAU{\#  (e.g., 'RDRS\_v2.1\_A\_PR0\_SFC')}\\
+				\> date=\textit{date}, \> \GRAU{\# datetime object specifying date}\\
+				\> \> \GRAU{\#  (can be list of dates)}\\
+				\> \GRAU{\# Optional arguments:}\\
+				\> foldername=\textit{foldername}, \> \GRAU{\# } \\
+				\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen} \\
+			\> ) \> 
 		\end{tabbing}
 	\end{ttfont}
 	\vspace*{-0.3cm}
 \end{framed}
 \vspace*{-0.3cm}
-The return variable \texttt{files\_caspar} is 0. The function will only display a warning that the data have to be requested and downloaded manually. 
+The return variable \texttt{files\_caspar} is a dictionary where the keys are the provides date(s) and the values are lists of filenames that contain this time step. In case no file is found for a date, the list will be empty. If the list contains multiple files, the time step was found in several files. If no file was found for any date, an error is raised since this indicates that the files have not been requested and downloaded from CaSPAr yet or the \texttt{foldername} is not the location where those files have been downloaded to. 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\linewidth]{figures/caspar-request-hfe.png}
@@ -343,15 +363,15 @@ The return variable \texttt{files\_caspar} is 0. The function will only display 
 			\\
 			data\_caspar = read\_caspar\_nc(\\
 			\> \GRAU{\# Mandatory arguments:}\\
-			\> product=\textit{product}, \> \GRAU{\# name of product in CaSPAr (e.g., 'RDRS-v2.1')}\\
 			\> variable=\textit{variable}, \> \GRAU{\# name of variable in CaSPAr}\\
-			\> \> \GRAU{\#  (e.g., 'RDRS\_v2.1\_A\_PR0\_SFC')}\\
-			\> date=\textit{date}, \> \GRAU{\# datetime object specifying date}\\
-			\> \> \GRAU{\#  (can be list of dates)}\\
+			\> filenames=\textit{filenames}, \> \GRAU{\# dictionary specifying filename per time}\\
+			\>  \> \GRAU{\# step, e.g.,}\\
+			\>  \> \GRAU{\#  \{ date\_1: [ filename\_1, filename\_2 ],}\\
+			\>  \> \GRAU{\# \hspace*{0.2cm}    date\_2: [ filename\_2 ],}\\
+			\>  \> \GRAU{\# \hspace*{0.2cm}    date\_3: [ ], ... \}}\\
+			\>  \> \GRAU{\# $\curvearrowright$ output of "request\_caspar\_nc()"}\\
 			\> \GRAU{\# Optional arguments:}\\
 			\> bbox=\textit{bbox}, \> \GRAU{\# dictionary specifying bounding box}\\
-			\> foldername=\textit{foldername}, \> \GRAU{\# name of folder that contains files requested}\\
-			\> \> \GRAU{\# and downloaded from CaSPAr (files not renamed)}\\
 			\> lintransform=\textit{lintransform}, \> \GRAU{\# dictionary to specify linear transform of}\\
 			\>  \> \GRAU{\# data, e.g., to allow for unit conversions}\\
 			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
@@ -361,7 +381,7 @@ The return variable \texttt{files\_caspar} is 0. The function will only display 
 	\vspace*{-0.3cm}
 \end{framed}
 \vspace*{-0.3cm}
-The returned variable \texttt{data\_caspar} is a dictionary that will contain the attributes \texttt{lat}, \texttt{lon}, and \texttt{var}. The latter will be 3-dimensional if several dates were read. The latitude and longitudes of the files are checked for consistency.
+The returned variable \texttt{data\_caspar} is a dictionary that will contain the attributes \texttt{time}, \texttt{lat}, \texttt{lon}, and \texttt{var}. The latter will be 3-dimensional (time, lat, lon). The latitude and longitudes of the files are checked for consistency. The time steps returned are only the time steps where data was available.
 
 \textbf{Step Cx:} Plot data.
 
