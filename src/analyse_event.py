@@ -345,12 +345,13 @@ print("\n\nPlot data:")
 var          = data["var"]
 lat          = data["lat"]
 lon          = data["lon"]
-date         = date[0:9]+date[10:]
+date         = data["time"]
 png          = True
 gif          = True
 legend       = True
 cities       = True
 basefilename = '/tmp/tmp/analyse_event_'+str(ifeature)+'/plot_event_'+str(ifeature)
+overwrite    = False
 silent       = True
 
 plots_data = plot_data(var=var,lat=lat,lon=lon,date=date,
@@ -360,6 +361,7 @@ plots_data = plot_data(var=var,lat=lat,lon=lon,date=date,
                            cities=cities,
                            bbox=bbox,
                            basefilename=basefilename,
+                           overwrite=overwrite,
                            silent=silent)
 
 print("   Number of PNGs    plotted: {}".format(len(plots_data['png'])))
