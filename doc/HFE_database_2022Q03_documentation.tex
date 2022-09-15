@@ -203,19 +203,21 @@ This seems to be the only possibility to obtain geo-referenced data. The library
 	\vspace*{-1.2cm}
 	\begin{ttfont}
 	\begin{tabbing}
-		\hspace{1.0cm} \= \hspace{3.2cm} \= \kill \\[4pt]
+		\hspace{1.0cm} \= \hspace{3.9cm} \= \kill \\[4pt]
 		\GRAU{\# see module for detailed documentation and example}\\
 		from a1\_request\_geomet\_grib2 import request\_geomet\_grib2\\
 		\\
 		files\_geomet = request\_geomet\_grib2(\\
 		\> \GRAU{\# Mandatory arguments:}\\
-		\> product=\textit{product}, \> \GRAU{\# name of product, e.g., ``rdpa:10km:24f''}\\
-		\> date=\textit{date},\> \GRAU{\# datetime object specifying date (can be list of dates)}\\
+		\> product=\textit{product}, \> \GRAU{\# name of product, e.g., "rdpa:10km:24f"}\\
+		\> date=\textit{date},\> \GRAU{\# datetime object specifying date (or list of dates)}\\
 		\> bbox=\textit{bbox},\> \GRAU{\# dictionary specifying bounding box}\\
 		\> \GRAU{\# Optional arguments:}\\
-		\> crs=\textit{crs},\> \GRAU{\# coordinate reference system, e.g., ``EPSG:4326''}\\
-		\> filename=\textit{filename},\> \GRAU{\# base filename of output file (can include path but no}\\
-		\>                           \> \GRAU{\# file extension); date will be added to filename}\\
+		\> crs=\textit{crs},\> \GRAU{\# coordinate reference system, e.g., "EPSG:4326"}\\
+		\> filename=\textit{filename},\> \GRAU{\# base filename of output file (can include path but }\\
+		\>                           \> \GRAU{\# no file extension); date will be added to filename}\\
+		\> overwrite=\textit{overwrite},\> \GRAU{\# If true, file will be downloaded }\\
+		\>                           \> \GRAU{\# again overwriting existing file}\\
 		\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
 		\> ) \> 
 	\end{tabbing}
