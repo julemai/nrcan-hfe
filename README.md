@@ -4,6 +4,10 @@ Codes to feed data for flood events into NRCan's HFE database
 
 ## Python environment
 
+It is recommended to use `pyenv` to setup a Python environment. An installation guide can be found [here](https://realpython.com/lessons/installing-pyenv/). Additionally, the GDAL library needs to be installed before setting up the Python environment. Please use, for example, `brew install gdal` or your native package installer to get GDAL. Test if it is installed by checking the version number using `gdal-config --version`. Then proceed to setup the Python environment.
+
+### A. Manual setup and installation (recommended since basemap is used)
+
 ```python
 pyenv virtualenv 3.8.5 env-3.8.5-nrcan
 pyenv activate env-3.8.5-nrcan
@@ -24,6 +28,16 @@ pip install -U pytest
 pip install ipython
 ```
 
+### B. Automatic setup and installation (not tested)
+
+```python
+pyenv virtualenv 3.8.5 env-3.8.5-nrcan
+pyenv activate env-3.8.5-nrcan
+
+pip install -r /path/to/nrcan-hfe/src/requirements.txt
+```
+
+
 ## Testing codes
 
 All tests for ```pytest``` are setup under ```src/tests```. Please run the following command to check that all tests pass before pushing any changes:
@@ -35,7 +49,7 @@ pytest
 pytest src/tests/test_b1_read_geomet_grib2.py
 ```
 
-All functions have build-in docstring tests that are checked by running the indiviudal scripts. They will result in error messages if any test fails.
+All functions have build-in docstring tests that are checked by running the individual scripts. They will result in error messages if any test fails.
 
 ```python
 python a1_request_geomet_grib2.py 
