@@ -1,5 +1,5 @@
 # nrcan-hfe
-Codes to feed data for flood events into NRCan's HFE database
+Codes to provide precipitation data of flood events into NRCan's HFE database.
 
 
 ## Python environment
