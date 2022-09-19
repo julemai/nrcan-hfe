@@ -61,5 +61,6 @@ python b3_read_hfe_json.py
 python cx_plot_data.py 
 python dx_interpolate_data.py 
 python ex_determine_bbox.py 
+python fx_determine_dates.py 
 ```
 
