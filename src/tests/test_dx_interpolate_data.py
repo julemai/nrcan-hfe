@@ -73,10 +73,10 @@ def test_interpolate_geomet():
                                               lon=data_geomet["lon"],
                                               locations=locations,
                                               bbox=bbox,post_process=True,silent=True)
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768329, 2.86795733] )
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,1], [0.03124098, 0.13879879] )
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,2], [0.00268678, 0.0] )
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,3], [0.00427919, 0.0] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768641, 2.84033923] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,1], [0.03125   , 0.13948481] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,2], [0.00104299, 0.0       ] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,3], [0.00281244, 0.0       ] )
 
     # 1 location (as list) ; w/ post-process (negative values set to zero)
     locations = {"lat":[45.25], "lon":[-73.5]}
@@ -85,7 +85,7 @@ def test_interpolate_geomet():
                                               lon=data_geomet["lon"],
                                               locations=locations,
                                               bbox=bbox,post_process=True,silent=True)
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768329, 2.86795733] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768641, 2.84033923] )
 
     # 1 location (as scalar) ; w/ post-process (negative values set to zero)
     locations = {"lat":45.25, "lon":-73.5}
@@ -94,7 +94,7 @@ def test_interpolate_geomet():
                                               lon=data_geomet["lon"],
                                               locations=locations,
                                               bbox=bbox,post_process=True,silent=True)
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768329, 2.86795733] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768641, 2.84033923] )
 
 
 @pytest.mark.filterwarnings("ignore:request_caspar_nc")
@@ -130,25 +130,25 @@ def test_interpolate_caspar():
     interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,
                                               bbox=bbox,post_process=False,silent=True)
 
-    np.testing.assert_almost_equal( interpolate_caspar['var'][:4,0], [-0.00077367, -0.00034989, -0.00029589, -0.00056612] )
-    np.testing.assert_almost_equal( interpolate_caspar['var'][:4,1], [0.04931655, 0.32463379, 0.36022639, 0.0334888 ] )
-    np.testing.assert_almost_equal( interpolate_caspar['var'][:4,2], [ 0.00068256,  0.03492004,  0.20845831, -0.0208557 ] )
-    np.testing.assert_almost_equal( interpolate_caspar['var'][:4,3], [7.03383407e-05, 2.11351033e-02, 1.49056495e-01, 8.51443785e-02] )
-
-    # 1 location (as list); w/o post-process (leads to negative values)
-    locations = {"lat":[45.25], "lon":[-73.5]}
-    interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,
-                                              bbox=bbox,post_process=False,silent=True)
-    np.testing.assert_almost_equal( interpolate_caspar['var'][:4,0], [-0.00077367, -0.00034989, -0.00029589, -0.00056612] )
-
-    # 1 location (as scalar); w/o post-process (leads to negative values)
-    locations = {"lat":45.25, "lon":-73.5}
-    interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,
-                                              bbox=bbox,return_tmp=False,post_process=False,silent=True)
-    np.testing.assert_almost_equal( interpolate_caspar['var'][:4,0], [-0.00077367, -0.00034989, -0.00029589, -0.00056612] )
-
-    # 1 location (as scalar) ; w/ post-process (negative values set to zero)
-    locations = {"lat":45.25, "lon":-73.5}
-    interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,
-                                               bbox=bbox,return_tmp=False,post_process=True,silent=True)
     np.testing.assert_almost_equal( interpolate_caspar['var'][:4,0], [0., 0., 0., 0.] )
+    np.testing.assert_almost_equal( interpolate_caspar['var'][:4,1], [0.03943589, 0.25160196, 0.32552247, 0.0252854 ] )
+    np.testing.assert_almost_equal( interpolate_caspar['var'][:4,2], [0.00069719, 0.03622241, 0.20670044, 0.00618395] )
+    np.testing.assert_almost_equal( interpolate_caspar['var'][:4,3], [9.51688978e-05, 1.66070234e-02, 1.09431941e-01, 5.25377496e-02] )
+
+    # # 1 location (as list); w/o post-process (leads to negative values)
+    # locations = {"lat":[45.25], "lon":[-73.5]}
+    # interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,
+    #                                           bbox=bbox,post_process=False,silent=True)
+    # np.testing.assert_almost_equal( interpolate_caspar['var'][:4,0], [-0.00077367, -0.00034989, -0.00029589, -0.00056612] )
+
+    # # 1 location (as scalar); w/o post-process (leads to negative values)
+    # locations = {"lat":45.25, "lon":-73.5}
+    # interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,
+    #                                           bbox=bbox,return_tmp=False,post_process=False,silent=True)
+    # np.testing.assert_almost_equal( interpolate_caspar['var'][:4,0], [-0.00077367, -0.00034989, -0.00029589, -0.00056612] )
+
+    # # 1 location (as scalar) ; w/ post-process (negative values set to zero)
+    # locations = {"lat":45.25, "lon":-73.5}
+    # interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,
+    #                                            bbox=bbox,return_tmp=False,post_process=True,silent=True)
+    # np.testing.assert_almost_equal( interpolate_caspar['var'][:4,0], [0., 0., 0., 0.] )
