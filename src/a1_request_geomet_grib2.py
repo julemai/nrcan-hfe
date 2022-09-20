@@ -214,11 +214,15 @@ def request_geomet_grib2(product=None,date=None,bbox=None,crs='EPSG:4326',filena
             except urllib.error.HTTPError as e:
                 # Return code error (e.g. 404, 501, ...)
                 # ...
+                warnings.warn("request_geomet_grib2: Request to Geomet unsuccessful '{}'. File potentially missing.".format(api_str))
                 if not(silent): print('HTTPError: {}'.format(e.code))
+
             except urllib.error.URLError as e:
                 # Not an HTTP-specific error (e.g. connection refused)
                 # ...
+                warnings.warn("request_geomet_grib2: Request to Geomet unsuccessful '{}'. File potentially missing.".format(api_str))
                 if not(silent): print('URLError: {}'.format(e.reason))
+
             else:
                 # 200
                 # ...
