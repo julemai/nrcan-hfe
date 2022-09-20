@@ -229,7 +229,6 @@ print("   Type: {}\n   Number of locations: {}\n   OBJECTID: {}\n   Start: {}\n 
     feature['properties']['flood_cause'],
     ))
 
-
 # --------------------
 # Determine bounding box
 # --------------------
@@ -270,11 +269,12 @@ if (product == 'rdpa:10km:6f') or (product == 'rdpa:10km:24f'):
     filename  = '/tmp/tmp/analyse_event_'+str(ifeature)+'/geomet'
     crs       = 'EPSG:4326'
     overwrite = False
-    silent    = False
+    silent    = True
     file_geomet = request_geomet_grib2(product=product,date=date,bbox=bbox,crs=crs,filename=filename,overwrite=overwrite,silent=silent)
 
     nfiles = len(file_geomet)
     print("   Number of Geomet files downloaded: {}".format(nfiles))
+    print("   Number of Geomet files missing:    {}".format(len(date) - nfiles))
 
 elif (product == 'RDRS_v2.1'):
 
@@ -330,10 +330,9 @@ var       = data["var"]
 lat       = data["lat"]
 lon       = data["lon"]
 interpolated_data = interpolate_data(var=var,lat=lat,lon=lon,locations=locations,bbox=bbox,post_process=True,silent=True)
-print("   Sum of precipitation at all {} locations over the time period evaluated: {}".format(len(feature['geometry']['coordinates']),np.sum(interpolated_data['var'],axis=0)))
+print("   Sum of precipitation [mm] at all {} locations over the time period evaluated: {}".format(len(locations['lon']),np.sum(interpolated_data['var'],axis=0)))
 
-plot_interpolated(locations,date[0:-1],interpolated_data,pngfile='/tmp/tmp/analyse_event_'+str(ifeature)+'/interpolated_at_stations.png',start_date=start_date,end_date=end_date)
-
+plot_interpolated(locations,date,interpolated_data,pngfile='/tmp/tmp/analyse_event_'+str(ifeature)+'/interpolated_at_stations.png',start_date=start_date,end_date=end_date)
 
 
 
