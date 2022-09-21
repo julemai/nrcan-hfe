@@ -211,7 +211,7 @@ def read_hfe_json(filename=None,filtering=False,polygon=None,return_filtered=Fal
 
         file_is_for = None
         if np.any([ 'uuid' in dd['properties'].keys() for dd in data['features'] ]):
-            # at lest one feature has 'uuid' --> is file of occurrences
+            # at least one feature has 'uuid' --> is file of occurrences
             file_is_for = 'occurrences'
             required_keys_prop = ['event_id', 'start_date', 'end_date', 'season', 'flood_cause','uuid', 'rainfall_mm']
         else:
