@@ -5,7 +5,7 @@ Common folder to potentially hold data downloaded from CaSPAr.
 The shapefile ``RDRS_v21_hfe_outline.zip`` has been used to request
 RDRS v2.1 from CaSPAr. Only the precipitation variable based on CaPA
 ``RDRS_v2.1_A_PR0_SFC`` has been requested for all days available (Jan
-1, 1980 to Dec 31, 2018). 
+1, 1980 to Dec 31, 2018).
 
 <p align="center">
    <img src="https://github.com/julemai/nrcan-hfe/blob/main/doc/figures/caspar-request-hfe.png" width="85%" />
