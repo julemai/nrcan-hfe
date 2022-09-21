@@ -20,4 +20,4 @@ src/test-data/CMC*.grib2
 
 # data that will get downloaded
 data/geomet/*.grib2
-data/caspar/**.nc
+data/caspar/rdrs_v2.1/*.nc
