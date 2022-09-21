@@ -61,7 +61,8 @@ def read_hfe_json(filename=None,filtering=False,polygon=None,return_filtered=Fal
                                          2. start_date and end_date are YYYY-MM-DD
                                             (not just MM or YYYY, etc.)
                                          3. start_date is 1980-01-01 or later
-                                         4. points are within "polygon" if not None
+                                         4. If end_date given it must be after start_date
+                                         5. points are within "polygon" if not None
                                          Default: False
 
         polygon          list            List of lat/lon pairs to check whether points in JSON
@@ -96,7 +97,8 @@ def read_hfe_json(filename=None,filtering=False,polygon=None,return_filtered=Fal
         2. start_date and end_date are YYYY-MM-DD
            (not just MM or YYYY, etc.)
         3. start_date is 1980-01-01 or later
-        4. points are within "polygon" if not None
+        4. if end_date given it must be after start_date
+        5. points are within "polygon" if not None
 
         These checks will make sure that any processing of data for those events and occurrences will
         run smoothly hereafter.
@@ -127,12 +129,12 @@ def read_hfe_json(filename=None,filtering=False,polygon=None,return_filtered=Fal
         >>> # filtering w/o checking if points are in polygon
         >>> data_hfe = read_hfe_json(filename=filename,filtering=True,polygon=None,silent=True)
         >>> print("Number of flood occurrences/events found: {}".format(len(data_hfe['data']['features'])))
-        Number of flood occurrences/events found: 368
+        Number of flood occurrences/events found: 363
 
         >>> # filtering w/  checking if points are in polygon
         >>> data_hfe = read_hfe_json(filename=filename,filtering=True,polygon=polygon,silent=True)
         >>> print("Number of flood occurrences/events found: {}".format(len(data_hfe['data']['features'])))
-        Number of flood occurrences/events found: 366
+        Number of flood occurrences/events found: 361
 
         >>> # ------------------------
         >>> # Read flood occurences (POINTS)
@@ -148,12 +150,12 @@ def read_hfe_json(filename=None,filtering=False,polygon=None,return_filtered=Fal
         >>> # filtering w/o checking if points are in polygon
         >>> data_hfe = read_hfe_json(filename=filename,filtering=True,polygon=None,silent=True)
         >>> print("Number of flood occurrences/events found: {}".format(len(data_hfe['data']['features'])))
-        Number of flood occurrences/events found: 1893
+        Number of flood occurrences/events found: 1854
 
         >>> # filtering w/  checking if points are in polygon
         >>> data_hfe = read_hfe_json(filename=filename,filtering=True,polygon=polygon,silent=True)
         >>> print("Number of flood occurrences/events found: {}".format(len(data_hfe['data']['features'])))
-        Number of flood occurrences/events found: 1891
+        Number of flood occurrences/events found: 1852
 
 
         License
@@ -283,11 +285,12 @@ def read_hfe_json(filename=None,filtering=False,polygon=None,return_filtered=Fal
                 if tofilter:
                     if file_is_for == 'occurrences':
                         warnings.warn("read_hfe_json: end_date of feature[uuid={}] is '{}' which is not conform to expected YYYY-MM-DD.".format(ifeature['properties']['uuid'],end_date))
+                        filter_features.append(ifeature['properties']['uuid'])
                     elif file_is_for == 'events':
                         warnings.warn("read_hfe_json: end_date of feature[eventid={}] is '{}' which is not conform to expected YYYY-MM-DD.".format(ifeature['properties']['event_id'],end_date))
+                        filter_features.append(ifeature['properties']['event_id'])
                     else:
                         raise ValueError('read_hfe_json: What kind of file is this?')
-
 
         result_filtered['check_date_format'] = filter_features
 
@@ -322,7 +325,50 @@ def read_hfe_json(filename=None,filtering=False,polygon=None,return_filtered=Fal
 
         result_filtered['check_too_early'] = filter_features
 
-        # check 4. points are within "polygon" if not None
+        # check 4. if end_date given, it must be after start_date
+        filter_features = []
+        for iifeature,ifeature in enumerate(data['features']):
+
+            already_filtered = False
+            if file_is_for == 'occurrences':
+                if (ifeature['properties']['uuid'] in result_filtered['check_date_format']):
+                    already_filtered = True
+                if (ifeature['properties']['uuid'] in result_filtered['check_too_early']):
+                    already_filtered = True
+            elif file_is_for == 'events':
+                if (ifeature['properties']['event_id'] in result_filtered['check_date_format']):
+                    already_filtered = True
+                if (ifeature['properties']['event_id'] in result_filtered['check_too_early']):
+                    already_filtered = True
+            else:
+                raise ValueError('read_hfe_json: What kind of file is this?')
+
+            if not(already_filtered):
+
+                tofilter = False
+                start_date = ifeature['properties']['start_date']
+                end_date   = ifeature['properties']['end_date']
+                if (end_date != "") and not(end_date is None):
+
+                    start_datetime = datetime.datetime(int(start_date[0:4]),int(start_date[5:7]),int(start_date[8:10]))
+                    end_datetime = datetime.datetime(int(end_date[0:4]),int(end_date[5:7]),int(end_date[8:10]))
+
+                    if start_datetime > end_datetime:
+                        tofilter = True
+
+                if tofilter:
+                    if file_is_for == 'occurrences':
+                        warnings.warn("read_hfe_json: end_date of feature[uuid={}] is '{}' and this is before start_date '{}'.".format(ifeature['properties']['uuid'],end_date,start_date))
+                        filter_features.append(ifeature['properties']['uuid'])
+                    elif file_is_for == 'events':
+                        warnings.warn("read_hfe_json: end_date of feature[eventid={}] is '{}' and this is before start_date '{}'.".format(ifeature['properties']['event_id'],end_date,start_date))
+                        filter_features.append(ifeature['properties']['event_id'])
+                    else:
+                        raise ValueError('read_hfe_json: What kind of file is this?')
+
+        result_filtered['check_enddate_too_early'] = filter_features
+
+        # check 5. points are within "polygon" if not None
         if not(polygon is None):
 
             lon_poly = np.array(polygon)[:,0]
@@ -366,6 +412,7 @@ def read_hfe_json(filename=None,filtering=False,polygon=None,return_filtered=Fal
         all_filtered += result_filtered['check_keys']
         all_filtered += result_filtered['check_date_format']
         all_filtered += result_filtered['check_too_early']
+        all_filtered += result_filtered['check_enddate_too_early']
         all_filtered += result_filtered['check_outside_polygon']
         all_filtered = np.unique(all_filtered)
 

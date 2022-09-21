@@ -548,6 +548,7 @@ The checks currently applied when \texttt{filtering} is set to True are:
 	\item Required keys are available.
 	\item Start and end dates specified are in format YYYY-MM-DD (not just MM or YYYY, etc.).
 	\item Start date is 1980-01-01 or later. This is the date RDRS-v2.1 becomes available. For events before this date, no data could be retrieved.
+	\item Start date is not before end date (given that end date is specified).
 	\item Points and multipoints are within the specified \texttt{polygon} if specified.
 \end{enumerate}
 
@@ -556,18 +557,20 @@ Table~\ref{tab:HFE_JSON_feautues} shows the number of features available in the 
 \begin{table}
 \begin{tabular}{L{1cm}L{3cm}R{3cm}R{3cm}R{3cm}}
 	\hline
-	&&  no check & check 1-3 & check 1-4 \\
+	&&  no check & check 1-4 & check 1-5 \\
 	&&  \texttt{filtering=False} & \texttt{filtering=True} & \texttt{filtering=True} \\
 	&&                           & \texttt{polygon=None}   & \texttt{polygon=polygon} \\
 	\hline
-	\multicolumn{2}{l}{historical\_flood.json} & 1904 & 1893$^\mathrm{a}$ & 1893$^\mathrm{c}$ \\
-	\multicolumn{2}{l}{historical\_flood\_event.json} & 487 & 368$^\mathrm{b}$ & 368$^\mathrm{c}$\\
+	\multicolumn{2}{l}{historical\_flood.json} & 1904 & 1854$^\mathrm{a}$ & 1854$^\mathrm{c}$ \\
+	\multicolumn{2}{l}{historical\_flood\_event.json} & 487 & 363$^\mathrm{b}$ & 363$^\mathrm{c}$\\
 	\hline
 	\multicolumn{1}{r}{$^\mathrm{a}$ $\ldots$} & \multicolumn{4}{l}{in total, n=11 features are flagged;}\\
 	& \multicolumn{4}{l}{$\curvearrowright$ n=11 due to check \#2 (only year but not date specified)}\\
+	& \multicolumn{4}{l}{$\curvearrowright$ n=39 due to check \#4 (start-date after end-date)}\\
 	\multicolumn{1}{r}{$^\mathrm{b}$ $\ldots$} & \multicolumn{4}{l}{in total, n=119 features are flagged; }\\
 	& \multicolumn{4}{l}{$\curvearrowright$ n=9 due to check \#2 (only year but not date specified)}\\
 	& \multicolumn{4}{l}{$\curvearrowright$ n=110 due to check \#3 (event being before Jan 1, 1980)}\\
+	& \multicolumn{4}{l}{$\curvearrowright$ n=5 due to check \#4 (start-date after end-date)}\\
 	\multicolumn{1}{r}{$^\mathrm{c}$ $\ldots$} & \multicolumn{4}{l}{in total, n=0 features are flagged due to check \#4}\\
 	& \multicolumn{4}{l}{$\curvearrowright$ i.e., all feautures are inside polygon}\\
 	& \multicolumn{4}{l}{$\curvearrowright$ i.e., polygon used to request data from CaSPAr was large enough to cover all events}
