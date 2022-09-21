@@ -12,6 +12,7 @@ doc/*.pdf
 doc/*_timesheet.tex
 doc/presentation_nrcan/*
 doc/figures/slides/*
+doc/figures/*.zip
 doc/HFE_database_2022Q03_meeting_20220915.*
 
 # test-data
@@ -19,4 +20,4 @@ src/test-data/CMC*.grib2
 
 # data that will get downloaded
 data/geomet/*.grib2
-data/caspar/*.nc
+data/caspar/**.nc
