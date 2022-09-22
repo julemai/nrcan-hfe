@@ -62,6 +62,37 @@ conda install -n env-conda-3.8 -c conda-forge pytest
 conda install -n env-conda-3.8 -c conda-forge ipython 
 ```
 
+### D. Setting up a Pythin environment on Compute Canada systems (tested on Graham)
+
+```bash
+cd nrcan-hfe
+mkdir env-3.8
+
+module load netcdf
+module load StdEnv/2020
+module load gcc/9.3.0 gdal/3.0.4
+module load mpi4py
+module load proj
+module load python/3.8
+
+virtualenv --no-download env-3.8
+source env-3.8/bin/activate
+
+pip install --no-index --upgrade pip
+pip install numpy --no-index
+pip install GDAL --no-index
+pip install argparse --no-index
+pip install geopandas --no-index
+pip install netCDF4 --no-index
+pip install scipy --no-index
+pip install xarray --no-index
+pip install pygrib --no-index
+pip install matplotlib --no-index
+pip install ipython --no-index
+
+python -m pip install basemap --no-index
+pip install -U pytest --no-index
+```
 
 ## Testing codes
 
