@@ -590,7 +590,7 @@ Table~\ref{tab:HFE_JSON_feautues} shows the number of features available in the 
 
 \section{Bilinear interpolation}
 
-\textbf{Step Dx:} Interpolate data to specific location.
+\textbf{Step Dx:} a~--~Interpolate data to specific location.
 
 This method is used to extract time series for points defining the flooding event (located within the bounding box used to request data). The raster is interpolated at the flooding event points using bilinear interpolation. The base of this function is \texttt{scipy.interpolate.LinearNDInterpolator} (function \texttt{scipy.interpolate.interp2d} was tested but turned out to be too unstable). If a location is requested that is not available in data, an error is raised. It is recommended to set \texttt{post\_process} to True which will round negative interpolated (precipitation) data to zero unless they are ``too negative''. The latter will raise an error indicating that the interpolation does not seem to work properly.
 
@@ -630,6 +630,48 @@ This method is used to extract time series for points defining the flooding even
 The returned variable \texttt{interpolated\_points} is a dictionary that will contain the attributes \texttt{lat}, \texttt{lon}, and \texttt{var}. The latter will be 2-dimensional with the size of the first dimension being the number of time steps and the size of the second dimension being the number of locations. 
 
 Fig.~\ref{fig:plot_example:bilinear} is showing the result of a bilinear interpolation of two locations over the course of 9 days.
+\pagebreak 
+
+\textbf{Step Dx:} b~--~Plot interpolated data.
+
+The module \texttt{dx\_interpolate\_data} also contains a convenience function to plot the interpolated data using \texttt{plot\_interpolated()} similar to what is shown in the left two panels of Fig.~\ref{fig:plot_example:bilinear}. An example output of the function with highlighting some time steps is shown in Fig.~\ref{fig:plot_example:plot_interpolated}.
+
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.0cm} \= \hspace{7.2cm} \= \kill \\[4pt]
+			\GRAU{\# see module for detailed documentation and example}\\
+			from dx\_interpolate\_data import plot\_interpolated\\
+			\\
+			plots\_interpolated = plot\_interpolated(\\
+			\> \GRAU{\# Mandatory arguments:}\\
+			\> locations=\textit{locations}, \> \GRAU{\# dict containing "lat" as list of }\\
+			\> \> \GRAU{\# latitudes and "lon" as list of }\\
+			\> \> \GRAU{\# longitudes for points }\\
+			\> dates=\textit{dates}, \> \GRAU{\# list of dates "data" are provided for}\\
+			\> data=\textit{data}, \> \GRAU{\# dictionary of data containing "lat", }\\
+			\> \> \GRAU{\# "lon", and "var" (return of }\\
+			\> \> \GRAU{\# "interpolate\_data()")}\\
+			\> start\_date\_buffer=\textit{start\_date\_buffer}, \> \GRAU{\# start date incl. buffer}\\
+			\> end\_date\_buffer=\textit{end\_date\_buffer}, \> \GRAU{\# end date incl. buffer}\\
+			\> pngfile=\textit{pngfile}, \> \GRAU{\# name of PNG file to be created}\\
+			\> \GRAU{\# Optional arguments:}\\
+			\> highlight\_dates\_idx=\textit{highlight\_dates\_idx}, \> \GRAU{\# indexes of timesteps to highlight}\\
+			\> \> \GRAU{\# in plot}\\
+			\> start\_date=\textit{start\_date}, \> \GRAU{\# start date listed in HFE database}\\
+			\> \> \GRAU{\# (only used to plot vertical line)}\\
+			\> end\_date=\textit{end\_date}, \> \GRAU{\# end date listed in HFE database}\\
+			\> \> \GRAU{\# (only used to plot vertical line)}\\
+			\> label=\textit{label}, \> \GRAU{\# custom label to add below plot}\\
+			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
+			\> ) \> 
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+The returned variable \texttt{plots\_interpolated} is a dictionary that will contain the key \texttt{"png"} and its value is a list of the PNG file created. 
 
 \begin{figure}[h!]
 	\centering
@@ -637,6 +679,14 @@ Fig.~\ref{fig:plot_example:bilinear} is showing the result of a bilinear interpo
 	\caption{RDPA (6h total precipitation) around Montreal requested from Geomet (\url{https://api.weather.gc.ca/}) is displayed for nine time steps (Aug 7, 2018 12:00 until Aug 9, 2018 12:00). The nine maps on the right show the spatial distribution of precipitation within the requested bounding box (outline of black rectangle) and beyond. The legend is the same for the nine plots showing maps (see Fig.~\ref{fig:plot_example:legend}). Two locations have been randomly selected and are displayed on the maps as well (black dots). The left two panels show the precipitation rate over time for the center cell that contains the locations (dashed black line) as well as the bilinearily interpolated precipitation rate at the exact location (solid black line). For reference also the other 8 neighboring cells used for the bilinear interpolation are shown (gray lines).}
 	\label{fig:plot_example:bilinear}
 \end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\linewidth]{figures/test-plot-interpolated.png}
+	\caption{Output of function \texttt{plot\_interpolated()} in module \texttt{dx\_interpolate\_data}. Some timesteps of the analysed time period from July 19, 2018 to July 31, 2018 have been specified to be highlighted ("\texttt{highlight\_dates\_idx}"; highlighted in blue color). The sum of those datapoints is 121.90 [mm] which had been passed as a custom label ("\texttt{label}") including the UUID of the feature analyzed.}
+	\label{fig:plot_example:plot_interpolated}
+\end{figure}
+
 \clearpage 
 
 \section{Determine bounding box to process}
@@ -823,6 +873,15 @@ The following examples are to show the dates determined using this function.
 %\textbf{Example 3a:} Dates to retrieve data from RDPA-24h (daily dataset; only available 12:00) without buffer.
 %
 %\textbf{Example 3b:} Dates to retrieve data from RDPA-24h (daily dataset; only available 12:00) with buffer.
+
+\section{Identify precipitation event}
+
+\textbf{Step Gx:} Identify the major precipitation event in a time series between a specified start and end date as well as shortky before and after.
+
+It is assumed that a precipitation time series is provided (\texttt{"data"}) at given dates (\texttt{"dates"}) for a feature (\texttt{"feature"}) as it is stored in the HFE database. The main event will then be identified starting at the start date given in the
+\texttt{"feature"}. A rolling window of a certain length (\texttt{"length\_window\_d"}) will be analyzed. If the accumulated precipitation of the current window is large enough (larger than \texttt{"min\_prec\_window"}), all time steps of the window will be added and the window moved by one timestep (earlier). This is continued until no new time step is added prior to the start date (because the cumulative precipitation is too small, i.e., event start seems to have been found). Then only single time steps (prior to first current index) are checked and added until the first time step smaller than a threshold (\texttt{"min\_prec"}) is detected. This guarantees that the entire onset of the event is added. The same approach is then repeated starting the rolling window with the current
+last detected index (current end of event). After no more indexes are added by using the window, single time steps larger
+than a threshold (\texttt{"min\_prec"}) are added.
 
 \end{document}
 

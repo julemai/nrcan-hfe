@@ -373,14 +373,15 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
 
 
 
-def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None,end_date_buffer=None,highlight_dates_idx=None,pngfile=None,start_date=None,end_date=None,label=None,silent=True):
+def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None,end_date_buffer=None,pngfile=None,highlight_dates_idx=None,start_date=None,end_date=None,label=None,silent=True):
 
     """
         Plot interpolated data.
 
         Definition
         ----------
-        def interpolate_data(var=None,lat=None,lon=None,locations=None, bbox=None,silent=True)
+        def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None,end_date_buffer=None,pngfile=None,
+                              highlight_dates_idx=None,start_date=None,end_date=None,label=None,silent=True)
 
 
         Input           Format         Description
@@ -391,7 +392,7 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
                                        is requested, instead of lists a scalar can be provided
                                        Default: None
 
-        date            list(datetime) List of datetime objects specifying the time the variable ("data") is valid
+        dates           list(datetime) List of datetime objects specifying the time the variable ("data") is valid
                                        for.
                                        Default: None
 
