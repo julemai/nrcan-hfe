@@ -111,7 +111,7 @@ def test_interpolate_caspar():
     variable='RDRS_v2.1_A_PR0_SFC'
     dates=[ datetime.datetime(2018,8,8,15,0) + datetime.timedelta(hours=ii) for ii in range(10) ]
     bbox={"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
-    foldername='test-data/'
+    foldername=dir_path+'/../test-data/'
     lintransform={'a':1000.0,'b':0.0}  # convert from m/h to mm/h
     silent=False
 

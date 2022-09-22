@@ -49,7 +49,7 @@ def test_read_hfe_events():
     # Read flood events (MULTIPOINTS)
     # ------------------------
 
-    filename='../data/hfe/historical_flood_event.json'
+    filename=dir_path+'/../../data/hfe/historical_flood_event.json'
 
     # no filtering; just reading
     data_hfe = read_hfe_json(filename=filename,filtering=False,polygon=None,silent=True)
@@ -70,7 +70,7 @@ def test_read_hfe_occurrences():
     # Read flood occurences (POINTS)
     # ------------------------
 
-    filename='../data/hfe/historical_flood.json'
+    filename=dir_path+'/../../data/hfe/historical_flood.json'
 
     # no filtering; just reading
     data_hfe = read_hfe_json(filename=filename,filtering=False,polygon=None,silent=True)

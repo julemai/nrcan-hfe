@@ -24,7 +24,7 @@ from __future__ import print_function
 
 import numpy as np
 import datetime as datetime
-import scipy as scipy
+import scipy.interpolate
 
 
 __all__ = ['interpolate_data']

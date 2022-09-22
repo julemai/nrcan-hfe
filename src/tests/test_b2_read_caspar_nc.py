@@ -46,7 +46,7 @@ def test_read_caspar_1file():
 
     # Read data (1 file)
 
-    filenames={datetime.datetime(2018, 8, 9, 7, 0): ['test-data/2018080812.nc']}
+    filenames={datetime.datetime(2018, 8, 9, 7, 0): [dir_path+'/../test-data/2018080812.nc']}
 
     data_caspar = read_caspar_nc(variable=variable,filenames=filenames,bbox=bbox,lintransform=lintransform,silent=True)
 
@@ -60,7 +60,7 @@ def test_read_caspar_2files():
 
     # Read data (2 files)
 
-    filenames={datetime.datetime(2018, 8, 9, 7, 0): ['test-data/2018080812.nc'], datetime.datetime(2018, 8, 9, 14, 0): ['test-data/2018080912.nc']}
+    filenames={datetime.datetime(2018, 8, 9, 7, 0): [dir_path+'/../test-data/2018080812.nc'], datetime.datetime(2018, 8, 9, 14, 0): [dir_path+'/../test-data/2018080912.nc']}
 
     data_caspar = read_caspar_nc(variable=variable,filenames=filenames,bbox=bbox,lintransform=lintransform,silent=True)
 
@@ -75,7 +75,7 @@ def test_read_caspar_3files():
 
     # Read data (2 files; no file for third date found)
 
-    filenames={datetime.datetime(2018, 8, 9, 7, 0): ['test-data/2018080812.nc'], datetime.datetime(2018, 8, 9, 14, 0): ['test-data/2018080912.nc'], datetime.datetime(2018, 8, 10, 13, 0): []}
+    filenames={datetime.datetime(2018, 8, 9, 7, 0): [dir_path+'/../test-data/2018080812.nc'], datetime.datetime(2018, 8, 9, 14, 0): [dir_path+'/../test-data/2018080912.nc'], datetime.datetime(2018, 8, 10, 13, 0): []}
 
     data_caspar = read_caspar_nc(variable=variable,filenames=filenames,bbox=bbox,lintransform=lintransform,silent=True)
 

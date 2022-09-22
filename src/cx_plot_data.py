@@ -488,10 +488,10 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
                 bmap = Basemap(projection='merc',area_thresh=2000.,
                         llcrnrlon=llcrnrlon_buf, urcrnrlon=urcrnrlon_buf, llcrnrlat=llcrnrlat_buf, urcrnrlat=urcrnrlat_buf,
                         lat_1=lat_1, lat_2=lat_2, lat_0=lat_0, lon_0=lon_0,
-                        resolution='i') # Lambert conformal
+                        resolution='l') # Lambert conformal
 
                 # plot coastlines
-                bmap.drawcoastlines(linewidth=0.3)
+                #bmap.drawcoastlines(linewidth=0.3)
 
                 #bmap.drawmapboundary(color='black', fill_color=ocean_color, linewidth=0.3)
                 #bmap.drawcountries(color='black', linewidth=0.3)
