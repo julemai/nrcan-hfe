@@ -80,7 +80,7 @@ def identify_precipitation_event(feature=None,product=None,dates=None,data=None,
                                            Default: 2.0 [days]
 
         min_prec_window   float            Minimum precipitation accumulated over rolling window to be considered
-                                           precipitation. Given in [mm] within length_window_d.
+                                           precipitation of event. Given in [mm] within length_window_d.
                                            Default: 3.0 [mm] (over 2.0 days)
 
         min_prec          float            Minimal amount of precipitation to be considered at one time step to be non-zero.

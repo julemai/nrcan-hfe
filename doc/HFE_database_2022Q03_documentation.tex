@@ -876,12 +876,104 @@ The following examples are to show the dates determined using this function.
 
 \section{Identify precipitation event}
 
-\textbf{Step Gx:} Identify the major precipitation event in a time series between a specified start and end date as well as shortky before and after.
+\textbf{Step Gx:} Identify the major precipitation event in a time series between a specified start and end date as well as shortly before and after.
 
 It is assumed that a precipitation time series is provided (\texttt{"data"}) at given dates (\texttt{"dates"}) for a feature (\texttt{"feature"}) as it is stored in the HFE database. The main event will then be identified starting at the start date given in the
 \texttt{"feature"}. A rolling window of a certain length (\texttt{"length\_window\_d"}) will be analyzed. If the accumulated precipitation of the current window is large enough (larger than \texttt{"min\_prec\_window"}), all time steps of the window will be added and the window moved by one timestep (earlier). This is continued until no new time step is added prior to the start date (because the cumulative precipitation is too small, i.e., event start seems to have been found). Then only single time steps (prior to first current index) are checked and added until the first time step smaller than a threshold (\texttt{"min\_prec"}) is detected. This guarantees that the entire onset of the event is added. The same approach is then repeated starting the rolling window with the current
 last detected index (current end of event). After no more indexes are added by using the window, single time steps larger
 than a threshold (\texttt{"min\_prec"}) are added.
+
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.0cm} \= \hspace{6.2cm} \= \kill \\[4pt]
+			\GRAU{\# see module for detailed documentation and example}\\
+			from gx\_identify\_precipitation\_event import identify\_precipitation\_event\\
+			\\
+			time\_idx = identify\_precipitation\_event(\\
+			\> \GRAU{\# Mandatory arguments:}\\
+			\> feature=\textit{feature}, \> \GRAU{\# dict containing feature as obtained }\\
+			\> \> \GRAU{\# from HFE database}\\
+			\> product=\textit{product}, \> \GRAU{\# name of product, e.g., "rdpa:10km:24f"}\\
+			\> \> \GRAU{\# must be one of the following: }\\
+			\> \> \GRAU{\# [ "RDRS\_v2.1", "rdpa:10km:24f", }\\
+			\> \> \GRAU{\# \ \ "rdpa:10km:6f" ]}\\
+			\> dates=\textit{dates}, \> \GRAU{\# list of dates "data" are provided for}\\
+			\> data=\textit{data}, \> \GRAU{\# dictionary of data containing "lat", }\\
+			\> \> \GRAU{\# "lon", and "var" (return of }\\
+			\> \> \GRAU{\# "interpolate\_data()")}\\
+			\> \GRAU{\# Optional arguments:}\\
+			\> length\_window\_d=\textit{length\_window\_d}, \> \GRAU{\# Length of rolling window precipitation }\\
+			\> \> \GRAU{\# is iteratively analyzed for.}\\
+			\> \> \GRAU{\# Given in [days].}\\
+			\> min\_prec\_window=\textit{min\_prec\_window}, \> \GRAU{\# Minimum precipitation accumulated over }\\
+			\> \> \GRAU{\# rolling window to be considered being}\\
+			\> \> \GRAU{\# added to event. }\\
+			\> \> \GRAU{\# Given in [mm] within length\_window\_d.}\\
+			\> min\_prec=\textit{min\_prec}, \> \GRAU{\# Minimal amount of precipitation to be  }\\
+			\> \> \GRAU{\# considered at one time step.  }\\
+			\> \> \GRAU{\# Given in [mm/h].}\\
+			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
+			\> ) \> 
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+The return value \texttt{"time\_idx"} is a list of list of indexes for time steps that should be considered as major precipitation event. The indexes can be applied to \texttt{"dates"} and the time axis of \texttt{"data"}. The list of list of indexes can be helpful to be specified as \texttt{"highlight\_dates\_idx"} in \texttt{plot\_interpolated()}.
+
+The result of three example events that occurred in 2017 comparing data retrieved from Geomet (RDPA-6h) and CaSPAr (RDRS\_v2.1) are shown in Fig.~\ref{fig:plot_example:prec_event_caspar_vs_geomet}.
+
+\begin{figure}[h]
+	\begin{subfigure}[a]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/compare_Geomet_CaSPAr/interpolated_at_stations_occurrence_883_identified-timesteps_RDRS_v2.1.png}
+		\caption{UUID ``34570a42-1daa-4a0e-86ce-e7b8aa680ae6''\\using CaSPAr data (RDRS\_v2.1; 1hr accum.)}
+	\end{subfigure}
+	%\vspace*{0.05\textwidth}
+	%\par\bigskip\bigskip
+	\hspace*{0.05\linewidth}
+	\begin{subfigure}[a]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/compare_Geomet_CaSPAr/interpolated_at_stations_occurrence_883_identified-timesteps_rdpa:10km:6f.png}
+		\caption{UUID ``34570a42-1daa-4a0e-86ce-e7b8aa680ae6''\\using GeoMet data (RDPA; 6hr accum.)}
+	\end{subfigure}
+	\par\bigskip\bigskip
+	%
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/compare_Geomet_CaSPAr/interpolated_at_stations_occurrence_1362_identified-timesteps_RDRS_v2.1.png}
+		\caption{UUID ``bf26f6fa-1cf9-4f9d-93a9-b87a87028e8d''\\using CaSPAr data (RDRS\_v2.1; 1hr accum.)}
+	\end{subfigure}
+	%\vspace*{0.05\textwidth}
+	%\par\bigskip\bigskip
+	\hspace*{0.05\linewidth}
+	\begin{subfigure}[b]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/compare_Geomet_CaSPAr/interpolated_at_stations_occurrence_1362_identified-timesteps_rdpa:10km:6f.png}
+		\caption{UUID ``bf26f6fa-1cf9-4f9d-93a9-b87a87028e8d''\\using GeoMet data (RDPA; 6hr accum.)}
+	\end{subfigure}
+	\par\bigskip\bigskip
+	%
+	\begin{subfigure}[c]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/compare_Geomet_CaSPAr/interpolated_at_stations_occurrence_1756_identified-timesteps_RDRS_v2.1.png}
+		\caption{UUID ``23a381c9-cfbd-4d9a-a4bf-b42373b7dd83''\\using CaSPAr data (RDRS\_v2.1; 1hr accum.)}
+	\end{subfigure}
+	%\vspace*{0.05\textwidth}
+	%\par\bigskip\bigskip
+	\hspace*{0.05\linewidth}
+	\begin{subfigure}[c]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/compare_Geomet_CaSPAr/interpolated_at_stations_occurrence_1756_identified-timesteps_rdpa:10km:6f.png}
+		\caption{UUID ``23a381c9-cfbd-4d9a-a4bf-b42373b7dd83''\\using GeoMet data (RDPA; 6hr accum.)}
+	\end{subfigure}
+	\par\bigskip\bigskip
+	\caption{Three example flood events (rows) that occurred in 2017 from HFE database (historical\_flood.json). The major precipitation has been identified using CaSPAr data (left column) and GeoMet data (right column). The identified for each event (UUID) corresponds to the UUID specified in \texttt{historical\_flood.json}.}
+	\label{fig:plot_example:prec_event_caspar_vs_geomet}
+\end{figure}
+
 
 \end{document}
 
