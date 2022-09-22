@@ -114,4 +114,4 @@ def test_identify_precipitation_event():
 
     assert idx_event         == [[9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]]
     assert len(idx_event[0]) == 20
-    assert sum_prec          == [121.89938715300597]
+    np.testing.assert_almost_equal( sum_prec[0] , 121.89938715300597 )

@@ -41,7 +41,7 @@ def test_read_geomet_1file():
 
     # Read data (1 file)
 
-    filenames = {datetime.datetime(2022, 8, 24, 12, 0): ['test-data/rdpa-6h_2022082412.grib2']}
+    filenames = {datetime.datetime(2022, 8, 24, 12, 0): [dir_path+'/../test-data/rdpa-6h_2022082412.grib2']}
     data_geomet = read_geomet_grib2(filenames)
 
     np.testing.assert_almost_equal( data_geomet["var"][0,0,0:4], [0.09765625, 0.0625, 0.09375, 0.1015625 ] )
@@ -52,7 +52,7 @@ def test_read_geomet_4files():
 
     # Read data (4 files)
 
-    filenames = {datetime.datetime(2022, 8, 24, 0, 0): ['test-data/rdpa-6h_2022082400.grib2'], datetime.datetime(2022, 8, 24, 6, 0): ['test-data/rdpa-6h_2022082406.grib2'], datetime.datetime(2022, 8, 24, 12, 0): ['test-data/rdpa-6h_2022082412.grib2'], datetime.datetime(2022, 8, 24, 18, 0): ['test-data/rdpa-6h_2022082418.grib2']}
+    filenames = {datetime.datetime(2022, 8, 24, 0, 0): [dir_path+'/../test-data/rdpa-6h_2022082400.grib2'], datetime.datetime(2022, 8, 24, 6, 0): [dir_path+'/../test-data/rdpa-6h_2022082406.grib2'], datetime.datetime(2022, 8, 24, 12, 0): [dir_path+'/../test-data/rdpa-6h_2022082412.grib2'], datetime.datetime(2022, 8, 24, 18, 0): [dir_path+'/../test-data/rdpa-6h_2022082418.grib2']}
     data_geomet = read_geomet_grib2(filenames)
 
     np.testing.assert_almost_equal( data_geomet["var"][0,0,0:4], [0.1875, 0.125, 0.34375, 0.21875] )

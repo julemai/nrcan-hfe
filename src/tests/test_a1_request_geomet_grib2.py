@@ -37,6 +37,7 @@ import datetime as datetime
 import pytest
 
 
+
 @pytest.mark.filterwarnings("ignore:request_geomet_grib2")
 def test_request_geomet_1file():
 
@@ -44,10 +45,10 @@ def test_request_geomet_1file():
 
     date = datetime.datetime(2022,8,24,12,0)
     bbox = {"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
-    filename = 'test-data/rdpa-6h'
+    filename = dir_path+'/../test-data/rdpa-6h'
     file_geomet = request_geomet_grib2(product='rdpa:10km:6f',date=date,bbox=bbox,crs='EPSG:4326',filename=filename,overwrite=False)
 
-    assert file_geomet == {datetime.datetime(2022, 8, 24, 12, 0): ['test-data/rdpa-6h_2022082412.grib2']}
+    assert file_geomet == {datetime.datetime(2022, 8, 24, 12, 0): [dir_path+'/../test-data/rdpa-6h_2022082412.grib2']}
 
 @pytest.mark.filterwarnings("ignore:request_geomet_grib2")
 def test_request_geomet_4files():
@@ -56,7 +57,7 @@ def test_request_geomet_4files():
 
     dates = [ datetime.datetime(2022,8,24,0,0) + datetime.timedelta(hours=6*ii) for ii in range(4) ]
     bbox = {"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
-    filename = 'test-data/rdpa-6h'
+    filename = dir_path+'/../test-data/rdpa-6h'
     file_geomet = request_geomet_grib2(product='rdpa:10km:6f',date=dates,bbox=bbox,crs='EPSG:4326',filename=filename,overwrite=False)
 
-    assert file_geomet == {datetime.datetime(2022, 8, 24, 0, 0): ['test-data/rdpa-6h_2022082400.grib2'], datetime.datetime(2022, 8, 24, 6, 0): ['test-data/rdpa-6h_2022082406.grib2'], datetime.datetime(2022, 8, 24, 12, 0): ['test-data/rdpa-6h_2022082412.grib2'], datetime.datetime(2022, 8, 24, 18, 0): ['test-data/rdpa-6h_2022082418.grib2']}
+    assert file_geomet == {datetime.datetime(2022, 8, 24, 0, 0): [dir_path+'/../test-data/rdpa-6h_2022082400.grib2'], datetime.datetime(2022, 8, 24, 6, 0): [dir_path+'/../test-data/rdpa-6h_2022082406.grib2'], datetime.datetime(2022, 8, 24, 12, 0): [dir_path+'/../test-data/rdpa-6h_2022082412.grib2'], datetime.datetime(2022, 8, 24, 18, 0): [dir_path+'/../test-data/rdpa-6h_2022082418.grib2']}
