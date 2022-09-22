@@ -37,6 +37,30 @@ pyenv activate env-3.8.5-nrcan
 pip install -r /path/to/nrcan-hfe/src/requirements.txt
 ```
 
+### C. Using conda
+
+Helpful commands can be found [here](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Syntax on how to install various packages can be found [here](https://anaconda.org/anaconda/xarray) by using search bar to find packages.
+
+```bash
+conda create -n env-conda-3.8 python=3.8
+conda activate env-conda-3.8
+
+conda install -n env-conda-3.8 -c conda-forge gdal 
+conda install -n env-conda-3.8 -c conda-forge argparse
+conda install -n env-conda-3.8 -c conda-forge numpy
+conda install -n env-conda-3.8 -c conda-forge scipy
+conda install -n env-conda-3.8 -c conda-forge geopandas
+conda install -n env-conda-3.8 -c conda-forge netcdf4
+conda install -n env-conda-3.8 -c conda-forge xarray 
+conda install -n env-conda-3.8 -c conda-forge pygrib
+conda install -n env-conda-3.8 -c conda-forge matplotlib
+conda install -n env-conda-3.8 -c conda-forge basemap 
+conda install -n env-conda-3.8 -c conda-forge pytest
+
+# optional
+conda install -n env-conda-3.8 -c conda-forge ipython 
+```
+
 
 ## Testing codes
 
