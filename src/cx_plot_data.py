@@ -485,10 +485,18 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
                 lat_2     =  (llcrnrlat_buf+urcrnrlat_buf)/2  # second "equator"
                 lat_0     =  (llcrnrlat_buf+urcrnrlat_buf)/2  # center of the map
                 lon_0     =  (llcrnrlon_buf+urcrnrlon_buf)/2  # center of the map
-                bmap = Basemap(projection='merc',area_thresh=2000.,
+
+                try:
+                    bmap = Basemap(projection='merc',area_thresh=2000.,
                         llcrnrlon=llcrnrlon_buf, urcrnrlon=urcrnrlon_buf, llcrnrlat=llcrnrlat_buf, urcrnrlat=urcrnrlat_buf,
                         lat_1=lat_1, lat_2=lat_2, lat_0=lat_0, lon_0=lon_0,
-                        resolution='l') # Lambert conformal
+                        resolution='i') # Lambert conformal (lcc), Mercator (merc)
+                except:
+                    bmap = Basemap(projection='merc',area_thresh=2000.,
+                        llcrnrlon=llcrnrlon_buf, urcrnrlon=urcrnrlon_buf, llcrnrlat=llcrnrlat_buf, urcrnrlat=urcrnrlat_buf,
+                        lat_1=lat_1, lat_2=lat_2, lat_0=lat_0, lon_0=lon_0,
+                        resolution='l') # Lambert conformal (lcc), Mercator (merc)
+
 
                 # plot coastlines
                 #bmap.drawcoastlines(linewidth=0.3)

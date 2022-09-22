@@ -32,7 +32,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path+'/../../src')
 
 
-from dx_interpolate_data import interpolate_data
+from dx_interpolate_data import interpolate_data, plot_interpolated
 import numpy as np
 import datetime as datetime
 import pytest
@@ -56,7 +56,7 @@ def test_interpolate_geomet():
     dates = [ datetime.datetime(2022,8,24,12,0) + datetime.timedelta(hours=24*ii) for ii in range(2) ]
 
     # request data
-    filename = '/tmp/pytest_rdpa_10km_6f'
+    filename = '/tmp/pytest_rdpa_10km_24f'
     files_geomet = request_geomet_grib2(product=product,date=dates,bbox=bbox,crs=crs,filename=filename,silent=True)
 
     # read data
@@ -73,10 +73,10 @@ def test_interpolate_geomet():
                                               lon=data_geomet["lon"],
                                               locations=locations,
                                               bbox=bbox,post_process=True,silent=True)
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768641, 2.84033923] )
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,1], [0.03125   , 0.13948481] )
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,2], [0.00104299, 0.0       ] )
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,3], [0.00281244, 0.0       ] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [20.6339361,  2.3831583] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,1], [18.0737082,  0.6571791] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,2], [8.6186519, 0.046875] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,3], [2.559042 , 0.0268747] )
 
     # 1 location (as list) ; w/ post-process (negative values set to zero)
     locations = {"lat":[45.25], "lon":[-73.5]}
@@ -85,7 +85,7 @@ def test_interpolate_geomet():
                                               lon=data_geomet["lon"],
                                               locations=locations,
                                               bbox=bbox,post_process=True,silent=True)
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768641, 2.84033923] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [20.6339361,  2.3831583] )
 
     # 1 location (as scalar) ; w/ post-process (negative values set to zero)
     locations = {"lat":45.25, "lon":-73.5}
@@ -94,7 +94,7 @@ def test_interpolate_geomet():
                                               lon=data_geomet["lon"],
                                               locations=locations,
                                               bbox=bbox,post_process=True,silent=True)
-    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [0.06768641, 2.84033923] )
+    np.testing.assert_almost_equal( interpolate_geomet['var'][:,0], [20.6339361,  2.3831583] )
 
 
 @pytest.mark.filterwarnings("ignore:request_caspar_nc")
@@ -152,3 +152,42 @@ def test_interpolate_caspar():
     # interpolate_caspar = interpolate_data(var=data_caspar["var"],lat=data_caspar["lat"],lon=data_caspar["lon"],locations=locations,
     #                                            bbox=bbox,return_tmp=False,post_process=True,silent=True)
     # np.testing.assert_almost_equal( interpolate_caspar['var'][:4,0], [0., 0., 0., 0.] )
+
+
+@pytest.mark.filterwarnings("ignore:request_geomet_grib2")
+def test_plot_interpolated():
+
+    # --------------------------------------
+    # Request and read data from Geomet
+    # --------------------------------------
+
+    from a1_request_geomet_grib2 import request_geomet_grib2
+    from b1_read_geomet_grib2 import read_geomet_grib2
+
+    product = 'rdpa:10km:6f'
+    crs = 'EPSG:4326'
+    bbox = {"lat":{"min":45.0,"max":46.0},"lon":{"min":-74.0,"max":-73.0}}
+
+    # four dates 6h apart from each other
+    dates = [ datetime.datetime(2022,8,24,12,0) + datetime.timedelta(hours=6*ii) for ii in range(4) ]
+
+    # request data
+    filename = '/tmp/pytest_rdpa_10km_6f'
+    files_geomet = request_geomet_grib2(product=product,date=dates,bbox=bbox,crs=crs,filename=filename,silent=True)
+
+    # read data
+    data_geomet = read_geomet_grib2(files_geomet,silent=True)
+
+    # --------------------------------------
+    # Interpolate data from Geomet
+    # --------------------------------------
+
+    # 4 locations ; w/ post-process (negative values set to zero)
+    locations = {"lat":[45.25,45.5,45.75,45.75], "lon":[-73.5,-73.5,-73.5,-73.75]}
+    interpolate_geomet = interpolate_data(    var=data_geomet["var"],
+                                              lat=data_geomet["lat"],
+                                              lon=data_geomet["lon"],
+                                              locations=locations,
+                                              bbox=bbox,post_process=True,silent=True)
+    filenames = plot_interpolated(locations=locations, dates=dates, data=interpolate_geomet, start_date_buffer=dates[0], end_date_buffer=dates[-1], pngfile='/tmp/test-interpolate-data.png',silent=True)
+    assert np.all( filenames['png']    == ['/tmp/test-interpolate-data.png'] )
