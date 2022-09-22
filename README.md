@@ -56,7 +56,6 @@ conda install -n env-conda-3.8 -c conda-forge pygrib
 conda install -n env-conda-3.8 -c conda-forge matplotlib
 conda install -n env-conda-3.8 -c conda-forge basemap
 conda install -n env-conda-3.8 -c conda-forge basemap-data-hires
-conda install -c conda-forge basemap-data-hires
 conda install -n env-conda-3.8 -c conda-forge pytest
 
 # optional
