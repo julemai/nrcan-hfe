@@ -87,5 +87,6 @@ python cx_plot_data.py
 python dx_interpolate_data.py 
 python ex_determine_bbox.py 
 python fx_determine_dates.py 
+python gx_identify_precipitation_event.py
 ```
 
