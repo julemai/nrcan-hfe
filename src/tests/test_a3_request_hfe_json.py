@@ -33,6 +33,7 @@ sys.path.append(dir_path+'/../../src')
 
 from a3_request_hfe_json import request_hfe_json
 import pytest
+from pathlib import Path
 
 
 @pytest.mark.filterwarnings("ignore:request_hfe_json")
@@ -41,4 +42,5 @@ def test_request_hfe():
     jsonfilebase = dir_path+'/../../data/hfe/historical_flood'
     file_hfe = request_hfe_json(filename=None, jsonfilebase=jsonfilebase,silent=False)
 
-    assert file_hfe == {'json': [dir_path+'/../../data/hfe/historical_flood.json', dir_path+'/../../data/hfe/historical_flood.json']}
+    assert str(Path(file_hfe['json'][0])) == str(Path(dir_path+'/../../data/hfe/historical_flood.json'))
+    assert str(Path(file_hfe['json'][1])) == str(Path(dir_path+'/../../data/hfe/historical_flood_event.json'))

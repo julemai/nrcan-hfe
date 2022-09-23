@@ -68,11 +68,9 @@ conda install -n env-conda-3.8 -c conda-forge ipython
 cd nrcan-hfe
 mkdir env-3.8
 
-module load netcdf
-module load StdEnv/2020
-module load gcc/9.3.0 gdal/3.0.4
-module load mpi4py
-module load proj
+module purge
+module load StdEnv/2020 netcdf gcc/9.3.0 gdal/3.0.4
+module load mpi4py proj
 module load python/3.8
 
 virtualenv --no-download env-3.8
