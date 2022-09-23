@@ -296,7 +296,7 @@ def identify_precipitation_event(feature=None,product=None,dates=None,data=None,
             add_prec = np.sum(ivar[idx_search])
             if (add_prec > min_prec_window):
 
-                #print("   --> adding cluster before: ",add_prec,"(date = ",np.array(idate_wbuffer)[idx_search],")")
+                if not(silent): print("   --> A1: adding cluster before: ",add_prec,"(date = ",np.array(idate_wbuffer)[idx_search],")")
 
                 # update variables (add all tested time steps)
                 idx_dates_loc = list(np.unique( list(idx_search) + idx_dates_loc ))
@@ -320,7 +320,7 @@ def identify_precipitation_event(feature=None,product=None,dates=None,data=None,
 
                 add_prec = ivar[idx_search]
 
-                #print("   --> adding single before: ",add_prec,"(date = ",idate_wbuffer[idx_search],")")
+                if not(silent): print("   --> A2: adding single before: ",add_prec,"(date = ",idate_wbuffer[idx_search],")")
 
                 # update variables (add single tested time steps)
                 idx_dates_loc = list(np.unique( [ idx_search ] + idx_dates_loc ))
@@ -338,7 +338,7 @@ def identify_precipitation_event(feature=None,product=None,dates=None,data=None,
 
             add_prec = ivar[idx_search]
 
-            #print("   --> adding single before more: ",add_prec,"(date = ",np.array(idate_wbuffer)[idx_search],")")
+            if not(silent): print("   --> A3: adding single before more: ",add_prec,"(date = ",np.array(idate_wbuffer)[idx_search],")")
 
             # update variables (add single tested time steps)
             idx_dates_loc = list(np.unique( [ idx_search ] + idx_dates_loc ))
@@ -358,7 +358,7 @@ def identify_precipitation_event(feature=None,product=None,dates=None,data=None,
             add_prec = np.sum(ivar[idx_search])
             if (add_prec > min_prec_window):
 
-                #print("   --> adding cluster after: ",add_prec,"(date = ",idate_wbuffer[idx_search],")")
+                if not(silent): print("   --> B1: adding cluster after: ",add_prec,"(date = ",idate_wbuffer[idx_search],")")
 
                 # update variables (add all tested time steps)
                 idx_dates_loc = list(np.unique( idx_dates_loc + list(idx_search) ))
@@ -382,7 +382,7 @@ def identify_precipitation_event(feature=None,product=None,dates=None,data=None,
 
                 add_prec = ivar[idx_search]
 
-                #print("   --> adding single after: ",add_prec,"(date = ",idate_wbuffer[idx_search],")")
+                if not(silent): print("   --> B2: adding single after: ",add_prec,"(date = ",idate_wbuffer[idx_search],")")
 
                  # update variables (add single tested time steps)
                 idx_dates_loc = list(np.unique( idx_dates_loc + [ idx_search ] ))
@@ -394,6 +394,17 @@ def identify_precipitation_event(feature=None,product=None,dates=None,data=None,
 
                 # no new non-negative value found --> stop search
                 stop_search = True
+
+        # (C) Cleanup; go once again through first and last time steps and remove all that might be almost zero
+        #     This happens if A2 and B2 are actually not performed but
+        while (ivar[idx_dates_loc[0]]/(dt/60/60.) <= min_prec):
+            remove_idx = idx_dates_loc.pop(0)
+            if not(silent): print("   --> C1: remove_idx because close-to-zero = ",remove_idx)
+
+        while (ivar[idx_dates_loc[-1]]/(dt/60/60.) <= min_prec):
+            remove_idx = idx_dates_loc.pop(-1)
+            if not(silent): print("   --> C2: remove_idx because close-to-zero = ",remove_idx)
+
 
         highlight_dates_idx.append(idx_dates_loc)
 
