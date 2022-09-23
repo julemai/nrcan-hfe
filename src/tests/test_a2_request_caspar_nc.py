@@ -35,7 +35,7 @@ sys.path.append(dir_path+'/../../src')
 from a2_request_caspar_nc import request_caspar_nc
 import datetime as datetime
 import pytest
-
+from pathlib import Path
 
 @pytest.mark.filterwarnings("ignore:request_caspar_nc")
 def test_request_caspar():
@@ -47,7 +47,7 @@ def test_request_caspar():
 
     file_caspar = request_caspar_nc(product=product,variable=variable,date=date,foldername=foldername,silent=True)
 
-    assert file_caspar[date[0]] == [dir_path+'/../test-data/2018080812.nc']
-    assert file_caspar[date[1]] == [dir_path+'/../test-data/2018080812.nc']
-    assert file_caspar[date[2]] == [dir_path+'/../test-data/2018080912.nc']
+    assert str(Path(file_caspar[date[0]][0])) == str(Path(dir_path+'/../test-data/2018080812.nc'))
+    assert str(Path(file_caspar[date[1]][0])) == str(Path(dir_path+'/../test-data/2018080812.nc'))
+    assert str(Path(file_caspar[date[2]][0])) == str(Path(dir_path+'/../test-data/2018080912.nc'))
     assert file_caspar[date[3]] == []
