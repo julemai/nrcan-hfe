@@ -22,9 +22,20 @@ from __future__ import print_function
 # along with The NRCan-HFE code library.
 # If not, see <https://github.com/julemai/nrcan-hfe/blob/main/LICENSE>.
 
+# -----------------------
+# add subolder scripts/lib to search path
+# -----------------------
+import sys
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(dir_path+'/../../src')
+
+
+
 import numpy as np
 import datetime as datetime
 import warnings
+import json as json
 
 from a1_request_geomet_grib2 import request_geomet_grib2
 from a2_request_caspar_nc import request_caspar_nc
@@ -52,7 +63,7 @@ ifeatures    = [     873, 1092, 1098, 1139, 1140, 1174, 1200, 1211, 1247, 1248,
 #ifeatures    = [    1140  ]
 #ifeatures    = [     875  ]   # needs addition of time step one before
 #ifeatures    = [    1200  ]   # has missing time steps (2019-07-03T06 and 2019-07-06T12) but not in highlighted domain
-ifeatures    = [    1277  ]   # has missing time steps (2019-07-03T06 and 2019-07-06T12) but     in highlighted domain
+#ifeatures    = [    1277  ]   # has missing time steps (2019-07-03T06 and 2019-07-06T12) but     in highlighted domain
 #ifeatures    = [    1512  ]   # has missing time steps (2019-07-03T06 and 2019-07-06T12) but all at the end
 
 # ifeatures    = [     794, 883, 932, 936, 963, 965, 1008, 1009, 1036, 1043, 1054,
@@ -60,7 +71,7 @@ ifeatures    = [    1277  ]   # has missing time steps (2019-07-03T06 and 2019-0
 #                     1737, 1756 ]   # 2017 features
 
 #ifeatures    = range(1854)
-#ifeatures    = range(3)
+ifeatures    = range(3)
 
 bbox_buffer  = 0.5
 dates_buffer = [5.0,5.0]
@@ -187,16 +198,23 @@ for iifeature,ifeature in enumerate(ifeatures):
         file_geomet = request_geomet_grib2(product=product,date=date,bbox=bbox,crs=crs,filename=filename,overwrite=overwrite,silent=silent)
 
         nfiles = len(file_geomet)
+        missing_dates_perc   = (len(date) - nfiles) *100. / len(date)
+        missing_dates_n      = (len(date) - nfiles)
+
         print("   Number of Geomet files downloaded: {}".format(nfiles))
-        print("   Number of Geomet files missing:    {}".format(len(date) - nfiles))
+        print("   Number of Geomet files missing:    {} ({} %)".format(missing_dates_n,missing_dates_perc))
 
     elif (product == 'RDRS_v2.1'):
 
         variable = 'RDRS_v2.1_A_PR0_SFC'
-        file_caspar = request_caspar_nc(product=product,variable=variable,date=date,foldername='../data/caspar/rdrs_v2.1/',silent=False)
+        foldername = dir_path+'/../data/caspar/rdrs_v2.1/'
+        print(">>>>  ",foldername)
+        file_caspar = request_caspar_nc(product=product,variable=variable,date=date,foldername=foldername,silent=False)
 
         #nfiles = len(file_caspar)
         nfiles = len(np.unique([item for sublist in [ list(file_caspar[ff]) for ff in file_caspar ] for item in sublist ]))
+        missing_dates_perc = (len(date) - nfiles) *100. / len(date)
+        missing_dates_n    = (len(date) - nfiles)
         print("   Number of CaSPAr files required: {}".format(nfiles))
 
     else:
@@ -294,6 +312,44 @@ for iifeature,ifeature in enumerate(ifeatures):
                           )
     print("\n\nPlotted: \n  ",file_interpolated['png'])
 
+    # --------------------
+    # Save data that we will need to augment the HFE database
+    # --------------------
+    print("\n\nSave results as JSON:")
+
+    ilocation = 0
+
+    # find if there are gaps in the highlighted interval
+    dates_all = determine_dates(
+        start_date=dates[np.sort(highlight_dates_idx[ilocation])][0],
+        end_date=dates[np.sort(highlight_dates_idx[ilocation])][-1],
+        product=product,
+        dates_buffer=[0.0,0.0],
+        silent=True)
+    missing_dates_n = len(dates_all) - len(dates[highlight_dates_idx[ilocation]])
+    available_dates_n = len(dates[highlight_dates_idx[ilocation]])
+    missing_dates_perc = missing_dates_n*100./len(dates_all)
+    available_dates_perc = available_dates_n*100./len(dates_all)
+
+    results_dict = {}
+    results_dict['accumulated_mm']        = round(sum_prec[ilocation],2)
+    results_dict['start_date_w_buffer']   = str(date[0])
+    results_dict['end_date_w_buffer']     = str(date[-1])
+    results_dict['missing_dates_n']       = missing_dates_n
+    results_dict['missing_dates_%']       = round(missing_dates_perc,2)
+    results_dict['available_dates_n']     = available_dates_n
+    results_dict['available_dates_%']     = round(available_dates_perc,2)
+    results_dict['available_dates']       = [ str(idate) for idate in dates[highlight_dates_idx[ilocation]] ]
+
+    results_dict['data_source'] = product
+
+    jsonfile = '/tmp/tmp/analyse_occurrence_'+str(ifeature)+'/interpolated_at_stations_occurrence_'+str(ifeature)+'_identified-timesteps_'+product+'.json'
+    json_dump = json.dumps(results_dict)
+    ff = open(jsonfile, "w")
+    ff.write(json_dump)
+    ff.close()
+
+    print("Saved: \n  ",jsonfile)
 
 
     # # --------------------
