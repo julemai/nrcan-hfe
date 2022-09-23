@@ -90,7 +90,7 @@ def request_hfe_json(filename=None, jsonfilebase=None,silent=True):
         >>> jsonfilebase = '../data/hfe/historical_flood'
         >>> file_hfe = request_hfe_json(filename=None, jsonfilebase=jsonfilebase,silent=True)
         >>> print('file_hfe = '+str(file_hfe))
-        file_hfe = {'json': ['../data/hfe/historical_flood.json', '../data/hfe/historical_flood.json']}
+        file_hfe = {'json': ['../data/hfe/historical_flood.json', '../data/hfe/historical_flood_event.json']}
 
 
         License
@@ -138,7 +138,7 @@ def request_hfe_json(filename=None, jsonfilebase=None,silent=True):
         if not(silent): print('Checked file {}.'.format(filename_occurrence))
         filenames['json'].append(str(filename_occurrence))
 
-    filename_event = Path(jsonfilebase+'.json')
+    filename_event = Path(jsonfilebase+'_event.json')
     if filename_event.exists():
         if not(silent): print('Checked file {}.'.format(filename_event))
         filenames['json'].append(str(filename_event))
