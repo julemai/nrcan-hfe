@@ -2,6 +2,9 @@
 
 **.pyc
 
+# init script on Graham
+init.sh
+
 # doc
 doc/*.aux
 doc/*.log
