@@ -51,8 +51,8 @@ def request_hfe_json(filename=None, jsonfilebase=None,silent=True):
                                            File 1: <jsonfilebase>.json
                                            File 2: <jsonfilebase>_event.json
 
-        silent          Boolean        If set to True, nothing will be printed to terminal.
-                                       Default: True
+        silent          Boolean         If set to True, nothing will be printed to terminal.
+                                        Default: True
 
 
         Output          Format          Description
