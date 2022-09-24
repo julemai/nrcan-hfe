@@ -432,16 +432,22 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
         ilocation = 0
 
         # find if there are gaps in the highlighted interval
-        dates_all = determine_dates(
-            start_date=dates[np.sort(highlight_dates_idx[ilocation])][0],
-            end_date=dates[np.sort(highlight_dates_idx[ilocation])][-1],
-            product=product,
-            dates_buffer=[0.0,0.0],
-            silent=True)
-        missing_dates_n = len(dates_all) - len(dates[highlight_dates_idx[ilocation]])
-        available_dates_n = len(dates[highlight_dates_idx[ilocation]])
-        missing_dates_perc = missing_dates_n*100./len(dates_all)
-        available_dates_perc = available_dates_n*100./len(dates_all)
+        if len(highlight_dates_idx[ilocation]) > 0:
+            dates_all = determine_dates(
+                start_date=dates[np.sort(highlight_dates_idx[ilocation])][0],
+                end_date=dates[np.sort(highlight_dates_idx[ilocation])][-1],
+                product=product,
+                dates_buffer=[0.0,0.0],
+                silent=True)
+            missing_dates_n = len(dates_all) - len(dates[highlight_dates_idx[ilocation]])
+            available_dates_n = len(dates[highlight_dates_idx[ilocation]])
+            missing_dates_perc = missing_dates_n*100./len(dates_all)
+            available_dates_perc = available_dates_n*100./len(dates_all)
+        else:
+            missing_dates_n = 0
+            available_dates_n = 0
+            missing_dates_perc = 0.0
+            available_dates_perc = 0.0
 
         results_dict = {}
         results_dict['accumulated_mm']        = round(sum_prec[ilocation],2)

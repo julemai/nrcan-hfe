@@ -677,13 +677,14 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
             else:
                 ilabel = ""
 
-            # set all missing values to 0.0 such that fill-between looks appropriate (i.e., fill under step-plot)
-            tmp = data_all['var'][np.min(highlight_dates_idx_all[ilocation]):np.max(highlight_dates_idx_all[ilocation])+1,ilocation]/timedelta
-            tmp[tmp.mask] = 0.0
+            if len(highlight_dates_idx_all[ilocation]) > 0:
+                # set all missing values to 0.0 such that fill-between looks appropriate (i.e., fill under step-plot)
+                tmp = data_all['var'][np.min(highlight_dates_idx_all[ilocation]):np.max(highlight_dates_idx_all[ilocation])+1,ilocation]/timedelta
+                tmp[tmp.mask] = 0.0
 
-            sub.fill_between(    dates_all[np.min(highlight_dates_idx_all[ilocation]):np.max(highlight_dates_idx_all[ilocation])+1],
-                                 tmp,
-                                 color=ocean_color, step="pre", interpolate=True,alpha=0.4,linewidth=1.0*lwidth,linestyle='-',zorder=50, label=ilabel)
+                sub.fill_between(    dates_all[np.min(highlight_dates_idx_all[ilocation]):np.max(highlight_dates_idx_all[ilocation])+1],
+                                     tmp,
+                                     color=ocean_color, step="pre", interpolate=True,alpha=0.4,linewidth=1.0*lwidth,linestyle='-',zorder=50, label=ilabel)
 
     # -------------------------------------------------------------------------
     # Format date axis

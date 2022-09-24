@@ -397,11 +397,11 @@ def identify_precipitation_event(feature=None,product=None,dates=None,data=None,
 
         # (C) Cleanup; go once again through first and last time steps and remove all that might be almost zero
         #     This happens if A2 and B2 are actually not performed but
-        while (ivar[idx_dates_loc[0]]/(dt/60/60.) <= min_prec):
+        while (len(idx_dates_loc) > 0) and (ivar[idx_dates_loc[0]]/(dt/60/60.) <= min_prec):
             remove_idx = idx_dates_loc.pop(0)
             if not(silent): print("   --> C1: remove_idx because close-to-zero = ",remove_idx)
 
-        while (ivar[idx_dates_loc[-1]]/(dt/60/60.) <= min_prec):
+        while (len(idx_dates_loc) > 0) and (ivar[idx_dates_loc[-1]]/(dt/60/60.) <= min_prec):
             remove_idx = idx_dates_loc.pop(-1)
             if not(silent): print("   --> C2: remove_idx because close-to-zero = ",remove_idx)
 
