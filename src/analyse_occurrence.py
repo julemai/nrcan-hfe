@@ -442,21 +442,23 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
             available_dates_n = len(dates[highlight_dates_idx[ilocation]])
             missing_dates_perc = missing_dates_n*100./len(dates_all)
             available_dates_perc = available_dates_n*100./len(dates_all)
+            available_timesteps_precip_mm = { str(dates[idx]):round(interpolated_data['var'][idx,ilocation],2) for idx in highlight_dates_idx[ilocation] }
         else:
             missing_dates_n = 0
             available_dates_n = 0
             missing_dates_perc = 0.0
             available_dates_perc = 0.0
+            available_timesteps_precip_mm = {}
 
         results_dict = {}
-        results_dict['accumulated_mm']        = round(sum_prec[ilocation],2)
-        results_dict['start_date_w_buffer']   = str(date[0])
-        results_dict['end_date_w_buffer']     = str(date[-1])
-        results_dict['missing_timesteps_n']   = missing_dates_n
-        results_dict['missing_timesteps_%']   = round(missing_dates_perc,2)
-        results_dict['available_timesteps_n'] = available_dates_n
-        results_dict['available_timesteps_%'] = round(available_dates_perc,2)
-        results_dict['available_timesteps_precip_mm/dt']   = { str(dates[idx]):round(interpolated_data['var'][idx,ilocation],2) for idx in highlight_dates_idx[ilocation] }
+        results_dict['accumulated_mm']                   = round(sum_prec[ilocation],2)
+        results_dict['start_date_w_buffer']              = str(date[0])
+        results_dict['end_date_w_buffer']                = str(date[-1])
+        results_dict['missing_timesteps_n']              = missing_dates_n
+        results_dict['missing_timesteps_%']              = round(missing_dates_perc,2)
+        results_dict['available_timesteps_n']            = available_dates_n
+        results_dict['available_timesteps_%']            = round(available_dates_perc,2)
+        results_dict['available_timesteps_precip_mm/dt'] = available_timesteps_precip_mm
 
         results_dict['data_source'] = product
 
@@ -552,3 +554,7 @@ if __name__ == '__main__':
     files_produced = analyse_occurrence(ifeatures=ifeatures,tmpdir=tmpdir,bbox_buffer=bbox_buffer,dates_buffer=dates_buffer,silent=silent)
 
     print("\n\nAll files produced = ",files_produced)
+
+
+    # for example, run for all Geomet features:
+    # python analyse_occurrence.py --ifeatures "873, 1092, 1098, 1139, 1140, 1174, 1200, 1211, 1247, 1248, 1249, 1270, 1277, 1278, 1293, 1298, 1434, 1446, 1457, 1465, 1512, 1558, 1564, 1646, 1647, 1648, 1651, 1658, 1759, 1794" --bbox_buffer 0.5 --dates_buffer 5.0,5.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
