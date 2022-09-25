@@ -1034,7 +1034,7 @@ The return value \texttt{"files\_created"} is a dictionary of files created. It 
 			\GRAU{\# Call of Python workflow}\\
 			python analyse\_occurrence.py --ifeatures "\$\{features\}" \textbackslash \\
 			\> --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/" \textbackslash \\
-			\> --bbox\_buffer 0.5 --dates\_buffer 2.0,2.0 \\
+			\> --bbox\_buffer 0.5 --dates\_buffer 2.0,2.0 --silent\\
 			\\
 			\GRAU{\# with:}\\
 			\\
@@ -1058,6 +1058,7 @@ The return value \texttt{"files\_created"} is a dictionary of files created. It 
 			\> \> \GRAU{\# precipitation data prior to and after flooding}\\
 			\> \> \GRAU{\# event; needs to be non-negative; unit: days}\\
 			\> \> \GRAU{\# example: "3.0,1.0"}\\
+			\> --silent \> \GRAU{\# if given, no printing on screen}\\
 		\end{tabbing}
 	\end{ttfont}
 	\vspace*{-0.3cm}
