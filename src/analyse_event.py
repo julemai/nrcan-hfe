@@ -462,8 +462,8 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
 
 
 if __name__ == '__main__':
-    import doctest
-    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
+    # import doctest
+    # doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
 
 
     ifeatures     = ['316']
