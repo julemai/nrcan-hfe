@@ -28,6 +28,7 @@ import glob as glob
 import datetime as datetime
 from pathlib import Path
 import xarray as xr
+import json as json
 
 __all__ = ['request_caspar_nc']
 
@@ -163,6 +164,8 @@ def request_caspar_nc(product=None,variable=None,date=None,foldername='/tmp/test
     if date is None:
         raise ValueError("request_caspar_nc: date(s) need(s) to be specified")
 
+    # initialize return
+    filenames = {}
 
     # make sure date input is always list
     date_was_string = False
@@ -171,34 +174,64 @@ def request_caspar_nc(product=None,variable=None,date=None,foldername='/tmp/test
         date_was_string = True
     date = np.sort(date)
 
-    # make sure all files contain specified product
-    filenames = np.sort( glob.glob(foldername+'*.nc') )
-    for filename in filenames:
+    # check content of NetCDFs in specified folder
+    # --> since this can take ages when there is lots of files in this folder, this is done once and results saved in a JSON
+    # --> if this JSON is found only read results
 
-        ds = xr.open_dataset(filename)
-        iproduct = ds.attrs['product']
-        if iproduct != product:
-            raise ValueError("request_caspar_nc: file {} does not contain specified product {}.".format(filename,product))
+    # all NetCDF files in specified folder
+    ncfiles = np.sort( glob.glob(foldername+'/*.nc') )
 
-        ds.close()
+    # check-file with filenames and available time steps in each file (only created when not existing --> saving lots of time)
+    jsonfile = foldername+'/check_summary.json'
 
-    # gather all time steps available in all files
-    filenames = np.sort( glob.glob(foldername+'*.nc') )
-    avail_dates = {}
-    for filename in filenames:
+    if not( Path(jsonfile).is_file() ):
 
-        ds = xr.open_dataset(filename)
-        time_datetime64 = ds['time'].data   # type is "datetime64[ns]"
-        time_datetime   = [ datetime.datetime.strptime(str(dd).split('.')[0],'%Y-%m-%dT%H:%M:%S') for dd in time_datetime64 ]   # type is "datetime.datetime"
+        # make sure all files contain specified product
+        for ncfile in ncfiles:
 
-        avail_dates[filename] = time_datetime
-        ds.close()
+            ds = xr.open_dataset(ncfile)
+            iproduct = ds.attrs['product']
+            if iproduct != product:
+                raise ValueError("request_caspar_nc: file {} does not contain specified product {}.".format(ncfile,product))
 
-    # go through all dates and collect file containing required time step and variable
+            ds.close()
+
+        # gather all time steps available in all files
+        avail_dates = {}
+        for ncfile in ncfiles:
+
+            ds = xr.open_dataset(ncfile)
+            time_datetime64 = ds['time'].data   # type is "datetime64[ns]"
+            time_datetime   = [ datetime.datetime.strptime(str(dd).split('.')[0],'%Y-%m-%dT%H:%M:%S') for dd in time_datetime64 ]   # type is "datetime.datetime"
+
+            avail_dates[ncfile] = time_datetime
+            ds.close()
+
+        # save in JSON (no datetime objects)
+        avail_dates_JSON = { ii:[str(iii) for iii in avail_dates[ii]] for ii in avail_dates }
+        json_dump = json.dumps(avail_dates_JSON)
+        ff = open(jsonfile, "w")
+        ff.write(json_dump)
+        ff.close()
+
+    with open(jsonfile, 'r') as ff:
+        avail_dates_JSON = json.load(ff)
+
+    # make str into datetime again
+    avail_dates = { ii:[datetime.datetime.strptime(iii,'%Y-%m-%d %H:%M:%S') for iii in avail_dates_JSON[ii]] for ii in avail_dates_JSON }
+
+    # checking if information for all files in folder exists
+    # if not, the check-file might be outdated
+    all_files_in_checkfile = list(avail_dates.keys())
+    if not( np.all([ ifile in ncfiles for ifile in all_files_in_checkfile ]) ):
+        raise ValueError("request_caspar_nc: files in check-file '{}' is not consistent with files found in folder '{}'.\nYou should update the check-file by deleting '{}' and re-running this script. This way the file will be recreated. Be aware that this might take a few minutes if there are lots of NetCDF files located in folder '{}'.".format(jsonfile,foldername,jsonfile,foldername))
+
+
+    # return only filenames for requested dates
     filenames = { idate : [ avail_date for avail_date in avail_dates if idate in avail_dates[avail_date] ] for idate in date }
 
     # check if all lists of filenames are empty
-    if np.sum([ len(filenames[filename]) for filename in filenames ]) == 0:
+    if np.sum([ len(filenames[idate]) for idate in filenames ]) == 0:
         raise ValueError("request_caspar_nc: No file was found. The foldername '{}' is probably wrong or data have not been manually requested from CaSPAr yet.".format(foldername))
 
     return filenames
