@@ -314,7 +314,6 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
 
             variable = 'RDRS_v2.1_A_PR0_SFC'
             foldername = str(Path(dir_path).parent)+'/data/caspar/rdrs_v2.1/'
-            print(">>>>  ",foldername)
             file_caspar = request_caspar_nc(product=product,variable=variable,date=date,foldername=foldername,silent=False)
 
             #nfiles = len(file_caspar)
@@ -379,7 +378,7 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
         interpolated_data = interpolate_data(var=var,lat=lat,lon=lon,locations=locations,bbox=bbox,post_process=True,silent=True)
 
         sum_prec = np.sum(interpolated_data['var'],axis=0)
-        if not(silent): print("   Sum of precipitation [mm] at all {} locations over the time period evaluated: {}".format(nlocations,sum_prec))
+        if not(silent): print("   Sum of precipitation [mm] at all {} locations over the time period evaluated: {}".format(nlocations,np.round(sum_prec,2)))
 
         # # plot interpolated data w/o highlighted time steps
         # pngfile = str(Path(tmpdir+'/analyse_occurrence_'+str(ifeature)+'/occurrence_'+str(ifeature)+'_'+product.replace(":","-")+'_no-highlight.png'))
@@ -405,7 +404,7 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
         highlight_dates_idx = identify_precipitation_event(feature=feature,product=product,dates=dates,data=interpolated_data,length_window_d=2,min_prec_window=3.0,min_prec=0.001,silent=True)
 
         sum_prec = [ np.sum(interpolated_data['var'][highlight_dates_idx[ilocation],ilocation]) for ilocation in range(nlocations) ]
-        if not(silent): print("   Sum of precipitation [mm] at all {} locations over the time period identified: {}".format(nlocations,sum_prec))
+        if not(silent): print("   Sum of precipitation [mm] at all {} locations over the time period identified: {}".format(nlocations,np.round(sum_prec,2)))
 
         # plot interpolated data w/ highlighted time steps
         pngfile = str(Path(tmpdir+'/analyse_occurrence_'+str(ifeature)+'/occurrence_'+str(ifeature)+'_'+product.replace(":","-")+'.png'))
@@ -522,7 +521,8 @@ if __name__ == '__main__':
     ifeatures     = ['873,1092']
     tmpdir        = ['/tmp/']
     bbox_buffer   = ['0.5']
-    dates_buffer  = ['1.0,1.0']
+    dates_buffer  = ['5.0,5.0']
+    silent        = False
     parser        = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
                                             description='''Analyse single-point feature(s) (occurrence) from HFE database.''')
     parser.add_argument('-i', '--ifeatures', action='store',
@@ -537,16 +537,18 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dates_buffer', action='store',
                         default=dates_buffer, dest='dates_buffer', metavar='dates_buffer', nargs=1,
                         help='Buffer of time period around feature start and end date. Given in [days] (default: "5.0,5.0").')
+    parser.add_argument('-s', '--silent', action='store_true', default=silent, dest="silent",
+                        help="If set nothing will be printed to terminal. Default: false.")
 
     args          = parser.parse_args()
     ifeatures     = [ int(ii) for ii in args.ifeatures[0].split(',') ]
     tmpdir        = args.tmpdir[0]
     bbox_buffer   = float(args.bbox_buffer[0])
     dates_buffer  = [ float(ii) for ii in args.dates_buffer[0].split(',') ]
+    silent        = args.silent
 
     del parser, args
 
-    silent = False # set to False if yiou want to follow the processing with some interesting information plotted
     files_produced = analyse_occurrence(ifeatures=ifeatures,tmpdir=tmpdir,bbox_buffer=bbox_buffer,dates_buffer=dates_buffer,silent=silent)
 
     print("\n\nAll files produced = ",files_produced)
