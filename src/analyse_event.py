@@ -166,6 +166,7 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
     result['png'] = []
     result['gif'] = []
     result['legend'] = []
+    result['json'] = []
 
     # # all features
     # ifeatures = range(363)
@@ -416,7 +417,7 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
         var          = data["var"][min_tidx:max_tidx+1]
         lat          = data["lat"]
         lon          = data["lon"]
-        dates        = data["time"][min_tidx:max_tidx+1]
+        dates_event  = data["time"][min_tidx:max_tidx+1]
         png          = True
         gif          = True
         legend       = True
@@ -425,7 +426,7 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
         basefilename = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+feature['properties']['event_id']+'_'+product.replace(":","-")))
         overwrite    = False
 
-        plots_data = plot_data(var=var,lat=lat,lon=lon,date=dates,
+        plots_data = plot_data(var=var,lat=lat,lon=lon,date=dates_event,
                                    png=png,
                                    gif=gif,
                                    legend=legend,
@@ -453,6 +454,61 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
         result['png'].append(plots_data['png'])
         result['gif'].append(plots_data['gif'])
         result['legend'].append(plots_data['legend'])
+
+
+        # --------------------
+        # Save data that we will need to augment the HFE database
+        # --------------------
+        if not(silent): print("\n\nSave results as JSON:")
+
+        missing_dates_n = []
+        available_dates_n = []
+        missing_dates_perc = []
+        available_dates_perc = []
+        available_timesteps_precip_mm = []
+        for ilocation in range(nlocations):
+
+            # find if there are gaps in the highlighted interval
+            if len(highlight_dates_idx[ilocation]) > 0:
+                dates_all = determine_dates(
+                    start_date=dates[np.sort(highlight_dates_idx[ilocation])][0],
+                    end_date=dates[np.sort(highlight_dates_idx[ilocation])][-1],
+                    product=product,
+                    dates_buffer=[0.0,0.0],
+                    silent=True)
+                missing_dates_n.append( len(dates_all) - len(dates[highlight_dates_idx[ilocation]]) )
+                available_dates_n.append( len(dates[highlight_dates_idx[ilocation]]) )
+                missing_dates_perc.append( missing_dates_n[-1]*100./len(dates_all) )
+                available_dates_perc.append( available_dates_n[-1]*100./len(dates_all) )
+                available_timesteps_precip_mm.append( { str(dates[idx]): round(interpolated_data['var'][idx,ilocation],2) for idx in highlight_dates_idx[ilocation] } )
+            else:
+                missing_dates_n.append( 0 )
+                available_dates_n.append( 0 )
+                missing_dates_perc.append( 0.0 )
+                available_dates_perc.append( 0.0 )
+                available_timesteps_precip_mm.append( {} )
+
+        results_dict = {}
+        results_dict['accumulated_mm']                   = list(np.round(sum_prec,2))
+        results_dict['start_date_w_buffer']              = str(date[0])
+        results_dict['end_date_w_buffer']                = str(date[-1])
+        results_dict['missing_timesteps_n']              = list(missing_dates_n)
+        results_dict['missing_timesteps_%']              = list(np.round(missing_dates_perc,2))
+        results_dict['available_timesteps_n']            = list(available_dates_n)
+        results_dict['available_timesteps_%']            = list(np.round(available_dates_perc,2))
+        results_dict['available_timesteps_precip_mm/dt'] = available_timesteps_precip_mm
+
+        results_dict['data_source'] = product
+
+        jsonfile = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+str(ifeature)+'_'+product.replace(":","-")+'.json'))
+        jsonfile = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+feature['properties']['event_id']+'_'+product.replace(":","-")+'.json'))
+        json_dump = json.dumps(results_dict)
+        ff = open(jsonfile, "w")
+        ff.write(json_dump)
+        ff.close()
+
+        if not(silent): print("Saved: \n  ",jsonfile)
+        result['json'].append([jsonfile])
 
     return result
 
@@ -500,3 +556,7 @@ if __name__ == '__main__':
     files_produced = analyse_event(ifeatures=ifeatures,tmpdir=tmpdir,bbox_buffer=bbox_buffer,dates_buffer=dates_buffer,silent=silent)
 
     print("\n\nAll files produced = ",files_produced)
+
+
+    # for example, run for all Geomet features:
+    # python analyse_event.py --ifeatures "0, 1, 62, 168, 173, 178, 179, 192, 202, 210, 215, 240, 241, 245, 247, 277, 283, 294, 316, 339" --bbox_buffer 0.5 --dates_buffer 5.0,5.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
