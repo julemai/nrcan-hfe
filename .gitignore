@@ -25,3 +25,4 @@ data/caspar/rdrs_v2.1/*.nc
 
 # outputs
 data/output/analyse_occurrence_*
+data/output/analyse_event_*
