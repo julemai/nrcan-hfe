@@ -22,347 +22,481 @@ from __future__ import print_function
 # along with The NRCan-HFE code library.
 # If not, see <https://github.com/julemai/nrcan-hfe/blob/main/LICENSE>.
 
+# -----------------------
+# add subolder scripts/lib to search path
+# -----------------------
+import sys
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(dir_path+'/../../src')
+
+
+
 import numpy as np
 import datetime as datetime
 import warnings
+import json as json
+import argparse
+from pathlib import Path
 
 from a1_request_geomet_grib2 import request_geomet_grib2
 from a2_request_caspar_nc import request_caspar_nc
 from b1_read_geomet_grib2 import read_geomet_grib2
+from b2_read_caspar_nc import read_caspar_nc
 from b3_read_hfe_json import read_hfe_json
 
 from cx_plot_data import plot_data
-from dx_interpolate_data import interpolate_data
+from dx_interpolate_data import interpolate_data, plot_interpolated
 from ex_determine_bbox import determine_bbox
 from fx_determine_dates import determine_dates
-
-
-def plot_interpolated(locations=None,dates=None,data=None,pngfile=None,start_date=None,end_date=None):
-
-    # checking inputs
-    if (locations is None):
-        raise ValueError("plot_interpolated: location needs to be specified")
-    if (dates is None):
-        raise ValueError("plot_interpolated: dates needs to be specified")
-    if (data is None):
-        raise ValueError("plot_interpolated: data needs to be specified")
-    if (pngfile is None):
-        raise ValueError("plot_interpolated: pngfile needs to be specified")
-
-    import matplotlib as mpl
-    import matplotlib.pyplot as plt
-
-
-    # -------------------------------------------------------------------------
-    # create plot
-    # -------------------------------------------------------------------------
-
-    # plot settings
-    textsize    = 12          # standard text size
-    lwidth      = 1.5         # linewidth
-    alwidth     = 1.0         # axis line width
-    dpi         = 100         # dpi=100 --> filesize 220kB, dpi=600 --> filesize 1.8MB
-    ifig        = 0           # initialize counter
-    transparent = False
-    bbox_inches = 'tight'
-    pad_inches  = 0.035
-    mpl.use('Agg') # set directly after import matplotlib
-    mpl.rc('figure', figsize=(8.27,11.69)) # a4 portrait
-    mpl.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-    mpl.rc('text.latex') #, unicode=True)
-    mpl.rc('savefig', dpi=dpi, format='png')
-    mpl.rc('font', size=textsize)
-    mpl.rc('lines', linewidth=lwidth, color='black')
-    mpl.rc('axes', linewidth=alwidth, labelcolor='black')
-    mpl.rc('path', simplify=False) # do not remove
-
-    llxbbox     = 0.5         # x-anchor legend bounding box
-    llybbox     = 1.0        # y-anchor legend bounding box
-    llrspace    = 0.25        # spacing between rows in legend
-    llcspace    = 1.0         # spacing between columns in legend
-    llhtextpad  = 0.8         # the pad between the legend handle and text
-    llhlength   = 1.5         # the length of the legend handles
-    frameon     = False       # if True, draw a frame around the legend. If None, use rc
-
-    # colors (gathered from reference legend created by Geomet)
-    # e.g., run the following request and extract colors:
-    # "https://geo.weather.gc.ca/geomet?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYERS=RDPA.6F_PR&STYLES=RDPA-WXO&CRS=EPSG:4326&BBOX=45,-74,46,-73&WIDTH=400&HEIGHT=400&FORMAT=image/png"
-    ocean_color = (151/256., 183/256., 224/256.)
-    colors = [
-        '#ffffff', #   0.00           - white
-        '#98cbfe', #   0.10 -    0.50 - light blue
-        '#0098fe', #   0.50 -    1.00 - medium blue
-        '#222cff', #   1.00 -    2.50 - dark blue
-        '#00fe65', #   2.50 -    5.00 - light green
-        '#00cb00', #   5.00 -    7.50 - medium green
-        '#009800', #   7.50 -   10.00 - green
-        '#006500', #  10.00 -   15.00 - dark green
-        '#fefe32', #  15.00 -   20.00 - yellow
-        '#fecb00', #  20.00 -   25.00 - light orange
-        '#fe9800', #  25.00 -   30.00 - orange
-        '#fe6500', #  30.00 -   40.00 - dark orange
-        '#fe0000', #  40.00 -   50.00 - red
-        '#fe0098', #  50.00 -   75.00 - pink
-        '#9832cb', #  75.00 -  100.00 - light purple
-        '#650098', # 100.00 -  150.00 - purple
-        '#989898'  # 150.00 -  250.00 - gray
-        ]
-    cmap = mpl.colors.ListedColormap(colors)
-    bounds = [ 0.00, 0.10, 0.50, 1.00, 2.50, 5.00, 7.50, 10.00, 15.00, 20.00, 25.00, 30.00, 40.00, 50.00, 75.00, 100.00, 150.00, 250.00]
-    norm = mpl.colors.BoundaryNorm(bounds, len(colors))
+from gx_identify_precipitation_event import identify_precipitation_event
 
 
 
-    # -------------------------------------------------------------------------
-    # Create figure object
-    # -------------------------------------------------------------------------
-    ifig += 1
-    iplot = 0
-    print('     Plot - Fig ', ifig, ' ::  ',pngfile)
-    fig = plt.figure(ifig)
 
-    # -------------------------------------------------------------------------
-    # Create line plots on figure
-    # -------------------------------------------------------------------------
+__all__ = ['analyse_event']
 
-    sub    = fig.add_axes( [0.0,0.0,1.0,0.25] )  # [left, bottom, width, height]
-
-    # 6h accumlations --> for stepwise plot divide by this value
-    timedelta = (dates[1]-dates[0]).seconds/60/60
-
-    label = [ "Loc #"+str(iloc+1)+"  ("+str(locations["lat"][iloc])+","+str(locations["lon"][iloc])+")" for iloc in range(len(locations["lat"])) ]
-    sub.step(dates,data['var']/timedelta,color='0.4',linewidth=1.0*lwidth,linestyle='-',zorder=100) #label=label,
-
-    xmin, xmax = sub.get_xlim()
-    ymin, ymax = sub.get_ylim()
-
-    # -------------------------------------------------------------------------
-    # Plot some vertical lines to visualize time period requested (incl. buffer) and start and end date of event
-    # -------------------------------------------------------------------------
-    sub.plot([dates[0],dates[0]],[ymin,ymax],label='Start date incl. buffer',color='0.8',linewidth=1.0*lwidth,linestyle='--',zorder=50)
-
-    if not(start_date is None):
-        sub.plot([start_date,start_date],[ymin,ymax],label='Event start date',color='0.8',linewidth=1.0*lwidth,linestyle='dotted',zorder=50)
-    if not(end_date is None):
-        sub.plot([end_date,end_date],[ymin,ymax],label='Event end date',color='0.8',linewidth=1.0*lwidth,linestyle='dotted',zorder=50)
-
-    sub.plot([dates[-1],dates[-1]],[ymin,ymax],label='End date incl. buffer',color='0.8',linewidth=1.0*lwidth,linestyle='--',zorder=50)
-
-    # -------------------------------------------------------------------------
-    # Format date axis
-    # -------------------------------------------------------------------------
-    import matplotlib.dates as mdates
-    from matplotlib.ticker import FormatStrFormatter
-    myFmt = mdates.DateFormatter("%d %h\n%H:%M")
-    sub.xaxis.set_major_formatter(myFmt)
-    sub.yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
-
-    # -------------------------------------------------------------------------
-    # Label on axes
-    # -------------------------------------------------------------------------
-    plt.setp(sub,  ylabel="Precipitation Rate [mm h$^{-1}$]")   # [mm/6h]
-
-    # -------------------------------------------------------------------------
-    # plot legend
-    # -------------------------------------------------------------------------
-    ll = sub.legend(frameon=frameon, ncol=4,
-                            labelspacing=llrspace, handletextpad=llhtextpad, handlelength=llhlength,
-                            loc='lower center', bbox_to_anchor=(llxbbox,llybbox), scatterpoints=1, numpoints=1,
-                            fontsize = 'small')
-
-    # -------------------------------------------------------------------------
-    # Done.
-    # -------------------------------------------------------------------------
-
-    fig.savefig(pngfile, transparent=transparent, bbox_inches=bbox_inches, pad_inches=pad_inches)
-    plt.close(fig)
+def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.0,5.0],silent=True):
+    """
+        Analyses multi-point feature (event) of HFE database.
 
 
-# --------------------
-# SPECIFICS OF WHAT TO ANALYSE
-# --------------------
-ifeature     = 320 # starts 2020-11-30 (using Geomet data)
-bbox_buffer  = 0.5
-dates_buffer = [1.0,2.0]
-
-# --------------------
-# Load HFE database
-# --------------------
-print("\n\nReading HFE database")
-
-# ignore warnings produced
-warnings.filterwarnings("ignore", category=UserWarning, message='b3_read_hfe_json')
-
-filename        = '../data/hfe/historical_flood_event.json'
-filtering       = True
-polygon         = None
-return_filtered = False
-silent          = True
-
-data_hfe = read_hfe_json(filename=filename,filtering=filtering,polygon=polygon,return_filtered=return_filtered,silent=silent)
-nfeatures = len(data_hfe['data']['features'])
-print("   Number of flood occurrences/events found: {}".format(nfeatures))
-
-# for iidate,idata in enumerate(data_hfe['data']['features']):
-#     print(iidate, idata['properties']['start_date'])
-
-# --------------------
-# Pick one event/occurrence
-# --------------------
-if ifeature >= nfeatures or ifeature < 0:
-    raise ValueError("Feature needs to be between {} and {}.".format(0,nfeatures))
-print("\n\nAnalysing event #{}:".format(ifeature))
-
-feature = data_hfe['data']['features'][ifeature]
-start_date = datetime.datetime(int(feature['properties']['start_date'][0:4]),int(feature['properties']['start_date'][5:7]),int(feature['properties']['start_date'][8:10]),0,0)
-if not(feature['properties']['end_date'] is None):
-    end_date = datetime.datetime(int(feature['properties']['end_date'][0:4]),int(feature['properties']['end_date'][5:7]),int(feature['properties']['end_date'][8:10]),0,0)
-else:
-    end_date = None
-
-print("   Type: {}\n   Number of locations: {}\n   OBJECTID: {}\n   Start: {}\n   End: {}\n   Cause: {}".format(
-    feature['geometry']['type'],
-    len(feature['geometry']['coordinates']),
-    feature['properties']['OBJECTID'],
-    feature['properties']['start_date'],
-    feature['properties']['end_date'],
-    feature['properties']['flood_cause'],
-    ))
-
-# --------------------
-# Determine bounding box
-# --------------------
-print("\n\nDetermine parameters for data requests:")
-
-silent      = True
-
-bbox = determine_bbox(feature=feature,bbox_buffer=bbox_buffer,silent=silent)
-print("   bbox : {}".format(bbox))
+        Definition
+        ----------
+        analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.0,5.0])
 
 
-# --------------------------------------
-# Determine time steps for rdpa:10km:6f
-# --------------------------------------
-if (start_date - datetime.datetime(1980,1,1)).days < 0:
-    raise ValueError("analyse_event: start date is '{}' which is before 1980-01-01 which is when precip data will become available".format(
-        feature['properties']['start_date']))
-elif (start_date - datetime.datetime(2018,1,1)).days < 0:
-    product  = 'RDRS_v2.1'
-else:
-    product  = 'rdpa:10km:6f'
-silent       = True
+        Input           Format          Description
+        -----           -----           -----------
+        ifeatures       list(int)       List of indexes of feature(s) to analyse.
+                                        Numbering starts with 0.
+                                        Default: None
 
-date = determine_dates(feature=feature,product=product,dates_buffer=dates_buffer,silent=silent)
-print("   date : [ {}, {}, ..., {}, {} ] (in total {} time steps)".format(date[0], date[1],date[-2],date[-1],len(date)))
+        tmpdir          string          Name of folder where outputs will be stored.
+                                        Default: /tmp/
+
+        bbox_buffer     float           Buffer around points specified (in degree). If set to zero, points will be on
+                                        edge/vertex of bounding box. If set to positive value, points will be truly
+                                        located within the bounding box with at least "bbox_buffer" distance to an
+                                        edge/vertex. Negative values for bbox_buffer are not allowed.
+                                        Values are in [degree].
+                                        Default: 0.5
+
+        dates_buffer   [float,float]    Buffer around period [start_date,end_date] specified (in days). The earliest timesteps
+                                        that will be returned will be "start_date-dates_buffer[0]" while the latest
+                                        timestep returned will be "end_date+dates_buffer[1]".
+                                        Values are in [days].
+                                        Negative values of dates_buffer are not allowed.
+                                        Default: [3.0,1.0]
+
+        silent          Boolean         If set to True, nothing will be printed to terminal.
+                                        Default: True
 
 
-# --------------------
-# Request data
-# --------------------
-print("\n\nRequest data:")
+        Output          Format          Description
+        -----           -----           -----------
+        {json}          dict            Dictionary of files that are produced. Has keys 'png' and 'json'.
 
-if (product == 'rdpa:10km:6f') or (product == 'rdpa:10km:24f'):
+
+        Description
+        -----------
+        The function summarizes the workflow to analyse multi-point events (events) for the HFE database, i.e.,
+        "historical_flood_event.json". The user needs to specify a feature index (or several). The other arguments are optional and
+        set to default values.
+
+
+        Restrictions
+        ------------
+        None.
+
+
+        Examples
+        --------
+
+        >>> # Analyse events
+
+        >>> files_event = analyse_event(ifeatures=[316],tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.0,5.0],silent=True)
+        >>> print("files_event['png'] = "+str(files_event['png'][0][0]))
+        files_event['png'] = /tmp/analyse_event_316/event_dbae8959-f2e0-4bdc-a5d6-84007dec140c_rdpa-10km-6f_2020112900.png
+        >>> print("files_event['png'] = "+str(files_event['png'][0][-1]))
+        files_event['png'] = /tmp/analyse_event_316/event_dbae8959-f2e0-4bdc-a5d6-84007dec140c_rdpa-10km-6f_2020120718.png
+        >>> print("files_event['legend'] = "+str(files_event['legend'][0][0]))
+        files_event['legend'] = /tmp/analyse_event_316/event_dbae8959-f2e0-4bdc-a5d6-84007dec140c_rdpa-10km-6f_legend.png
+        >>> print("files_event['gif'] = "+str(files_event['gif'][0][0]))
+        files_event['gif'] = /tmp/analyse_event_316/event_dbae8959-f2e0-4bdc-a5d6-84007dec140c_rdpa-10km-6f.gif
+        >>> print("files_event['png-ts'] = "+str(files_event['png-ts'][0][0]))
+        files_event['png-ts'] = /tmp/analyse_event_316/event_dbae8959-f2e0-4bdc-a5d6-84007dec140c_rdpa-10km-6f.png
+
+
+
+        License
+        -------
+        This file is part of the HFE code library for NRCan for "Improving the
+        characterization of the flood-producing precipitation events in the
+        Historic Flood Event (HFE) database by using the CaPA reanalysis/analysis".
+
+        The NRCan-HFE code library is free software: you can redistribute it and/or modify
+        it under the terms of the GNU Lesser General Public License as published by
+        the Free Software Foundation, either version 2.1 of the License, or
+        (at your option) any later version.
+
+        The NRCan-HFE code library is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+        GNU Lesser General Public License for more details.
+
+        You should have received a copy of the GNU Lesser General Public License
+        along with The NRCan-HFE code library.
+        If not, see <https://github.com/julemai/nrcan-hfe/blob/main/LICENSE>.
+
+        Copyright 2022 Juliane Mai - juliane.mai@uwaterloo.ca
+
+
+        History
+        -------
+        Written,  Juliane Mai, September 2022
+    """
+
+    if ifeatures is None:
+        raise ValueError("analyse_event: List of feature index(es), i.e., ifeatures, must be specified.")
+
+    # initialize return
+    result = {}
+    result['png-ts'] = []
+    result['png'] = []
+    result['gif'] = []
+    result['legend'] = []
+
+    # # all features
+    # ifeatures = range(363)
+
+    # # all GEOMET
+    # ifeatures = [0, 1, 62, 168, 173, 178, 179, 192, 202, 210, 215, 240, 241, 245, 247, 277, 283, 294, 316, 339]
+
+    # --------------------
+    # Load HFE database
+    # --------------------
+    if not(silent): print("\n\nReading HFE database")
 
     # ignore warnings produced
-    warnings.filterwarnings("ignore", category=UserWarning, message='request_geomet_grib2')
+    warnings.filterwarnings("ignore", category=UserWarning, message='read_hfe_json')
 
-    filename  = '/tmp/tmp/analyse_event_'+str(ifeature)+'/geomet'
-    crs       = 'EPSG:4326'
-    overwrite = False
-    silent    = True
-    file_geomet = request_geomet_grib2(product=product,date=date,bbox=bbox,crs=crs,filename=filename,overwrite=overwrite,silent=silent)
+    filename        = str(Path(dir_path).parent)+'/data/hfe/historical_flood_event.json'
+    filtering       = True
+    polygon         = None
+    return_filtered = False
 
-    nfiles = len(file_geomet)
-    print("   Number of Geomet files downloaded: {}".format(nfiles))
-    print("   Number of Geomet files missing:    {}".format(len(date) - nfiles))
+    data_hfe = read_hfe_json(filename=filename,filtering=filtering,polygon=polygon,return_filtered=return_filtered,silent=True)
+    nfeatures = len(data_hfe['data']['features'])
+    if not(silent): print("   Number of flood occurrences/events found: {}".format(nfeatures))
 
-elif (product == 'RDRS_v2.1'):
+    all_files_nc = {}
+    for iifeature,ifeature in enumerate(ifeatures):
 
-    file_caspar = request_caspar_nc( )
+        if not(silent): print("\n\n")
+        if not(silent): print("--------------------------------")
+        if not(silent): print("Working on feature {} ({} of {})".format(ifeature,iifeature+1,len(ifeatures)))
+        if not(silent): print("--------------------------------")
+        if not(silent): print("\n\n")
 
-    nfiles = 0
-    print("   Number of CaSPAr files downloaded: {}".format(nfiles))
+        # --------------------
+        # Pick one event/occurrence
+        # --------------------
+        if ifeature >= nfeatures or ifeature < 0:
+            raise ValueError("Feature needs to be between {} and {}.".format(0,nfeatures))
 
-else:
+        feature = data_hfe['data']['features'][ifeature]
+        start_date = datetime.datetime(int(feature['properties']['start_date'][0:4]),int(feature['properties']['start_date'][5:7]),int(feature['properties']['start_date'][8:10]),0,0)
+        if not(feature['properties']['end_date'] is None):
+            end_date = datetime.datetime(int(feature['properties']['end_date'][0:4]),int(feature['properties']['end_date'][5:7]),int(feature['properties']['end_date'][8:10]),0,0)
+        else:
+            end_date = None
 
-    raise ValueError("analyse_event: product not known")
+        if feature['geometry']['type'] == 'Point':
+            nlocations = 1
+        else:
+            nlocations = len(feature['geometry']['coordinates'])
 
+        if not(silent):
+            print("   Type: {}\n   Number of locations: {}\n   OBJECTID: {}\n   Start: {}\n   End: {}\n   Cause: {}".format(
+                feature['geometry']['type'],
+                nlocations,
+                feature['properties']['OBJECTID'],
+                feature['properties']['start_date'],
+                feature['properties']['end_date'],
+                feature['properties']['flood_cause'],
+                ))
 
-# --------------------
-# Read data
-# --------------------
-print("\n\nRead data:")
+        if not(feature['properties']['end_date'] is None):
+            length_event = (end_date-start_date).days+(end_date-start_date).seconds/60./60./24.
+            if (length_event > 90.):
+                print("Event will NOT be analysed because it is TOO LONG:")
+                print(">>> Length event {} (idx={}): {} [days]".format(
+                    feature['properties']['event_id'],
+                    ifeature,
+                    length_event))
+                return result
 
-if (product == 'rdpa:10km:6f'):
+        # --------------------
+        # Determine bounding box
+        # --------------------
+        if not(silent): print("\n\nDetermine parameters for data requests:")
 
-    lintransform = {'a':1.0,'b':0.0}
-    silent       = True
-    data = read_geomet_grib2(filenames=file_geomet,lintransform=lintransform,silent=silent)
-
-    ntime = np.shape(data['var'])[0]
-    nlat = np.shape(data['lat'])[0]
-    nlon = np.shape(data['lon'])[1]
-    print("   Number of time steps read: {}".format(ntime))
-    print("   Number of latitudes  read: {}".format(nlat))
-    print("   Number of longitudes read: {}".format(nlon))
-
-elif (product == 'RDRS_v2.1'):
-
-    file_caspar = read_caspar_nc( )   # TODO
-
-    nfiles = 0
-    print("   Number of CaSPAr files downloaded: {}".format(nfiles))
-
-else:
-
-    raise ValueError("analyse_event: product not known")
-
-
-
-# --------------------
-# Interpolate data at all locations of event
-# --------------------
-print("\n\nInterpolate data:")
-
-
-locations = {'lon':np.array(feature['geometry']['coordinates'])[:,0],'lat':np.array(feature['geometry']['coordinates'])[:,1]}
-var       = data["var"]
-lat       = data["lat"]
-lon       = data["lon"]
-interpolated_data = interpolate_data(var=var,lat=lat,lon=lon,locations=locations,bbox=bbox,post_process=True,silent=True)
-print("   Sum of precipitation [mm] at all {} locations over the time period evaluated: {}".format(len(locations['lon']),np.sum(interpolated_data['var'],axis=0)))
-
-plot_interpolated(locations,date,interpolated_data,pngfile='/tmp/tmp/analyse_event_'+str(ifeature)+'/interpolated_at_stations.png',start_date=start_date,end_date=end_date)
+        bbox = determine_bbox(feature=feature,bbox_buffer=bbox_buffer,silent=True)
+        if not(silent): print("   bbox : {}".format(bbox))
 
 
+        # --------------------------------------
+        # Determine time steps for rdpa:10km:6f
+        # --------------------------------------
+        if (start_date - datetime.datetime(1980,1,1)).days < 0:
+            raise ValueError("analyse_event: start date is '{}' which is before 1980-01-01 which is when precip data will become available".format(
+                feature['properties']['start_date']))
+        elif (start_date - datetime.datetime(2018,1,1)).days < 0:
+            product  = 'RDRS_v2.1'
+            # if not(silent): print(">>>> CASPAR: ",ifeature)
+        else:
+            product  = 'rdpa:10km:6f'
+            # if not(silent): print(">>>> GEOMET: ",ifeature)
 
-# --------------------
-# Plot data
-# --------------------
-print("\n\nPlot data:")
+        if feature['properties']['end_date'] is None:
+            # if there is no end-date make end buffer a bit larger
+            date = determine_dates(feature=feature,product=product,dates_buffer=list(np.array(dates_buffer)+[0.0,3.0]),silent=True)
+        else:
+            date = determine_dates(feature=feature,product=product,dates_buffer=dates_buffer,silent=True)
+        if not(silent): print("   date : [ {}, {}, ..., {}, {} ] (in total {} time steps)".format(date[0], date[1],date[-2],date[-1],len(date)))
 
-var          = data["var"]
-lat          = data["lat"]
-lon          = data["lon"]
-date         = data["time"]
-png          = True
-gif          = True
-legend       = True
-cities       = True
-basefilename = '/tmp/tmp/analyse_event_'+str(ifeature)+'/plot_event_'+str(ifeature)
-overwrite    = False
-silent       = True
+        # --------------------
+        # Request data
+        # --------------------
+        if not(silent): print("\n\nRequest data:")
 
-plots_data = plot_data(var=var,lat=lat,lon=lon,date=date,
-                           png=png,
-                           gif=gif,
-                           legend=legend,
-                           cities=cities,
-                           bbox=bbox,
-                           basefilename=basefilename,
-                           overwrite=overwrite,
-                           silent=silent)
+        if (product == 'rdpa:10km:6f') or (product == 'rdpa:10km:24f'):
 
-print("   Number of PNGs    plotted: {}".format(len(plots_data['png'])))
-print("   Number of GIFs    plotted: {}".format(len(plots_data['gif'])))
-print("   Number of Legends plotted: {}".format(len(plots_data['legend'])))
+            # ignore warnings produced
+            warnings.filterwarnings("ignore", category=UserWarning, message="request_geomet_grib2: File '.*' already exists. Will not be downloaded again.")
+
+            filename  = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/geomet'))
+            crs       = 'EPSG:4326'
+            overwrite = False
+            file_geomet = request_geomet_grib2(product=product,date=date,bbox=bbox,crs=crs,filename=filename,overwrite=overwrite,silent=True)
+
+            nfiles = len(file_geomet)
+            missing_dates_perc   = (len(date) - nfiles) *100. / len(date)
+            missing_dates_n      = (len(date) - nfiles)
+
+            if not(silent): print("   Number of Geomet files downloaded: {}".format(nfiles))
+            if not(silent): print("   Number of Geomet files missing:    {} ({} %)".format(missing_dates_n,missing_dates_perc))
+
+        elif (product == 'RDRS_v2.1'):
+
+            variable = 'RDRS_v2.1_A_PR0_SFC'
+            foldername = str(Path(dir_path).parent)+'/data/caspar/rdrs_v2.1/'
+            file_caspar = request_caspar_nc(product=product,variable=variable,date=date,foldername=foldername,silent=False)
+
+            #nfiles = len(file_caspar)
+            nfiles = len(np.unique([item for sublist in [ list(file_caspar[ff]) for ff in file_caspar ] for item in sublist ]))
+            missing_dates_perc = (len(date) - nfiles) *100. / len(date)
+            missing_dates_n    = (len(date) - nfiles)
+            if not(silent): print("   Number of CaSPAr files required: {}".format(nfiles))
+
+        else:
+
+            raise ValueError("analyse_event: product not known")
+
+
+        # --------------------
+        # Read data
+        # --------------------
+        if not(silent): print("\n\nRead data:")
+
+        if (product == 'rdpa:10km:6f'):
+
+            lintransform = {'a':1.0,'b':0.0}
+            data = read_geomet_grib2(filenames=file_geomet,lintransform=lintransform,silent=True)
+
+            ntime = np.shape(data['var'])[0]
+            nlat = np.shape(data['lat'])[0]
+            nlon = np.shape(data['lon'])[1]
+            if not(silent): print("   Number of time steps read: {}".format(ntime))
+            if not(silent): print("   Number of latitudes  read: {}".format(nlat))
+            if not(silent): print("   Number of longitudes read: {}".format(nlon))
+
+        elif (product == 'RDRS_v2.1'):
+
+            lintransform = {'a':1000.0,'b':0.0}
+            data = read_caspar_nc(variable=variable,filenames=file_caspar,bbox=bbox,lintransform=lintransform,silent=True)
+
+            ntime = np.shape(data['var'])[0]
+            nlat = np.shape(data['lat'])[0]
+            nlon = np.shape(data['lon'])[1]
+            if not(silent): print("   Number of time steps read: {}".format(ntime))
+            if not(silent): print("   Number of latitudes  read: {}".format(nlat))
+            if not(silent): print("   Number of longitudes read: {}".format(nlon))
+
+        else:
+
+            raise ValueError("analyse_event: product not known")
+
+
+
+        # --------------------
+        # Interpolate data at all locations of event
+        # --------------------
+        if not(silent): print("\n\nInterpolate data:")
+
+        if feature['geometry']['type'] == 'Point':
+            locations = {'lon':np.array([feature['geometry']['coordinates'][0]]),'lat':np.array([feature['geometry']['coordinates'][1]])}
+        else:
+            locations = {'lon':np.array(feature['geometry']['coordinates'])[:,0],'lat':np.array(feature['geometry']['coordinates'])[:,1]}
+        nlocations = len(locations['lon'])
+        var       = data["var"]
+        lat       = data["lat"]
+        lon       = data["lon"]
+        dates     = data["time"]
+        interpolated_data = interpolate_data(var=var,lat=lat,lon=lon,locations=locations,bbox=bbox,post_process=True,silent=True)
+
+        sum_prec = np.sum(interpolated_data['var'],axis=0)
+        if not(silent): print("   Sum of precipitation [mm] at all {} locations over the time period evaluated: {}".format(nlocations,np.round(sum_prec,2)))
+
+        # # plot interpolated data w/o highlighted time steps
+        # pngfile = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+str(ifeature)+'_'+product.replace(":","-")+'_no-highlight.png'))
+        # pngfile = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+feature['properties']['event_id']+'_'+product.replace(":","-")+'_no-highlight.png'))
+        # file_interpolated = plot_interpolated(locations=locations,
+        #                       dates=dates,
+        #                       data=interpolated_data,
+        #                       pngfile=pngfile,
+        #                       start_date=start_date,
+        #                       end_date=end_date,
+        #                       start_date_buffer=date[0],   # start date with buffer (no matter if avail or not)
+        #                       end_date_buffer=date[-1],    # end   date with buffer (no matter if avail or not)
+        #                       )
+        # if not(silent): print("\n\nPlotted: \n  ",file_interpolated['png'])
+        # result['png'].append(file_interpolated['png'])
+
+
+        # --------------------
+        # Find cluster of large precipitation for event (within start to end incl. buffer)
+        # --------------------
+        if not(silent): print("\n\nIdentify large precipitation cluster:")
+
+        highlight_dates_idx = identify_precipitation_event(feature=feature,product=product,dates=dates,data=interpolated_data,length_window_d=2,min_prec_window=3.0,min_prec=0.001,silent=True)
+
+        sum_prec = [ np.sum(interpolated_data['var'][highlight_dates_idx[ilocation],ilocation]) for ilocation in range(nlocations) ]
+        if not(silent): print("   Sum of precipitation [mm] at all {} locations over the time period identified: {}".format(nlocations,np.round(sum_prec,2)))
+
+        # plot interpolated data w/ highlighted time steps
+        pngfile = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+str(ifeature)+'_'+product.replace(":","-")+'.png'))
+        pngfile = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+feature['properties']['event_id']+'_'+product.replace(":","-")+'.png'))
+        file_interpolated = plot_interpolated(locations=locations,
+                              dates=dates,
+                              data=interpolated_data,
+                              highlight_dates_idx=highlight_dates_idx,
+                              pngfile=pngfile,
+                              start_date=start_date,
+                              end_date=end_date,
+                              start_date_buffer=date[0],   # start date with buffer (no matter if avail or not)
+                              end_date_buffer=date[-1],    # end   date with buffer (no matter if avail or not)
+                              #label="event_id = '{}'\nevent precip. considered = {:.2f} mm".format(feature['properties']['event_id'],sum_prec[0]),
+                              label="event_id = '{}'".format(feature['properties']['event_id']),
+                              )
+        if not(silent): print("\n\nPlotted (interpolated time series): \n  ",file_interpolated['png'])
+        result['png-ts'].append(file_interpolated['png'])
+
+
+
+        # --------------------
+        # Plot data
+        # --------------------
+
+        # find earliest identified start-date and latest identified end-date
+        min_tidx = np.min([ np.min(hh) for hh in highlight_dates_idx ])
+        max_tidx = np.max([ np.max(hh) for hh in highlight_dates_idx ])
+
+        var          = data["var"][min_tidx:max_tidx+1]
+        lat          = data["lat"]
+        lon          = data["lon"]
+        dates        = data["time"][min_tidx:max_tidx+1]
+        png          = True
+        gif          = True
+        legend       = True
+        cities       = True
+        basefilename = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+str(ifeature)+'_'+product.replace(":","-")))
+        basefilename = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+feature['properties']['event_id']+'_'+product.replace(":","-")))
+        overwrite    = False
+
+        plots_data = plot_data(var=var,lat=lat,lon=lon,date=dates,
+                                   png=png,
+                                   gif=gif,
+                                   legend=legend,
+                                   cities=cities,
+                                   bbox=bbox,
+                                   basefilename=basefilename,
+                                   overwrite=overwrite,
+                                   silent=True)
+
+        if not(silent): print("\n\nPlotted (spatial data as PNG, GIF, and/or legend): \n  ")
+        if not(silent):
+            if len(plots_data['png']) > 0:
+                print("   Number of PNGs    plotted: {:4d}, e.g., {}".format(len(plots_data['png']),plots_data['png'][0]))
+            else:
+                print("   Number of PNGs    plotted: {:4d}".format(len(plots_data['png'])))
+            if len(plots_data['gif']) > 0:
+                print("   Number of GIFs    plotted: {:4d}, e.g., {}".format(len(plots_data['gif']),plots_data['gif'][0]))
+            else:
+                print("   Number of GIFs    plotted: {:4d}".format(len(plots_data['gif'])))
+            if len(plots_data['legend']) > 0:
+                print("   Number of legends plotted: {:4d}, e.g., {}".format(len(plots_data['legend']),plots_data['legend'][0]))
+            else:
+                print("   Number of legends plotted: {:4d}".format(len(plots_data['legend'])))
+
+        result['png'].append(plots_data['png'])
+        result['gif'].append(plots_data['gif'])
+        result['legend'].append(plots_data['legend'])
+
+    return result
+
+
+
+
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE)
+
+
+    ifeatures     = ['316']
+    tmpdir        = ['/tmp/']
+    bbox_buffer   = ['0.5']
+    dates_buffer  = ['5.0,5.0']
+    silent        = False
+    parser        = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
+                                            description='''Analyse multi-point feature(s) (event) from HFE database.''')
+    parser.add_argument('-i', '--ifeatures', action='store',
+                        default=ifeatures, dest='ifeatures', metavar='ifeatures', nargs=1,
+                        help='Index of feature(s) to analyse. Comma separted if several. Numbering starts with 0. (default: "873,1092")')
+    parser.add_argument('-t', '--tmpdir', action='store',
+                        default=tmpdir, dest='tmpdir', metavar='tmpdir', nargs=1,
+                        help='Name of temporary directory to store outputs, i.e., PNG, GIF, and legend (default: /tmp/).')
+    parser.add_argument('-b', '--bbox_buffer', action='store',
+                        default=bbox_buffer, dest='bbox_buffer', metavar='bbox_buffer', nargs=1,
+                        help='Buffer of bounding box around feature. Given in [degrees] (default: "0.5").')
+    parser.add_argument('-d', '--dates_buffer', action='store',
+                        default=dates_buffer, dest='dates_buffer', metavar='dates_buffer', nargs=1,
+                        help='Buffer of time period around feature start and end date. Given in [days] (default: "5.0,5.0").')
+    parser.add_argument('-s', '--silent', action='store_true', default=silent, dest="silent",
+                        help="If set nothing will be printed to terminal. Default: false.")
+
+    args          = parser.parse_args()
+    ifeatures     = [ int(ii) for ii in args.ifeatures[0].split(',') ]
+    tmpdir        = args.tmpdir[0]
+    bbox_buffer   = float(args.bbox_buffer[0])
+    dates_buffer  = [ float(ii) for ii in args.dates_buffer[0].split(',') ]
+    silent        = args.silent
+
+    del parser, args
+
+    files_produced = analyse_event(ifeatures=ifeatures,tmpdir=tmpdir,bbox_buffer=bbox_buffer,dates_buffer=dates_buffer,silent=silent)
+
+    print("\n\nAll files produced = ",files_produced)
