@@ -231,8 +231,8 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
         if not(feature['properties']['end_date'] is None):
             length_event = (end_date-start_date).days+(end_date-start_date).seconds/60./60./24.
             if (length_event > 90.):
-                print("Event will NOT be analysed because it is TOO LONG:")
-                print(">>> Length event {} (idx={}): {} [days]".format(
+                print("analyse_event: Event will NOT be analysed because it is TOO LONG:")
+                print("               >>> Length event {} (idx={}): {} [days]".format(
                     feature['properties']['event_id'],
                     ifeature,
                     length_event))
@@ -241,6 +241,20 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
                 result['gif'].append( [] )
                 result['legend'].append( [] )
                 result['json'].append( [] )
+
+                # save a token file to note that this wont be processed
+                tokenfile = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/exception.token'))
+
+                # make sure folder to store file exists; otherwise create
+                Path(tokenfile).parent.mkdir(parents=True, exist_ok=True)
+
+                # save something
+                ff = open(tokenfile, "w")
+                ff.write("analyse_event: Event {} (idx={}) not processed because it is too long ({} days)".format(
+                    feature['properties']['event_id'],
+                    ifeature,
+                    length_event))
+                ff.close()
 
                 continue
 
@@ -569,3 +583,7 @@ if __name__ == '__main__':
 
     # for example, run for all Geomet features:
     # python analyse_event.py --ifeatures "0, 1, 62, 168, 173, 178, 179, 192, 202, 210, 215, 240, 241, 245, 247, 277, 283, 294, 316, 339" --bbox_buffer 0.5 --dates_buffer 5.0,5.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
+
+
+    # for example, run for all features that are too long:
+    # python analyse_event.py --ifeatures "212, 230, 279, 288" --bbox_buffer 0.5 --dates_buffer 5.0,5.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
