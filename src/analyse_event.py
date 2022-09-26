@@ -411,30 +411,33 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
         # --------------------
 
         # find earliest identified start-date and latest identified end-date
-        min_tidx = np.min([ np.min(hh) for hh in highlight_dates_idx if len(hh) > 0 ])
-        max_tidx = np.max([ np.max(hh) for hh in highlight_dates_idx if len(hh) > 0 ])
+        if highlight_dates_idx != [[]]: # make sure event is found for at least one location
+            min_tidx = np.min([ np.min(hh) for hh in highlight_dates_idx if len(hh) > 0 ])
+            max_tidx = np.max([ np.max(hh) for hh in highlight_dates_idx if len(hh) > 0 ])
 
-        var          = data["var"][min_tidx:max_tidx+1]
-        lat          = data["lat"]
-        lon          = data["lon"]
-        dates_event  = data["time"][min_tidx:max_tidx+1]
-        png          = True
-        gif          = True
-        legend       = True
-        cities       = True
-        basefilename = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+str(ifeature)+'_'+product.replace(":","-")))
-        basefilename = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+feature['properties']['event_id']+'_'+product.replace(":","-")))
-        overwrite    = False
+            var          = data["var"][min_tidx:max_tidx+1]
+            lat          = data["lat"]
+            lon          = data["lon"]
+            dates_event  = data["time"][min_tidx:max_tidx+1]
+            png          = True
+            gif          = True
+            legend       = True
+            cities       = True
+            basefilename = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+str(ifeature)+'_'+product.replace(":","-")))
+            basefilename = str(Path(tmpdir+'/analyse_event_'+str(ifeature)+'/event_'+feature['properties']['event_id']+'_'+product.replace(":","-")))
+            overwrite    = False
 
-        plots_data = plot_data(var=var,lat=lat,lon=lon,date=dates_event,
-                                   png=png,
-                                   gif=gif,
-                                   legend=legend,
-                                   cities=cities,
-                                   bbox=bbox,
-                                   basefilename=basefilename,
-                                   overwrite=overwrite,
-                                   silent=True)
+            plots_data = plot_data(var=var,lat=lat,lon=lon,date=dates_event,
+                                       png=png,
+                                       gif=gif,
+                                       legend=legend,
+                                       cities=cities,
+                                       bbox=bbox,
+                                       basefilename=basefilename,
+                                       overwrite=overwrite,
+                                       silent=True)
+        else:
+            plots_data = {'png':[],'gif':[],'legend':[]}
 
         if not(silent): print("\n\nPlotted (spatial data as PNG, GIF, and/or legend): \n  ")
         if not(silent):
