@@ -924,8 +924,11 @@ than a threshold (\texttt{"min\_prec"}) are added.
 The return value \texttt{"time\_idx"} is a list of list of indexes for time steps that should be considered as major precipitation event. The indexes can be applied to \texttt{"dates"} and the time axis of \texttt{"data"}. The list of list of indexes can be helpful to be specified as \texttt{"highlight\_dates\_idx"} in \texttt{plot\_interpolated()}.
 
 The result of three example events that occurred in 2017 comparing data retrieved from Geomet (RDPA-6h) and CaSPAr (RDRS\_v2.1) are shown in Fig.~\ref{fig:plot_example:prec_event_caspar_vs_geomet}.
+\vfill
+\pagebreak
+\newpage
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\begin{subfigure}[a]{0.48\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]{figures/compare_Geomet_CaSPAr/interpolated_at_stations_occurrence_883_identified-timesteps_RDRS_v2.1.png}
@@ -970,9 +973,12 @@ The result of three example events that occurred in 2017 comparing data retrieve
 		\caption{UUID ``23a381c9-cfbd-4d9a-a4bf-b42373b7dd83''\\using GeoMet data (RDPA; 6hr accum.)}
 	\end{subfigure}
 	\par\bigskip\bigskip
-	\caption{Three example flood events (rows) that occurred in 2017 from HFE database (historical\_flood.json). The major precipitation has been identified using CaSPAr data (left column) and GeoMet data (right column). The identified for each event (UUID) corresponds to the UUID specified in \texttt{historical\_flood.json}.}
+	\caption{Three example flood occurrences (rows) that occurred in 2017 from HFE database (historical\_flood.json). The major precipitation has been identified using CaSPAr data (left column) and GeoMet data (right column). The identified for each event (UUID) corresponds to the UUID specified in \texttt{historical\_flood.json}.}
 	\label{fig:plot_example:prec_event_caspar_vs_geomet}
 \end{figure}
+\vfill
+\pagebreak
+\newpage
 
 \section{Analyze occurrence}
 
@@ -1008,7 +1014,7 @@ set to default values. This script can be called directly from the command-line 
 			\> \> \GRAU{\# end\_date + dates\_buffer[1] in order to retrieve}\\
 			\> \> \GRAU{\# precipitation data prior to and after flooding}\\
 			\> \> \GRAU{\# event; needs to be non-negative; unit: days}\\
-			\> \> \GRAU{\# default [3.0,1.0]}\\
+			\> \> \GRAU{\# default [5.0,5.0]}\\
 			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
 			\> ) \> 
 		\end{tabbing}
@@ -1057,7 +1063,7 @@ The return value \texttt{"files\_created"} is a dictionary of files created. It 
 			\> \> \GRAU{\# end\_date + dates\_buffer[1] in order to retrieve}\\
 			\> \> \GRAU{\# precipitation data prior to and after flooding}\\
 			\> \> \GRAU{\# event; needs to be non-negative; unit: days}\\
-			\> \> \GRAU{\# example: "3.0,1.0"}\\
+			\> \> \GRAU{\# example: "5.0,5.0"}\\
 			\> --silent \> \GRAU{\# if given, no printing on screen}\\
 		\end{tabbing}
 	\end{ttfont}
@@ -1115,6 +1121,162 @@ A standard JSON file containing the summary of the analysis looks like the follo
 				\> \},  \\
 				\> \GRAU{\# product used as data source for precipitation}\\
 				\> "data\_source": "rdpa:10km:6f" \\
+			\} \\
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+\pagebreak
+
+
+\section{Analyze event}
+
+\textbf{Workflow:} Sequence of steps to analyze events (multi-point feature).
+
+The script/function summarizes the workflow to analyze multi-point events (events) for the HFE database, i.e.,
+\texttt{"historical\_flood\_event.json"}. The user needs to specify a feature index (or several). The other arguments are optional and
+set to default values. This script can be called directly from the command-line with command-line arguments or as a function within another Python script. There is no new functionality added here. This wrapper script is using only the functions described above.
+
+\textbf{A. Usage as Python function:}
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{1.0cm} \= \hspace{5.2cm} \= \kill \\[4pt]
+			\GRAU{\# see module for detailed documentation and example}\\
+			from analyse\_event import analyse\_event\\
+			\\
+			files\_created = analyse\_event(\\
+			\> \GRAU{\# Mandatory arguments:}\\
+			\> ifeatures=\textit{ifeatures}, \> \GRAU{\# list of indexes of feature(s) to analyze;}\\
+			\> \> \GRAU{\# numbering starts with 0; these are not }\\
+			\> \> \GRAU{\# feature IDs themselves but the order they }\\
+			\> \> \GRAU{\# appear in "historical\_flood\_event.json"}\\
+			\> \GRAU{\# Optional arguments:}\\
+			\> tmpdir=\textit{tmpdir}, \> \GRAU{\# Name of directory to save downloaded and}\\
+			\> \> \GRAU{\# produced files under; default: "/tmp/"}\\
+			\> bbox\_buffer=\textit{bbox\_buffer}, \> \GRAU{\# minimum distance between locations provided and}\\
+			\> \> \GRAU{\# outline of bounding box (in degrees); needs to}\\
+			\> \> \GRAU{\# be non-negative; unit: degree; default 0.5}\\
+			\> dates\_buffer=\textit{dates\_buffer}, \> \GRAU{\# used to offset start\_date to}\\
+			\> \> \GRAU{\# start\_date - dates\_buffer[0] and end\_date to }\\
+			\> \> \GRAU{\# end\_date + dates\_buffer[1] in order to retrieve}\\
+			\> \> \GRAU{\# precipitation data prior to and after flooding}\\
+			\> \> \GRAU{\# event; needs to be non-negative; unit: days}\\
+			\> \> \GRAU{\# default [5.0,5.0]}\\
+			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
+			\> ) \> 
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+The return value \texttt{"files\_created"} is a dictionary of files created. It has the keys \texttt{"png"} containing PNG files created (one for each timestep showing the spatial distribution of precipitation) and \texttt{"json"} containing JSON files that have the summarized analysis stored in the format they will be used to augment the HFE database. It also contains the key \texttt{"png-ts"} which is the PNG showing the time series of precipitation for all locations with the identified precipitation event highlighted in blue (same as \texttt{"png"} returned for \texttt{"analyse\_occurrence()"}). The key \texttt{"gif"} contains the GIF of all the merged files (listed under \texttt{"png"}). Finally, it has the key \texttt{"legend"} which is a PNG showing the color legend of the PNGs and GIFs. 
+
+Please be aware that a lot of files will be created for long events. Due to that, events that are longer than 90 days are skipped at the moment. If the hourly RDRS\_v2.1 product would be used, in total $24\times90$ files would be created and listed under \texttt{"png"}. The merged GIF would likely be very large. The setting can be adjusted in \texttt{src/analyse\_event.py} around line 233 (\texttt{"if (length\_event > 90.)"}).
+\pagebreak
+
+\textbf{B. Usage as commandline function:}
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{0.5cm} \= \hspace{5.2cm} \= \kill \\[4pt]
+			\GRAU{\# command-line terminal; '\textbackslash' at the end of lines below indicate line breaks}\\
+			\GRAU{\# for readability; remove before copying to terminal}\\
+			\\
+			\GRAU{\# List of feature indexes to analyse}\\
+			features='2,12,22'\\
+			\\
+			\GRAU{\# Call of Python workflow}\\
+			python analyse\_event.py --ifeatures "\$\{features\}" \textbackslash \\
+			\> --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/" \textbackslash \\
+			\> --bbox\_buffer 0.5 --dates\_buffer 2.0,2.0 --silent\\
+			\\
+			\GRAU{\# with:}\\
+			\\
+			\> \GRAU{\# Mandatory arguments:}\\
+			\> --ifeatures \textit{ifeatures} \> \GRAU{\# list of indexes of feature(s) to analyze;}\\
+			\> \> \GRAU{\# numbering starts with 0; these are not }\\
+			\> \> \GRAU{\# feature IDs themselves but the order they }\\
+			\> \> \GRAU{\# appear in "historical\_flood\_event.json"}\\
+			\> \> \GRAU{\# example: "2,12,22"}\\
+			\> \GRAU{\# Optional arguments:}\\
+			\> --tmpdir \textit{tmpdir} \> \GRAU{\# Name of directory to save downloaded and}\\
+			\> \> \GRAU{\# produced files under}\\
+			\> \> \GRAU{\# example: "/tmp/"}\\
+			\> --bbox\_buffer \textit{bbox\_buffer} \> \GRAU{\# minimum distance between locations provided and}\\
+			\> \> \GRAU{\# outline of bounding box (in degrees); needs to}\\
+			\> \> \GRAU{\# be non-negative; unit: degree}\\
+			\> \> \GRAU{\# example: "0.5"}\\
+			\> --dates\_buffer \textit{dates\_buffer} \> \GRAU{\# used to offset start\_date to}\\
+			\> \> \GRAU{\# start\_date - dates\_buffer[0] and end\_date to }\\
+			\> \> \GRAU{\# end\_date + dates\_buffer[1] in order to retrieve}\\
+			\> \> \GRAU{\# precipitation data prior to and after flooding}\\
+			\> \> \GRAU{\# event; needs to be non-negative; unit: days}\\
+			\> \> \GRAU{\# example: "5.0,5.0"}\\
+			\> --silent \> \GRAU{\# if given, no printing on screen}\\
+		\end{tabbing}
+	\end{ttfont}
+	\vspace*{-0.3cm}
+\end{framed}
+\vspace*{-0.3cm}
+There is no standard return of this command-line call. You will need to gather yourself where file(s) are stored.
+\pagebreak
+
+A standard JSON file containing the summary of the analysis looks like the following (similar to the JSON created using \texttt{analyse\_occurrence()} but for multiple locations):
+\begin{framed}
+	\vspace*{-1.2cm}
+	\begin{ttfont}
+		\begin{tabbing}
+			\hspace{0.5cm} \= \hspace{0.5cm} \= \hspace{0.5cm} \= \kill \\[4pt]
+			\GRAU{\# JSON file produced by analyse\_event()}\\
+			\GRAU{\# Note: gray text has been added as comment here but is not part of the }\\
+			\GRAU{\# \ \ \ \ \ \ \ actual file produced}\\
+			\\
+			\{ \\
+			\> \GRAU{\# accumulated precipitation over identified precipitation event period P;}\\
+			\> \GRAU{\# value is rounded to 2 digits}\\
+			\> "accumulated\_mm": [ 90.06, 41.76, $\ldots$ ],  \\
+			\> \GRAU{\# start date of files analyzed to find precipitation event period P, i.e.}\\
+			\> \GRAU{\# feature start date including "dates\_buffer[0]"}\\
+			\> "start\_date\_w\_buffer": "2018-07-19 00:00:00",  \\
+			\> \GRAU{\# end date of files analyzed to find precipitation event period P, i.e.}\\
+			\> \GRAU{\# feature end date including "dates\_buffer[1]"}\\
+			\> "end\_date\_w\_buffer": "2018-07-30 18:00:00",  \\
+			\> \GRAU{\# number of time steps no data is available during identified }\\
+			\> \GRAU{\# precipitation event period P}\\
+			\> "missing\_timesteps\_n": [ 1, 0, \ldots ],  \\
+			\> \GRAU{\# percentage of time steps no data is available during identified }\\
+			\> \GRAU{\# precipitation event period P}\\
+			\> "missing\_timesteps\_\%": [ 3.12, 0.0, \ldots ],  \\
+			\> \GRAU{\# number of time steps available during identified }\\
+			\> \GRAU{\# precipitation event period P}\\
+			\> "available\_timesteps\_n": [ 31, 36, \ldots ],  \\
+			\> \GRAU{\# percentage of time steps available during identified }\\
+			\> \GRAU{\# precipitation event period P}\\
+			\> "available\_timesteps\_\%": [ 96.88, 100.0, \ldots ], \\
+			\> \GRAU{\# list of time steps available during identified precipitation}\\
+			\> \GRAU{\# event period P incl. precipitation at this (period ending) time step; }\\
+			\> \GRAU{\# unit is [mm/dt] where dt is the temporal resolution of the data, i.e.,}\\
+			\> \GRAU{\# 6h for RDPA-6h and 1h for RDRS\_v2.1; values are rounded to 2 digits;}\\
+			\> \GRAU{\# $\curvearrowright$ sum of the "available\_timesteps\_n" values equals "accumulated\_mm"}\\
+			\> "available\_timesteps\_precip\_mm/dt": [ \\
+			\> \> \{ \\
+			\> \> \>	"2018-07-22 18:00:00": 5.07,  \\
+			\> \> \> 	...  \\
+			\> \> \> 	"2018-07-30 12:00:00": 0.02  \\
+			\> \> \},  \\
+			\> \> \{ \\
+			\> \> \>	"2018-07-21 18:00:00": 15.0,  \\
+			\> \> \> 	...  \\
+			\> \> \>	"2018-07-30 18:00:00": 1.05  \\
+			\> \> \},  \\
+			\> \> 	...  \\
+			\> \> ],  \\
+			\> \GRAU{\# product used as data source for precipitation}\\
+			\> "data\_source": "rdpa:10km:6f" \\
 			\} \\
 		\end{tabbing}
 	\end{ttfont}
