@@ -9,7 +9,7 @@
 #SBATCH --mail-type=FAIL                           # email send only in case of failure
 #SBATCH --time=0-06:00:00                          # time (DD-HH:MM:SS);
 #SBATCH --job-name=analyse_event                   # name of job in queque
-#SBATCH --array=1-363
+#SBATCH --array=1-100
 
 
 # job-id  :: ${SLURM_ARRAY_JOB_ID}
@@ -54,22 +54,22 @@ python analyse_event.py -i "${ifeatures}" --bbox_buffer 0.5 --dates_buffer 5.0,5
 
 
 
-# # ---------------------
-# # zip results (because they can contain quite a lot of PNGs)
-# # ---------------------
-# cd /project/6070465/julemai/nrcan-hfe/data/output/
-# ifeatures_list=$( tr -s ',' ' ' <<< "${ifeatures}" )    # "2 12 22"
-# for ifeature in ${ifeatures_list} ; do
-#     if [ -e "analyse_event_${ifeature}.zip" ] ; then rm "analyse_event_${ifeature}.zip" ; fi
-#     zip -r "analyse_event_${ifeature}.zip"  "analyse_event_${ifeature}"
-#     rm -r "analyse_event_${ifeature}"
-# done
-# cd -
+# ---------------------
+# zip results (because they can contain quite a lot of PNGs)
+# ---------------------
+cd /project/6070465/julemai/nrcan-hfe/data/output/
+ifeatures_list=$( tr -s ',' ' ' <<< "${ifeatures}" )    # "2 12 22"
+for ifeature in ${ifeatures_list} ; do
+    if [ -e "analyse_event_${ifeature}.zip" ] ; then rm "analyse_event_${ifeature}.zip" ; fi
+    if [ -e "analyse_event_${ifeature}" ] ; then zip -r "analyse_event_${ifeature}.zip"  "analyse_event_${ifeature}" ; fi
+    rm -r "analyse_event_${ifeature}"
+done
+cd -
 
 
 
 # JOBID
 # 65572013  - final       :: 363 events; 100 tasks --> 3 or 4 events per task --> took ~2h   (some geomet will fail because nodes do not have access to internet)
 # 65573326  - redo        :: 24 events where requested memory of 4GB was not enough --> increase to 8GB
-#           - redo        :: 363 events; 100 tasks --> 3 or 4 events per task --> took ~2h   (fixed that for some stations no event found; memory now set to 16GB)
+# 65576177  - redo        :: 363 events; 100 tasks --> 3 or 4 events per task --> took ~2h   (fixed that for some stations no event found; memory now set to 16GB)
 #

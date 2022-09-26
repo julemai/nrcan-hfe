@@ -236,7 +236,13 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
                     feature['properties']['event_id'],
                     ifeature,
                     length_event))
-                return result
+                result['png-ts'].append( [] )
+                result['png'].append( [] )
+                result['gif'].append( [] )
+                result['legend'].append( [] )
+                result['json'].append( [] )
+
+                continue
 
         # --------------------
         # Determine bounding box

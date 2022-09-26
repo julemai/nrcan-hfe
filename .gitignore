@@ -22,6 +22,7 @@ src/test-data/CMC*.grib2
 # data that will get downloaded
 data/geomet/*.grib2
 data/caspar/rdrs_v2.1/*.nc
+data/caspar/rdrs_v2.1/check_summary.json
 
 # outputs
 data/output/analyse_occurrence_*
