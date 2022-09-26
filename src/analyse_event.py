@@ -411,8 +411,8 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
         # --------------------
 
         # find earliest identified start-date and latest identified end-date
-        min_tidx = np.min([ np.min(hh) for hh in highlight_dates_idx ])
-        max_tidx = np.max([ np.max(hh) for hh in highlight_dates_idx ])
+        min_tidx = np.min([ np.min(hh) for hh in highlight_dates_idx if len(hh) > 0 ])
+        max_tidx = np.max([ np.max(hh) for hh in highlight_dates_idx if len(hh) > 0 ])
 
         var          = data["var"][min_tidx:max_tidx+1]
         lat          = data["lat"]
