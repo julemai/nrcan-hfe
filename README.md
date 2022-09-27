@@ -123,3 +123,29 @@ python fx_determine_dates.py
 python gx_identify_precipitation_event.py
 ```
 
+## Getting started
+
+Analyse two single-point occurrences listed in `data/hfe/historical_flood.json`:
+```python
+# Load your Python environment.
+pyenv activate env-3.8.5-nrcan
+
+# Analyse occurrences listed in JSON file "data/hfe/historical_flood.json"
+# Note: These two feaures have been selected because they require data from Geomet.
+#       If you pick other ones, you might need to request RDRS v2.1 from CaSPAr first.
+python src/analyse_occurrence.py --ifeatures "873, 1092" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
+```
+
+Analyse two multi-point events listed in `data/hfe/historical_flood_event.json`:
+```python
+# Load your Python environment.
+pyenv activate env-3.8.5-nrcan
+
+# Analyse event listed first (0) and second (1) in JSON file "data/hfe/historical_flood_event.json"
+# Note: These two feaures have been selected because they require data from Geomet.
+#       If you pick other ones, you might need to request RDRS v2.1 from CaSPAr first.
+python src/analyse_event.py --ifeatures "0, 1" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
+```
+
+Please refer to the [documentation](https://github.com/julemai/nrcan-hfe/tree/main/doc), for an exaplantion of the arguments passed to these functions as well as a documentation of the entire toolkit.
+
