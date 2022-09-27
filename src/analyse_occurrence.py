@@ -56,14 +56,14 @@ from gx_identify_precipitation_event import identify_precipitation_event
 
 __all__ = ['analyse_occurrence']
 
-def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.0,5.0],silent=True):
+def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.0,0.0],silent=True):
     """
         Analyses single-point feature (occurrence) of HFE database.
 
 
         Definition
         ----------
-        analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.0,5.0])
+        analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.0,0.0])
 
 
         Input           Format          Description
@@ -87,7 +87,7 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
                                         timestep returned will be "end_date+dates_buffer[1]".
                                         Values are in [days].
                                         Negative values of dates_buffer are not allowed.
-                                        Default: [3.0,1.0]
+                                        Default: [5.0,0.0]
 
         silent          Boolean         If set to True, nothing will be printed to terminal.
                                         Default: True
@@ -115,7 +115,7 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
 
         >>> # Analyse events
 
-        >>> files_occur = analyse_occurrence(ifeatures=[873,1092],tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.0,5.0],silent=True)
+        >>> files_occur = analyse_occurrence(ifeatures=[873,1092],tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.0,0.0],silent=True)
         >>> print("files_occur['png'] = "+str(files_occur['png'][0]))
         files_occur['png'] = ['/tmp/analyse_occurrence_873/occurrence_99843381-1cc2-483b-a5f7-baf4a1a0102c_rdpa-10km-6f.png']
         >>> print("files_occur['png'] = "+str(files_occur['png'][1]))
@@ -160,8 +160,11 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
 
     # initialize return
     result = {}
+    result['png-ts'] = []
     result['png'] = []
+    result['legend'] = []
     result['json'] = []
+    result['gif'] = []
 
     # # --------------------
     # # SPECIFICS OF WHAT TO ANALYSE
@@ -185,10 +188,10 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
     # ifeatures    = range(3)
 
     # bbox_buffer  = 0.5
-    # dates_buffer = [5.0,5.0]
+    # dates_buffer = [5.0,0.0]
 
     # --------------------
-    # Load HFE database
+    # Load HFE database (occurrences)
     # --------------------
     if not(silent): print("\n\nReading HFE database")
 
@@ -203,6 +206,10 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
     data_hfe = read_hfe_json(filename=filename,filtering=filtering,polygon=polygon,return_filtered=return_filtered,silent=True)
     nfeatures = len(data_hfe['data']['features'])
     if not(silent): print("   Number of flood occurrences/events found: {}".format(nfeatures))
+
+    # --------------------
+    # Process each occurrence
+    # --------------------
 
     all_files_nc = {}
     for iifeature,ifeature in enumerate(ifeatures):
@@ -265,7 +272,7 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
 
         if feature['properties']['end_date'] is None:
             # if there is no end-date make end buffer a bit larger
-            date = determine_dates(feature=feature,product=product,dates_buffer=list(np.array(dates_buffer)+[0.0,3.0]),silent=True)
+            date = determine_dates(feature=feature,product=product,dates_buffer=list(np.array(dates_buffer)+[0.0,8.0]),silent=True)
         else:
             date = determine_dates(feature=feature,product=product,dates_buffer=dates_buffer,silent=True)
         if not(silent): print("   date : [ {}, {}, ..., {}, {} ] (in total {} time steps)".format(date[0], date[1],date[-2],date[-1],len(date)))
@@ -367,7 +374,10 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
         if not(silent): print("\n\nInterpolate data:")
 
         if feature['geometry']['type'] == 'Point':
-            locations = {'lon':np.array([feature['geometry']['coordinates'][0]]),'lat':np.array([feature['geometry']['coordinates'][1]])}
+            locations = {
+                'lon':np.array([feature['geometry']['coordinates'][0]]),
+                'lat':np.array([feature['geometry']['coordinates'][1]]),
+                'name':np.array([feature['properties']['locality']])}
         else:
             locations = {'lon':np.array(feature['geometry']['coordinates'])[:,0],'lat':np.array(feature['geometry']['coordinates'])[:,1]}
         nlocations = len(locations['lon'])
@@ -393,7 +403,7 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
         #                       end_date_buffer=date[-1],    # end   date with buffer (no matter if avail or not)
         #                       )
         # print("\n\nPlotted: \n  ",file_interpolated['png'])
-        # result['png'].append(file_interpolated['png'])
+        # result['png-ts'].append(file_interpolated['png'])
 
 
         # --------------------
@@ -407,21 +417,93 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
         if not(silent): print("   Sum of precipitation [mm] at all {} locations over the time period identified: {}".format(nlocations,np.round(sum_prec,2)))
 
         # plot interpolated data w/ highlighted time steps
-        pngfile = str(Path(tmpdir+'/analyse_occurrence_'+str(ifeature)+'/occurrence_'+str(ifeature)+'_'+product.replace(":","-")+'.png'))
-        pngfile = str(Path(tmpdir+'/analyse_occurrence_'+str(ifeature)+'/occurrence_'+feature['properties']['uuid']+'_'+product.replace(":","-")+'.png'))
-        file_interpolated = plot_interpolated(locations=locations,
-                              dates=dates,
-                              data=interpolated_data,
-                              highlight_dates_idx=highlight_dates_idx,
-                              pngfile=pngfile,
-                              start_date=start_date,
-                              end_date=end_date,
-                              start_date_buffer=date[0],   # start date with buffer (no matter if avail or not)
-                              end_date_buffer=date[-1],    # end   date with buffer (no matter if avail or not)
-                              label="uuid = '{}'\nevent precip. considered = {:.2f} mm".format(feature['properties']['uuid'],sum_prec[0]),
-                              )
-        if not(silent): print("\n\nPlotted: \n  ",file_interpolated['png'])
-        result['png'].append(file_interpolated['png'])
+        languages = ['en_CA','fr_CA']
+        for ilanguage in languages:
+
+            if (ilanguage.startswith('en_')):
+                ilabel = "uuid = '{}'\nevent precip. considered = {:.2f} mm".format(feature['properties']['uuid'],sum_prec[0])
+            elif (ilanguage.startswith('fr_')):
+                ilabel = "uuid = '{}'\nprécip. de l’événement considérée = {:.2f} mm".format(feature['properties']['uuid'],sum_prec[0])
+            else:
+                raise ValueError("analyse_occurrence: language not known")
+
+
+            pngfile = str(Path(tmpdir+'/analyse_occurrence_'+str(ifeature)+'/occurrence_'+ilanguage+'_'+str(ifeature)+'_'+product.replace(":","-")+'.png'))
+            pngfile = str(Path(tmpdir+'/analyse_occurrence_'+str(ifeature)+'/occurrence_'+ilanguage+'_'+feature['properties']['uuid']+'_'+product.replace(":","-")+'.png'))
+            file_interpolated = plot_interpolated(locations=locations,
+                                  dates=dates,
+                                  data=interpolated_data,
+                                  highlight_dates_idx=highlight_dates_idx,
+                                  pngfile=pngfile,
+                                  start_date=start_date,
+                                  end_date=end_date,
+                                  start_date_buffer=date[0],   # start date with buffer (no matter if avail or not)
+                                  end_date_buffer=date[-1],    # end   date with buffer (no matter if avail or not)
+                                  label=ilabel,
+                                  language=ilanguage,
+                                  )
+            if not(silent): print("\n\nPlotted: \n  ",file_interpolated['png'])
+            result['png-ts'].append(file_interpolated['png'])
+
+        # --------------------
+        # Plot data (map with sum of precipitation for time steps identified)
+        # --------------------
+        languages = ['en_CA','fr_CA']
+        for ilanguage in languages:
+
+            # find earliest identified start-date and latest identified end-date
+            if highlight_dates_idx != [[]]: # make sure event is found for at least one location
+                min_tidx = np.min([ np.min(hh) for hh in highlight_dates_idx if len(hh) > 0 ])
+                max_tidx = np.max([ np.max(hh) for hh in highlight_dates_idx if len(hh) > 0 ])
+
+                var          = data["var"][min_tidx:max_tidx+1]
+                lat          = data["lat"]
+                lon          = data["lon"]
+                dates_occur  = data["time"][min_tidx:max_tidx+1]  # only first timestep
+                png          = False
+                gif          = False
+                legend       = True
+                pngsum       = True  # PNG with sum of precip
+                cities       = True
+                basefilename = str(Path(tmpdir+'/analyse_occurrence_'+str(ifeature)+'/occurrence_'+ilanguage+'_'+str(ifeature)+'_'+product.replace(":","-")))
+                basefilename = str(Path(tmpdir+'/analyse_occurrence_'+str(ifeature)+'/occurrence_'+ilanguage+'_'+feature['properties']['uuid']+'_'+product.replace(":","-")))
+                overwrite    = False
+
+                plots_data = plot_data(var=var,lat=lat,lon=lon,date=dates_occur,
+                                           png=png,
+                                           pngsum=pngsum,
+                                           gif=gif,
+                                           legend=legend,
+                                           cities=cities,
+                                           bbox=bbox,
+                                           basefilename=basefilename,
+                                           overwrite=overwrite,
+                                           language=ilanguage,
+                                           locations=locations,
+                                           silent=True)
+            else:
+                plots_data = {'png':[],'gif':[],'legend':[]}
+
+            if not(silent): print("\n\nPlotted (spatial data as PNG, GIF, and/or legend): \n  ")
+            if not(silent):
+                if len(plots_data['png']) > 0:
+                    print("   Number of PNGs    plotted: {:4d}, e.g., {}".format(len(plots_data['png']),plots_data['png'][0]))
+                else:
+                    print("   Number of PNGs    plotted: {:4d}".format(len(plots_data['png'])))
+                if len(plots_data['gif']) > 0:
+                    print("   Number of GIFs    plotted: {:4d}, e.g., {}".format(len(plots_data['gif']),plots_data['gif'][0]))
+                else:
+                    print("   Number of GIFs    plotted: {:4d}".format(len(plots_data['gif'])))
+                if len(plots_data['legend']) > 0:
+                    print("   Number of legends plotted: {:4d}, e.g., {}".format(len(plots_data['legend']),plots_data['legend'][0]))
+                else:
+                    print("   Number of legends plotted: {:4d}".format(len(plots_data['legend'])))
+
+            result['png'].append(plots_data['png'])
+            result['gif'].append(plots_data['gif'])
+            result['legend'].append(plots_data['legend'])
+
+
 
         # --------------------
         # Save data that we will need to augment the HFE database
@@ -523,7 +605,7 @@ if __name__ == '__main__':
     ifeatures     = ['873,1092']
     tmpdir        = ['/tmp/']
     bbox_buffer   = ['0.5']
-    dates_buffer  = ['5.0,5.0']
+    dates_buffer  = ['5.0,0.0']
     silent        = False
     parser        = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
                                             description='''Analyse single-point feature(s) (occurrence) from HFE database.''')
@@ -538,7 +620,7 @@ if __name__ == '__main__':
                         help='Buffer of bounding box around feature. Given in [degrees] (default: "0.5").')
     parser.add_argument('-d', '--dates_buffer', action='store',
                         default=dates_buffer, dest='dates_buffer', metavar='dates_buffer', nargs=1,
-                        help='Buffer of time period around feature start and end date. Given in [days] (default: "5.0,5.0").')
+                        help='Buffer of time period around feature start and end date. Given in [days] (default: "5.0,0.0").')
     parser.add_argument('-s', '--silent', action='store_true', default=silent, dest="silent",
                         help="If set nothing will be printed to terminal. Default: false.")
 
@@ -557,4 +639,4 @@ if __name__ == '__main__':
 
 
     # for example, run for all Geomet features:
-    # python analyse_occurrence.py --ifeatures "873, 1092, 1098, 1139, 1140, 1174, 1200, 1211, 1247, 1248, 1249, 1270, 1277, 1278, 1293, 1298, 1434, 1446, 1457, 1465, 1512, 1558, 1564, 1646, 1647, 1648, 1651, 1658, 1759, 1794" --bbox_buffer 0.5 --dates_buffer 5.0,5.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
+    # python analyse_occurrence.py --ifeatures "873, 1092, 1098, 1139, 1140, 1174, 1200, 1211, 1247, 1248, 1249, 1270, 1277, 1278, 1293, 1298, 1434, 1446, 1457, 1465, 1512, 1558, 1564, 1646, 1647, 1648, 1651, 1658, 1759, 1794" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
