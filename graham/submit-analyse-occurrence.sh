@@ -7,7 +7,7 @@
 #SBATCH --mem-per-cpu=1G                           # memory; default unit is megabytes
 #SBATCH --mail-user=juliane.mai@uwaterloo.ca       # email address for notifications
 #SBATCH --mail-type=FAIL                           # email send only in case of failure
-#SBATCH --time=0-12:00:00                          # time (DD-HH:MM:SS);
+#SBATCH --time=1-00:00:00                          # time (DD-HH:MM:SS);
 #SBATCH --job-name=analyse_occurence               # name of job in queque
 #SBATCH --array=1-200
 
@@ -53,13 +53,33 @@ python analyse_occurrence.py -i "${features}" --bbox_buffer 0.5 --dates_buffer 5
 
 
 
+# ---------------------
+# zip results (because they can contain quite a lot of PNGs)
+# ---------------------
+cd /project/6070465/julemai/nrcan-hfe/data/output/
+ifeatures_list=$( tr -s ',' ' ' <<< "${ifeatures}" )    # "2 12 22"
+for ifeature in ${ifeatures_list} ; do
+    if [ -e "analyse_occurrence_${ifeature}.zip" ] ; then rm "analyse_occurrence_${ifeature}.zip" ; fi
+    if [ -e "analyse_occurrence_${ifeature}" ] ; then zip -r "analyse_occurrence_${ifeature}.zip"  "analyse_occurrence_${ifeature}" ; fi
+    rm -r "analyse_occurrence_${ifeature}"
+done
+cd -
+
+
+
+
 # ntasks=200 --> 9 or 10 occurrences each
 
 # JOBID
 # 65508874  - testing     ::    6 occurrences;   3 tasks -->   2     occurrences per task --> took 1h
-# 65513537  - final       :: 1854 occurrences; 200 tasks --> 9 or 10 occurrences per task --> took ~2h   (some geomet will fail because nodes do not have access to internet)
-# 65531234  - redo failed ::   46 occurrences;  46 tasks -->   1     occurrences per task --> took ???   (some geomet will fail because nodes do not have access to internet)
-# 65534294  - final       :: redo with --dates_buffer 5.0,5.0
+# 65513537  - final       :: 1854 occurrences; 200 tasks --> 9 or 10 occurrences per task --> took ~10h
+#                            (some geomet will fail because nodes do not have access to internet)
+# 65531234  - redo failed ::   46 occurrences;  46 tasks -->   1     occurrences per task --> took ???
+#                            (some geomet will fail because nodes do not have access to internet)
+# 65534294  - redo        :: 1854 occurrences; 200 tasks --> 9 or 10 occurrences per task --> took ~10h
+#                            (redo with --dates_buffer 5.0,5.0)
+# 65632250  - redo        :: 1854 occurrences; 200 tasks --> 9 or 10 occurrences per task --> took ~20h
+#                            (all  adjustments from Philippe implemented; expecially new basemap setting and languages (2x number of plots))
 
 
 
@@ -67,7 +87,7 @@ python analyse_occurrence.py -i "${features}" --bbox_buffer 0.5 --dates_buffer 5
 #
 # -------------------------
 # get results sorted by accumulated_mm
-# ---> some are really large --> event longer than >>1 year
+# ---> some are really large --> occurrence longer than >>1 year
 # ---> some are really small --> there is just no event shortly before and after (you might want to post-process them again)
 # -------------------------
 # files=$( \ls ../data/output/analyse_occurrence_*/*.json )

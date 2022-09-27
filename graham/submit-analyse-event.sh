@@ -71,5 +71,7 @@ cd -
 # JOBID
 # 65572013  - final       :: 363 events; 100 tasks --> 3 or 4 events per task --> took ~2h   (some geomet will fail because nodes do not have access to internet)
 # 65573326  - redo        :: 24 events where requested memory of 4GB was not enough --> increase to 8GB
-# 65576177  - redo        :: 363 events; 100 tasks --> 3 or 4 events per task --> took ~2h   (fixed that for some stations no event found; memory now set to 16GB)
-#
+# 65576177  - redo        :: 363 events; 100 tasks --> 3 or 4 events per task --> took ~2h
+#                            (fixed that for some stations no event found; memory now set to 16GB)
+# 65632207  - redo        :: 363 events; 100 tasks --> 3 or 4 events per task --> took ~2h
+#                            (all  adjustments from Philippe implemented; expecially new basemap setting and languages (2x number of plots))

@@ -28,3 +28,13 @@ data/caspar/rdrs_v2.1/check_summary.json
 # outputs
 data/output/analyse_occurrence_*
 data/output/analyse_event_*
+
+# temporary folders
+tmp/
+
+# Python environments
+env-3.8/
+env-3.8_save/
+
+# slurm outputs on Graham
+graham/slurm-*.out
