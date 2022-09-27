@@ -387,7 +387,7 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
             locations = {
                 'lon':np.array([feature['geometry']['coordinates'][0]]),
                 'lat':np.array([feature['geometry']['coordinates'][1]]),
-                'name':np.array(feature['properties']['locality'])}
+                'name':np.array([feature['properties']['locality']])}
         else:
             locations = {
                 'lon':np.array(feature['geometry']['coordinates'])[:,0],
@@ -463,7 +463,7 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
 
 
         # --------------------
-        # Plot data
+        # Plot data (per time step --> png=True, sum of precip --> pngsum=True, legends --> legend=True, and gif of all timesteps --> gif=True
         # --------------------
         languages = ['en_CA','fr_CA']
         for ilanguage in languages:
@@ -478,6 +478,7 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
                 lon          = data["lon"]
                 dates_event  = data["time"][min_tidx:max_tidx+1]
                 png          = True
+                pngsum       = True
                 gif          = True
                 legend       = True
                 cities       = True
@@ -487,6 +488,7 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
 
                 plots_data = plot_data(var=var,lat=lat,lon=lon,date=dates_event,
                                            png=png,
+                                           pngsum=pngsum,
                                            gif=gif,
                                            legend=legend,
                                            cities=cities,
@@ -592,9 +594,12 @@ def find_names_of_occurrences(event_feature,data_hfe_occur,locations):
 
     names_occur = []
     noccur = len(occurrences_of_event)
+
     if noccur > 0:
         found = False
         for ilocation in range(nlocations):
+
+            print("ilocation = ",ilocation)
 
             ilon = locations["lon"][ilocation]
             ilat = locations["lat"][ilocation]
@@ -607,11 +612,19 @@ def find_names_of_occurrences(event_feature,data_hfe_occur,locations):
                 if np.sqrt(0.5*np.abs(ilon-jlon)**2 + 0.5*np.abs(ilat-jlat)**2) < 0.00001: # close enough
                     found = True
                     iname = occurrences_of_event[ioccur]["properties"]["locality"]
+                    break
 
+            print("found = ",found)
             if found:
                 names_occur.append( iname )
             else:
                 names_occur.append( "Loc. {}".format(ilocation+1) )
+
+    else:
+        # event-id not found anywhere in  data_hfe_occur
+        # --> fill all with dummy names
+        for ilocation in range(nlocations):
+            names_occur.append( "Loc. {}".format(ilocation+1) )
 
     locations["name"] = names_occur
 

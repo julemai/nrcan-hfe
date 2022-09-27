@@ -43,14 +43,14 @@ __all__ = ['plot_data']
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 def plot_data(var=None,lat=None,lon=None,date=None,png=True,pngsum=False,gif=False,legend=False,cities=True,bbox=None,
-              basefilename='/tmp/test',overwrite=True,label=None,language='en_CA',locations=None,silent=True):
+              basefilename='/tmp/test',overwrite=True,label=None,language='en_US',locations=None,silent=True):
     """
         Plot data retrieved from either Geomet or CaSPAr (data will be all formatted the same by now).
 
         Definition
         ----------
         def plot_data(var=None,lat=None,lon=None,date=None,png=True,pngsum=False,gif=False,legend=False,cities=True,bbox=None,
-                      basefilename='/tmp/test',label=None,language='en',locations=None,silent=True)
+                      basefilename='/tmp/test',label=None,language='en_US',locations=None,silent=True)
 
 
         Input           Format         Description
@@ -129,8 +129,9 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,pngsum=False,gif=Fal
                                        Default: None
 
         language        string         Language used for labels in plot. Must be one of the following:
-                                       ['en_CA', 'en_US', 'en_UK', 'fr_CA', 'fr_FR'].
-                                       Default: 'en_CA'
+                                       anything that starts with 'en_' or 'fr_' and is listed under "locale -a"
+                                       (command line)
+                                       Default: 'en_US.uft8'
 
         locations       dict           Dictionary providing attributes "lat" as list of latitudes and "lon" as list
                                        of "longitudes" for locations that should be added as labels to plot. Lists of
@@ -268,11 +269,20 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,pngsum=False,gif=Fal
     if not(locations is None):
         nlocations = np.shape(locations['lon'])[0]
     if not(language.startswith('en_') or language.startswith('fr_')):
-        raise ValueError("plot_data: language specified must be one of the following: ['en_CA', 'en_US', 'en_UK', 'fr_CA', 'fr_FR']")
+        raise ValueError("plot_data: language specified must be one of the following: ['en_*', 'fr_*'] and it must be supported under your system. Currently it is '{}'.".format(language))
 
     # set language
     import locale
-    locale.setlocale(locale.LC_ALL, language)
+    try:
+        locale.setlocale(locale.LC_ALL, language)
+    except:
+        try:
+            locale.setlocale(locale.LC_ALL, language+'.utf8')
+        except:
+            try:
+                locale.setlocale(locale.LC_ALL, language+'.UTF8')
+            except:
+                raise ValueError("plot_data: language '{}' can't be loaded".format(language))
 
     if len(np.shape(var)) == 3: # several time steps for variable provided
         # make sure everything is an np array

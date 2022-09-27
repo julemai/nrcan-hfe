@@ -374,7 +374,7 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
 
 
 def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None,end_date_buffer=None,pngfile=None,
-                      highlight_dates_idx=None,start_date=None,end_date=None,label=None,language='en_CA',silent=True):
+                      highlight_dates_idx=None,start_date=None,end_date=None,label=None,language='en_US',silent=True):
 
     """
         Plot interpolated data.
@@ -382,7 +382,7 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
         Definition
         ----------
         def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None,end_date_buffer=None,pngfile=None,
-                              highlight_dates_idx=None,start_date=None,end_date=None,label=None,language='en_CA',silent=True)
+                              highlight_dates_idx=None,start_date=None,end_date=None,label=None,language='en_US',silent=True)
 
 
         Input           Format         Description
@@ -430,8 +430,9 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
                                        Default: None
 
         language        string         Language used for labels in plot. Must be one of the following:
-                                       ['en_CA', 'en_US', 'en_UK', 'fr_CA', 'fr_FR'].
-                                       Default: 'en_CA'
+                                       anything that starts with 'en_' or 'fr_' and is listed under "locale -a"
+                                       (command line)
+                                       Default: 'en_US.uft8'
 
         silent          Boolean        If set to True, nothing will be printed to terminal.
                                        Default: True
@@ -537,11 +538,21 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
     if (end_date_buffer is None):
         raise ValueError("plot_interpolated: end_date_buffer needs to be specified")
     if not(language.startswith('en_') or language.startswith('fr_')):
-        raise ValueError("plot_data: language specified must be one of the following: ['en_CA', 'en_US', 'en_UK', 'fr_CA', 'fr_FR']")
+        raise ValueError("plot_data: language specified must be one of the following: ['en_*', 'fr_*'] and it must be supported under your system. Currently it is '{}'.".format(language))
 
     # set language
     import locale
-    locale.setlocale(locale.LC_ALL, language)
+    try:
+        locale.setlocale(locale.LC_ALL, language)
+    except:
+        try:
+            locale.setlocale(locale.LC_ALL, language+'.utf8')
+        except:
+            try:
+                locale.setlocale(locale.LC_ALL, language+'.UTF8')
+            except:
+                raise ValueError("plot_data: language '{}' can't be loaded".format(language))
+
 
     # initialize return
     result = {}

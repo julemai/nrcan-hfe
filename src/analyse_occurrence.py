@@ -379,7 +379,13 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
                 'lat':np.array([feature['geometry']['coordinates'][1]]),
                 'name':np.array([feature['properties']['locality']])}
         else:
-            locations = {'lon':np.array(feature['geometry']['coordinates'])[:,0],'lat':np.array(feature['geometry']['coordinates'])[:,1]}
+            locations = {
+                'lon':np.array(feature['geometry']['coordinates'])[:,0],
+                'lat':np.array(feature['geometry']['coordinates'])[:,1]}
+
+            # find names for all these locations
+            locations = find_names_of_occurrences(feature,data_hfe_occur,locations)
+
         nlocations = len(locations['lon'])
         var       = data["var"]
         lat       = data["lat"]
@@ -593,6 +599,68 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
     # nfiles_needed_from_caspar = len(files_needed_from_caspar)
 
     return result
+
+
+
+def find_names_of_occurrences(event_feature,data_hfe_occur,locations):
+
+    '''
+    event_feature    ... one feature from HFE event JSON file
+    data_hfe_occur   ... entire content of HFE occurrence JSON file
+    locations        ... locations (i.e., dictionary with only "lat" and "lon" for now)
+    '''
+
+def find_names_of_occurrences(event_feature,data_hfe_occur,locations):
+
+    '''
+    event_feature    ... one feature from HFE event JSON file
+    data_hfe_occur   ... entire content of HFE occurrence JSON file
+    locations        ... locations (i.e., dictionary with only "lat" and "lon" for now)
+    '''
+
+    nfeatures_occur = len(data_hfe_occur['data']['features'])
+    nlocations = len(locations['lon'])
+
+    event_id = event_feature['properties']['event_id']
+    occurrences_of_event = [ data_hfe_occur['data']['features'][ifeat] for ifeat in range(nfeatures_occur) if data_hfe_occur['data']['features'][ifeat]['properties']['event_id'] == event_id ]
+
+    names_occur = []
+    noccur = len(occurrences_of_event)
+
+    if noccur > 0:
+        found = False
+        for ilocation in range(nlocations):
+
+            print("ilocation = ",ilocation)
+
+            ilon = locations["lon"][ilocation]
+            ilat = locations["lat"][ilocation]
+
+            for ioccur in range(noccur):
+
+                jlon = occurrences_of_event[ioccur]["geometry"]["coordinates"][0]
+                jlat = occurrences_of_event[ioccur]["geometry"]["coordinates"][1]
+
+                if np.sqrt(0.5*np.abs(ilon-jlon)**2 + 0.5*np.abs(ilat-jlat)**2) < 0.00001: # close enough
+                    found = True
+                    iname = occurrences_of_event[ioccur]["properties"]["locality"]
+                    break
+
+            print("found = ",found)
+            if found:
+                names_occur.append( iname )
+            else:
+                names_occur.append( "Loc. {}".format(ilocation+1) )
+
+    else:
+        # event-id not found anywhere in  data_hfe_occur
+        # --> fill all with dummy names
+        for ilocation in range(nlocations):
+            names_occur.append( "Loc. {}".format(ilocation+1) )
+
+    locations["name"] = names_occur
+
+    return locations
 
 
 
