@@ -1,6 +1,6 @@
 # Historical Flood Event Python Toolkit
 
-This library is a collection of tools helpful to analyse flood events of the Historial Flood Event Database issued by Natural Resources Canada (NRCan). A documentation of the tools and their usage can be found [here](https://github.com/julemai/nrcan-hfe/tree/main/doc). Below are instructions on how to setup a Python environment with requirements to run tools of this collection. It also conatins instructions on how to test the various functions. Questions can be directed to <a href="mailto:juliane.mai@uwaterloo.ca">Julie Mai</a> or through the issues section [here](https://github.com/julemai/nrcan-hfe/issues).
+This library is a collection of tools helpful to analyse flood events of the Historial Flood Event Database issued by Natural Resources Canada (NRCan). A documentation of the tools and their usage can be found [here](https://github.com/julemai/nrcan-hfe/blob/main/doc/HFE_database_2022Q03_documentation.pdf). Below are instructions on how to setup a Python environment with requirements to run tools of this collection. It also conatins instructions on how to test the various functions. Questions can be directed to <a href="mailto:juliane.mai@uwaterloo.ca">Julie Mai</a> or through the issues section [here](https://github.com/julemai/nrcan-hfe/issues).
 
 <p align="center">
    <img alt="Umbrella icons created by Freepik - Flaticon. See here: https://www.flaticon.com/free-icons/umbrella" src="https://github.com/julemai/nrcan-hfe/blob/main/doc/logo/HFE_logo.png" width="65%" />
@@ -122,4 +122,34 @@ python ex_determine_bbox.py
 python fx_determine_dates.py 
 python gx_identify_precipitation_event.py
 ```
+
+## Getting started
+
+Analyse two single-point occurrences listed in `data/hfe/historical_flood.json`:
+```python
+# Maybe load some modules on your system?! (see, for example, the ones listed for Graham under D.)
+
+# Load your Python environment.
+pyenv activate env-3.8.5-nrcan
+
+# Analyse occurrences.
+# Note: These two feaures have been selected because they require data from Geomet.
+#       If you pick other ones, you might need to request RDRS v2.1 from CaSPAr first.
+python src/analyse_occurrence.py --ifeatures "873, 1092" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
+```
+
+Analyse two multi-point events listed in `data/hfe/historical_flood_event.json`:
+```python
+# Maybe load some modules on your system?! (see, for example, the ones listed for Graham under D.)
+
+# Load your Python environment.
+pyenv activate env-3.8.5-nrcan
+
+# Analyse events.
+# Note: These two feaures have been selected because they require data from Geomet.
+#       If you pick other ones, you might need to request RDRS v2.1 from CaSPAr first.
+python src/analyse_event.py --ifeatures "0, 178" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
+```
+
+Please refer to the [documentation](https://github.com/julemai/nrcan-hfe/blob/main/doc/HFE_database_2022Q03_documentation.pdf), for an exaplantion of the arguments passed to these functions as well as a documentation of the entire toolkit.
 
