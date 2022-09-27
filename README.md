@@ -130,7 +130,7 @@ Analyse two single-point occurrences listed in `data/hfe/historical_flood.json`:
 # Load your Python environment.
 pyenv activate env-3.8.5-nrcan
 
-# Analyse occurrences
+# Analyse occurrences.
 # Note: These two feaures have been selected because they require data from Geomet.
 #       If you pick other ones, you might need to request RDRS v2.1 from CaSPAr first.
 python src/analyse_occurrence.py --ifeatures "873, 1092" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
@@ -141,7 +141,7 @@ Analyse two multi-point events listed in `data/hfe/historical_flood_event.json`:
 # Load your Python environment.
 pyenv activate env-3.8.5-nrcan
 
-# Analyse events
+# Analyse events.
 # Note: These two feaures have been selected because they require data from Geomet.
 #       If you pick other ones, you might need to request RDRS v2.1 from CaSPAr first.
 python src/analyse_event.py --ifeatures "0, 178" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
