@@ -38,7 +38,7 @@ features=$( printf "%s," "${features[@]}" )   # "2,12,22,"
 features=$( echo ${features::-1} )            # "2,12,22"
 
 # runs the script with set of features
-python analyse_occurrence.py -i "${features}" --bbox_buffer 0.5 --dates_buffer 5.0,5.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
+python analyse_occurrence.py -i "${features}" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
 
 
 
