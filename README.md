@@ -125,8 +125,9 @@ python gx_identify_precipitation_event.py
 
 ## Getting started
 
-Analyse two single-point occurrences listed in `data/hfe/historical_flood.json`
+Analyse two single-point occurrences listed in `data/hfe/historical_flood.json`:
 ```python
+# Load your Python environment.
 pyenv activate env-3.8.5-nrcan
 
 # Analyse occurrences listed in JSON file "data/hfe/historical_flood.json"
@@ -135,8 +136,9 @@ pyenv activate env-3.8.5-nrcan
 python src/analyse_occurrence.py --ifeatures "873, 1092" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
 ```
 
-Analyse two multi-point events listed in `data/hfe/historical_flood_event.json`
+Analyse two multi-point events listed in `data/hfe/historical_flood_event.json`:
 ```python
+# Load your Python environment.
 pyenv activate env-3.8.5-nrcan
 
 # Analyse event listed first (0) and second (1) in JSON file "data/hfe/historical_flood_event.json"
