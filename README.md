@@ -144,7 +144,7 @@ pyenv activate env-3.8.5-nrcan
 # Analyse event listed first (0) and second (1) in JSON file "data/hfe/historical_flood_event.json"
 # Note: These two feaures have been selected because they require data from Geomet.
 #       If you pick other ones, you might need to request RDRS v2.1 from CaSPAr first.
-python src/analyse_event.py --ifeatures "0, 1" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
+python src/analyse_event.py --ifeatures "0, 178" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
 ```
 
 Please refer to the [documentation](https://github.com/julemai/nrcan-hfe/blob/main/doc/HFE_database_2022Q03_documentation.pdf), for an exaplantion of the arguments passed to these functions as well as a documentation of the entire toolkit.
