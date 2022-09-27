@@ -8,8 +8,9 @@ doc/*.log
 doc/*.out
 doc/*.toc
 doc/*.synctex.gz
-doc/*.pdf
+#doc/*.pdf
 doc/*_timesheet.tex
+doc/*_timesheet.pdf
 doc/presentation_nrcan/*
 doc/figures/slides/*
 doc/figures/*.zip
