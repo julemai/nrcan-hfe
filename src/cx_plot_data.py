@@ -543,7 +543,10 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,pngsum=False,gif=Fal
                 # bmap.shadedrelief()
 
                 # plot coastlines
-                bmap.drawcoastlines(linewidth=0.3)
+                try:
+                    bmap.drawcoastlines(linewidth=0.3)
+                except:
+                    if not(silent): print("Coastlines seem to have an issue on this system.")
 
                 # plot rivers
                 bmap.drawrivers(linewidth=0.8,color=river_color)
@@ -768,7 +771,10 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,pngsum=False,gif=Fal
             # bmap.shadedrelief()
 
             # plot coastlines
-            bmap.drawcoastlines(linewidth=0.3)
+            try:
+                bmap.drawcoastlines(linewidth=0.3)
+            except:
+                if not(silent): print("Coastlines seem to have an issue on this system.")
 
             # plot rivers
             bmap.drawrivers(linewidth=0.8,color=river_color)

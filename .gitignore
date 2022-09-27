@@ -18,6 +18,7 @@ doc/HFE_database_2022Q03_meeting_20220929.*
 
 # test-data
 src/test-data/CMC*.grib2
+src/test-data/check_summary.json
 
 # data that will get downloaded
 data/geomet/*.grib2
