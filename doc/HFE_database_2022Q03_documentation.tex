@@ -285,12 +285,22 @@ The returned variable \texttt{data\_geomet} is a dictionary that will contain th
 			\> date=\textit{date}, \> \GRAU{\# date or list of dates as datetime objects}\\
 			\> \GRAU{\# Optional arguments:}\\
 			\> png=\textit{png}, \> \GRAU{\# True if PNG file(s) should be created}\\
+			\> pngsum=\textit{pngsum}, \> \GRAU{\# True if PNG file (map) with sum over all }\\
+			\> \> \GRAU{\# time steps should be created}\\
 			\> gif=\textit{gif}, \> \GRAU{\# True if GIF should be created}\\
 			\> legend=\textit{legend}, \> \GRAU{\# True if PNG of legend should be created}\\
 			\> cities=\textit{cities}, \> \GRAU{\# True to display cities on maps}\\
 			\> bbox=\textit{bbox}, \> \GRAU{\# Bounding box will be plotted if provided}\\
 			\> basefilename=\textit{basefilename}, \> \GRAU{\# String specifying basename of files created}\\
 			\> overwrite=\textit{overwrite}, \> \GRAU{\# True to overwrite existing plots}\\
+			\> label=\textit{label}, \> \GRAU{\# Overwrite default label which is date of }\\
+			\> \> \GRAU{\# time step plotted by this label }\\
+			\> \> \GRAU{\# (same label added to all plots produced)}\\
+			\> language=\textit{language}, \> \GRAU{\# language version used for plot;}\\
+			\> \> \GRAU{\# for example, 'en\_CA' or 'fr\_CA'}\\
+			\> locations=\textit{locations}, \> \GRAU{\# locations that are to be added }\\
+			\> \> \GRAU{\# as labels to plot; dictionary with keys }\\
+			\> \> \GRAU{\# "lat", "lon", and "name"}\\
 			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
 			\> ) \> 
 		\end{tabbing}
@@ -656,9 +666,9 @@ The module \texttt{dx\_interpolate\_data} also contains a convenience function t
 			\> locations=\textit{locations}, \> \GRAU{\# dict containing "lat" as list of }\\
 			\> \> \GRAU{\# latitudes and "lon" as list of }\\
 			\> \> \GRAU{\# longitudes for points }\\
-			\> dates=\textit{dates}, \> \GRAU{\# list of dates "data" are provided for}\\
-			\> data=\textit{data}, \> \GRAU{\# dictionary of data containing "lat", }\\
-			\> \> \GRAU{\# "lon", and "var" (return of }\\
+			\> dates=\textit{dates}, \> \GRAU{\# list of dates "data" are provided}\\
+			\> data=\textit{data}, \> \GRAU{\# dictionary of data containing }\\
+			\> \> \GRAU{\# "lat", "lon", and "var" (return of }\\
 			\> \> \GRAU{\# "interpolate\_data()")}\\
 			\> start\_date\_buffer=\textit{start\_date\_buffer}, \> \GRAU{\# start date incl. buffer}\\
 			\> end\_date\_buffer=\textit{end\_date\_buffer}, \> \GRAU{\# end date incl. buffer}\\
@@ -671,6 +681,9 @@ The module \texttt{dx\_interpolate\_data} also contains a convenience function t
 			\> end\_date=\textit{end\_date}, \> \GRAU{\# end date listed in HFE database}\\
 			\> \> \GRAU{\# (only used to plot vertical line)}\\
 			\> label=\textit{label}, \> \GRAU{\# custom label to add below plot}\\
+			\> language=\textit{language}, \> \GRAU{\# language version used for plot;}\\
+			\> \> \GRAU{\# currently implemented: ['en\_CA', }\\
+			\> \> \GRAU{\# 'en\_US', 'en\_UK', 'fr\_CA', 'fr\_FR']}\\
 			\> silent=\textit{silent}, \> \GRAU{\# True for no printing on screen}\\
 			\> ) \> 
 		\end{tabbing}
@@ -1029,7 +1042,7 @@ set to default values. This script can be called directly from the command-line 
 	\vspace*{-0.3cm}
 \end{framed}
 \vspace*{-0.3cm}
-The return value \texttt{"files\_created"} is a dictionary of files created. It has the keys \texttt{"png"} containing PNG files created and \texttt{"json"} containing JSON files that have the summarized analysis stored in the format they will be used to augment the HFE database.
+The return value \texttt{"files\_created"} is a dictionary of files created. It has the keys \texttt{"png-ts"} containing PNG files created showing time series, \texttt{"png"} with a list of PNG files showing maps, \texttt{"legend"} with a list of legends used for map PNG files, and \texttt{"json"} containing JSON files that have the summarized analysis stored in the format they will be used to augment the HFE database. It also contains a key \texttt{"gif"} which is added for consistency but should usually only be an empty list as no GIFs are created.
 \pagebreak
 
 \textbf{B. Usage as commandline function:}
