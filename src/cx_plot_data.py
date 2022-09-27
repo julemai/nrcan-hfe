@@ -42,13 +42,15 @@ __all__ = ['plot_data']
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=False,cities=True,bbox=None,basefilename='/tmp/test',overwrite=True,silent=True):
+def plot_data(var=None,lat=None,lon=None,date=None,png=True,pngsum=False,gif=False,legend=False,cities=True,bbox=None,
+              basefilename='/tmp/test',overwrite=True,label=None,language='en_CA',locations=None,silent=True):
     """
         Plot data retrieved from either Geomet or CaSPAr (data will be all formatted the same by now).
 
         Definition
         ----------
-        def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=False,cities=True,bbox=None,basefilename='/tmp/test',silent=True)
+        def plot_data(var=None,lat=None,lon=None,date=None,png=True,pngsum=False,gif=False,legend=False,cities=True,bbox=None,
+                      basefilename='/tmp/test',label=None,language='en',locations=None,silent=True)
 
 
         Input           Format         Description
@@ -78,6 +80,11 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
                                        no PNG file will be created. Value will be ignored in case "gif" is true as the
                                        PNGs are required to build the GIF.
                                        Default: True
+
+        pngsum          Boolean        If this is set to true, an additional PNG will be plotted which is the sum over
+                                       the first axis of var (which is usually time).
+                                       The filename is by default: "/tmp/test_sum.png".
+                                       Default: False
 
         gif             Boolean        If true, an animated GIF file is created. If false, no GIF file will be created.
                                        Creating a GIF makes most sense when variable "var" is given for multiple time steps
@@ -115,6 +122,20 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
         overwrite       Boolean        If file already exists at specified location (basefilename+appended extension), it
                                        will not be overwritten; unless overwrite is set to True.
                                        Default: True
+
+        label           string         If a string is specified here, this will be used to replace the standard title of
+                                       the plot which is the date of the timestep. Be aware that if multiple plots are
+                                       created all receive the same label.
+                                       Default: None
+
+        language        string         Language used for labels in plot. Must be one of the following:
+                                       ['en_CA', 'en_US', 'en_UK', 'fr_CA', 'fr_FR'].
+                                       Default: 'en_CA'
+
+        locations       dict           Dictionary providing attributes "lat" as list of latitudes and "lon" as list
+                                       of "longitudes" for locations that should be added as labels to plot. Lists of
+                                       "lat" and "lon" are assumed to be of the same length.
+                                       Default: None
 
         silent          Boolean        If set to True, nothing will be printed to terminal.
                                        Default: True
@@ -244,6 +265,14 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
         raise ValueError("plot_data: longitude needs to be specified")
     if date is None:
         raise ValueError("plot_data: date(s) needs to be specified")
+    if not(locations is None):
+        nlocations = np.shape(locations['lon'])[0]
+    if not(language.startswith('en_') or language.startswith('fr_')):
+        raise ValueError("plot_data: language specified must be one of the following: ['en_CA', 'en_US', 'en_UK', 'fr_CA', 'fr_FR']")
+
+    # set language
+    import locale
+    locale.setlocale(locale.LC_ALL, language)
 
     if len(np.shape(var)) == 3: # several time steps for variable provided
         # make sure everything is an np array
@@ -310,11 +339,13 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
     mpl.rc('lines', linewidth=lwidth, color='black')
     mpl.rc('axes', linewidth=alwidth, labelcolor='black')
     mpl.rc('path', simplify=False) # do not remove
+    mpl.rcParams['axes.formatter.use_locale'] = True
 
     # colors (gathered from reference legend created by Geomet)
     # e.g., run the following request and extract colors:
     # "https://geo.weather.gc.ca/geomet?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetLegendGraphic&LAYERS=RDPA.6F_PR&STYLES=RDPA-WXO&CRS=EPSG:4326&BBOX=45,-74,46,-73&WIDTH=400&HEIGHT=400&FORMAT=image/png"
     ocean_color = (151/256., 183/256., 224/256.)
+    river_color = ( 51/256.,  85/256., 120/256.)
     colors = [
         '#ffffff', #   0.00           - white
         '#98cbfe', #   0.10 -    0.50 - light blue
@@ -341,7 +372,7 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
     # ----------------------------------------------------
     # Read and prepare data if PNG/GIF files will be created
     # ----------------------------------------------------
-    if png or gif:
+    if png or gif or pngsum:
 
         # boundaries between lats and lons
         lonh = np.empty((nlat+1,nlon+1), dtype=float)
@@ -456,7 +487,7 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
     # ----------------------------------------------------
     if png:
 
-        if not(silent): print('Create PNG ')
+        if not(silent): print('Create PNG (map of precip per timestep)')
 
         for iidate,idate in enumerate(date):
 
@@ -487,40 +518,40 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
                 lon_0     =  (llcrnrlon_buf+urcrnrlon_buf)/2  # center of the map
 
                 try:
-                    bmap = Basemap(projection='merc',area_thresh=2000.,
+                    bmap = Basemap(projection='merc',area_thresh=200.,
                         llcrnrlon=llcrnrlon_buf, urcrnrlon=urcrnrlon_buf, llcrnrlat=llcrnrlat_buf, urcrnrlat=urcrnrlat_buf,
                         lat_1=lat_1, lat_2=lat_2, lat_0=lat_0, lon_0=lon_0,
                         resolution='i') # Lambert conformal (lcc), Mercator (merc)
                 except:
-                    bmap = Basemap(projection='merc',area_thresh=2000.,
+                    bmap = Basemap(projection='merc',area_thresh=200.,
                         llcrnrlon=llcrnrlon_buf, urcrnrlon=urcrnrlon_buf, llcrnrlat=llcrnrlat_buf, urcrnrlat=urcrnrlat_buf,
                         lat_1=lat_1, lat_2=lat_2, lat_0=lat_0, lon_0=lon_0,
                         resolution='l') # Lambert conformal (lcc), Mercator (merc)
 
                 # plot topo map
                 # bmap.etopo()
-                bmap.shadedrelief
+                # bmap.shadedrelief()
 
                 # plot coastlines
                 bmap.drawcoastlines(linewidth=0.3)
 
                 # plot rivers
-                bmap.drawrivers(linewidth=0.3)
+                bmap.drawrivers(linewidth=0.8,color=river_color)
 
                 #bmap.drawmapboundary(color='black', fill_color=ocean_color, linewidth=0.3)
                 #bmap.drawcountries(color='black', linewidth=0.3)
-                # bmap.fillcontinents(color='white', lake_color=ocean_color)
+                bmap.fillcontinents(color='0.8', lake_color=ocean_color)
                 bmap.fillcontinents(lake_color=ocean_color)
 
                 # latitudes - draw 3 parallels, labels = [left, right, top, bottom]
                 nparallels = 3.
                 bmap.drawparallels(np.arange(np.round(np.min(lath),1),np.round(np.max(lath),1)+0.1,np.round((np.max(lath)+0.1-np.min(lath))/nparallels,1)),
-                                       labels=[1,0,0,0], dashes=[1,1], linewidth=0.25, color='0.5')
+                                       labels=[1,0,0,0], dashes=[1,1], linewidth=0.25, color='0.5', labelstyle='+/-')
 
                 # longitudes - draw 3 meridians, labels = [left, right, top, bottom]
                 nmeridians = 3.
                 bmap.drawmeridians(np.arange(np.round(np.min(lonh),1),np.round(np.max(lonh),1)+0.1,np.round((np.max(lonh)+0.1-np.min(lonh))/nmeridians,1)),
-                                       labels=[0,0,0,1], dashes=[1,1], linewidth=0.25, color='0.5')
+                                       labels=[0,0,0,1], dashes=[1,1], linewidth=0.25, color='0.5', labelstyle='+/-')
 
                 # geo-referenced
                 # xx, yy = bmap(lon,lat)
@@ -534,10 +565,29 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
                     labelshiftx = 0.0 #(urcrnrlon_raw - llcrnrlon_raw)*.01
                     labelshifty = (urcrnrlat_raw - llcrnrlat_raw)*.005
                     for icity in city_inregion:
-                        cityx, cityy           = bmap(city_inregion[icity]["lon"],city_inregion[icity]["lat"])
+                        cityx, cityy   = bmap(city_inregion[icity]["lon"],city_inregion[icity]["lat"])
                         xshift, yshift = bmap(city_inregion[icity]["lon"]+labelshiftx,city_inregion[icity]["lat"]-labelshifty)
-                        sub.plot(cityx, cityy, 'ok',      markersize=3, zorder = 200)
-                        sub.text(xshift, yshift, icity , fontsize=textsize-1, zorder = 200, horizontalalignment="center", verticalalignment="top")
+                        sub.plot(cityx, cityy, marker='o', color='0.5', markersize=3, zorder = 200)
+                        sub.text(xshift, yshift, icity , fontsize=textsize-3, color='0.3', zorder = 200, horizontalalignment="center", verticalalignment="top")
+
+                # plot locations
+                if not(locations is None):
+
+                    labelshiftx = 0.0 #(urcrnrlon_raw - llcrnrlon_raw)*.01
+                    labelshifty = (urcrnrlat_raw - llcrnrlat_raw)*.005
+                    for iloc in range(nlocations):
+
+                        ilon = locations["lon"][iloc]
+                        ilat = locations["lat"][iloc]
+                        if "name" in locations.keys():
+                            iname = locations["name"][iloc]   # if name given
+                        else:
+                            iname = "Loc. {}".format(iloc+1)  # no name given, use generic one
+                        locx, locy   = bmap(ilon,ilat)
+                        xshift, yshift = bmap(ilon+labelshiftx,ilat+labelshifty)
+                        sub.plot(locx, locy, marker='o', color='black', markersize=6, zorder = 150)
+                        sub.text(xshift, yshift, iname , fontsize=textsize-1, color='black', zorder = 200, horizontalalignment="center", verticalalignment="bottom")
+
 
                 if not(bbox is None):
 
@@ -561,7 +611,10 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
                     bmap.plot(xbbox, ybbox, color='black', linewidth=1., zorder = 400)
 
                 # set title as time step
-                sub.set_title(timestep_title,fontsize=textsize+2)
+                if (label is None):
+                    sub.set_title(timestep_title,fontsize=textsize+2)
+                else:
+                    sub.set_title(label,fontsize=textsize+2)
 
                 fig.savefig(pngfile, transparent=transparent, bbox_inches=bbox_inches, pad_inches=pad_inches)
                 plt.close(fig)
@@ -610,9 +663,9 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
             # limiting the bounding box to the legend area,
             # slighly extended to ensure the surrounding rounded corner box of
             # is not cropped. Transparency is enabled, so it is not an issue.
-            bbox  = legend.get_window_extent().padded(2)
-            bbox = bbox.transformed(fig.dpi_scale_trans.inverted())
-            fig.savefig(legendfile, transparent=transparent, bbox_inches=bbox)
+            bbox_mpl = legend.get_window_extent().padded(2)
+            bbox_mpl = bbox_mpl.transformed(fig.dpi_scale_trans.inverted())
+            fig.savefig(legendfile, transparent=transparent, bbox_inches=bbox_mpl)
 
             plt.close(fig)
 
@@ -648,6 +701,150 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
         # add file to return
         result["gif"].append(giffile)
 
+    # ----------------------------------------------------
+    # Create PNG with sum of precip (needs to be after GIF)
+    # ----------------------------------------------------
+    if pngsum:
+
+        if not(silent): print('Create PNG (map of sum of precip)')
+
+        firstdate = date[0].strftime('%d %h %Y %H:%M:%S')
+        lastdate = date[-1].strftime('%d %h %Y %H:%M:%S')
+        if (language.startswith('en_')):
+            timestep_title = "Sum of precip. from {} to {} UTC".format(firstdate,lastdate)
+        elif (language.startswith('fr_')):
+            timestep_title = "Somme des précip. du {} au {} UTC".format(firstdate,lastdate)
+        else:
+            raise ValueError("plot_data: language not known")
+
+        timestep_filename = "sum"
+        pngfile = "{0}_{1}.png".format(basefilename,timestep_filename)
+
+        if overwrite or not( Path(pngfile).is_file() ):
+
+            # -------------------------------------------------------------------------
+            # Create figure object
+            # -------------------------------------------------------------------------
+            ifig += 1
+            iplot = 0
+            if not(silent): print('     Plot - Fig ', ifig, ' ::  ',pngfile)
+            fig = plt.figure(ifig)
+
+            # -------------------------------------------------------------------------
+            # Create map on figure
+            # -------------------------------------------------------------------------
+            iplot += 1
+            sub    = fig.add_axes( [0.0,0.0,1.0,1.0] )  # [left, bottom, width, height]
+
+            # Basemap
+            lat_1     =  (llcrnrlat_buf+urcrnrlat_buf)/2  # first  "equator"
+            lat_2     =  (llcrnrlat_buf+urcrnrlat_buf)/2  # second "equator"
+            lat_0     =  (llcrnrlat_buf+urcrnrlat_buf)/2  # center of the map
+            lon_0     =  (llcrnrlon_buf+urcrnrlon_buf)/2  # center of the map
+
+            try:
+                bmap = Basemap(projection='merc',area_thresh=200.,
+                    llcrnrlon=llcrnrlon_buf, urcrnrlon=urcrnrlon_buf, llcrnrlat=llcrnrlat_buf, urcrnrlat=urcrnrlat_buf,
+                    lat_1=lat_1, lat_2=lat_2, lat_0=lat_0, lon_0=lon_0,
+                    resolution='i') # Lambert conformal (lcc), Mercator (merc)
+            except:
+                bmap = Basemap(projection='merc',area_thresh=200.,
+                    llcrnrlon=llcrnrlon_buf, urcrnrlon=urcrnrlon_buf, llcrnrlat=llcrnrlat_buf, urcrnrlat=urcrnrlat_buf,
+                    lat_1=lat_1, lat_2=lat_2, lat_0=lat_0, lon_0=lon_0,
+                    resolution='l') # Lambert conformal (lcc), Mercator (merc)
+
+            # plot topo map
+            # bmap.etopo()
+            # bmap.shadedrelief()
+
+            # plot coastlines
+            bmap.drawcoastlines(linewidth=0.3)
+
+            # plot rivers
+            bmap.drawrivers(linewidth=0.8,color=river_color)
+
+            #bmap.drawmapboundary(color='black', fill_color=ocean_color, linewidth=0.3)
+            #bmap.drawcountries(color='black', linewidth=0.3)
+            bmap.fillcontinents(color='0.8', lake_color=ocean_color)
+            bmap.fillcontinents(lake_color=ocean_color)
+
+            # latitudes - draw 3 parallels, labels = [left, right, top, bottom]
+            nparallels = 3.
+            bmap.drawparallels(np.arange(np.round(np.min(lath),1),np.round(np.max(lath),1)+0.1,np.round((np.max(lath)+0.1-np.min(lath))/nparallels,1)),
+                                   labels=[1,0,0,0], dashes=[1,1], linewidth=0.25, color='0.5', labelstyle='+/-')
+
+            # longitudes - draw 3 meridians, labels = [left, right, top, bottom]
+            nmeridians = 3.
+            bmap.drawmeridians(np.arange(np.round(np.min(lonh),1),np.round(np.max(lonh),1)+0.1,np.round((np.max(lonh)+0.1-np.min(lonh))/nmeridians,1)),
+                                   labels=[0,0,0,1], dashes=[1,1], linewidth=0.25, color='0.5', labelstyle='+/-')
+
+            # geo-referenced
+            # xx, yy = bmap(lon,lat)
+            xxh, yyh = bmap(lonh,lath)
+            zz = np.sum(var,axis=0)
+            variable_plot = bmap.pcolor(xxh, yyh, zz, cmap=cmap, norm=norm, zorder = 100, alpha=0.7)
+
+            # plot cities
+            if cities:
+
+                labelshiftx = 0.0 #(urcrnrlon_raw - llcrnrlon_raw)*.01
+                labelshifty = (urcrnrlat_raw - llcrnrlat_raw)*.005
+                for icity in city_inregion:
+                    cityx, cityy   = bmap(city_inregion[icity]["lon"],city_inregion[icity]["lat"])
+                    xshift, yshift = bmap(city_inregion[icity]["lon"]+labelshiftx,city_inregion[icity]["lat"]-labelshifty)
+                    sub.plot(cityx, cityy, marker='o', color='0.5', markersize=3, zorder = 200)
+                    sub.text(xshift, yshift, icity , fontsize=textsize-3, color='0.3', zorder = 200, horizontalalignment="center", verticalalignment="top")
+
+            # plot locations
+            if not(locations is None):
+
+                labelshiftx = 0.0 #(urcrnrlon_raw - llcrnrlon_raw)*.01
+                labelshifty = (urcrnrlat_raw - llcrnrlat_raw)*.005
+                for iloc in range(nlocations):
+
+                    ilon = locations["lon"][iloc]
+                    ilat = locations["lat"][iloc]
+                    if "name" in locations.keys():
+                        iname = locations["name"][iloc]   # if name given
+                    else:
+                        iname = "Loc. {}".format(iloc+1)  # no name given, use generic one
+                    locx, locy   = bmap(ilon,ilat)
+                    xshift, yshift = bmap(ilon+labelshiftx,ilat+labelshifty)
+                    sub.plot(locx, locy, marker='o', color='black', markersize=6, zorder = 150)
+                    sub.text(xshift, yshift, iname , fontsize=textsize-1, color='black', zorder = 200, horizontalalignment="center", verticalalignment="bottom")
+
+            if not(bbox is None):
+
+                xbbox = []
+                ybbox = []
+                xpt, ypt = bmap(bbox["lon"]["min"], bbox["lat"]["min"])
+                xbbox.append(xpt)
+                ybbox.append(ypt)
+                xpt, ypt = bmap(bbox["lon"]["max"], bbox["lat"]["min"])
+                xbbox.append(xpt)
+                ybbox.append(ypt)
+                xpt, ypt = bmap(bbox["lon"]["max"], bbox["lat"]["max"])
+                xbbox.append(xpt)
+                ybbox.append(ypt)
+                xpt, ypt = bmap(bbox["lon"]["min"], bbox["lat"]["max"])
+                xbbox.append(xpt)
+                ybbox.append(ypt)
+                xpt, ypt = bmap(bbox["lon"]["min"], bbox["lat"]["min"])
+                xbbox.append(xpt)
+                ybbox.append(ypt)
+                bmap.plot(xbbox, ybbox, color='black', linewidth=1., zorder = 400)
+
+            # set title as time step
+            if (label is None):
+                sub.set_title(timestep_title,fontsize=textsize+2)
+            else:
+                sub.set_title(label,fontsize=textsize+2)
+
+            fig.savefig(pngfile, transparent=transparent, bbox_inches=bbox_inches, pad_inches=pad_inches)
+            plt.close(fig)
+
+        # add file to return
+        result["png"].append(pngfile)
 
     # ----------------------------------------------------
     # Done.
