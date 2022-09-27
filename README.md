@@ -3,7 +3,7 @@
 This library is a collection of tools helpful to analyse flood events of the Historial Flood Event Database issued by Natural Resources Canada (NRCan). A documentation of the tools and their usage can be found [here](https://github.com/julemai/nrcan-hfe/tree/main/doc). Below are instructions on how to setup a Python environment with requirements to run tools of this collection. It also conatins instructions on how to test the various functions. Questions can be directed to <a href="mailto:juliane.mai@uwaterloo.ca">Julie Mai</a> or through the issues section [here](https://github.com/julemai/nrcan-hfe/issues).
 
 <p align="center">
-   <img alt="Umbrella icons created by Freepik - Flaticon." src="https://github.com/julemai/nrcan-hfe/blob/main/doc/logo/HFE_logo.png" width="65%" />
+   <img alt="Umbrella icons created by Freepik - Flaticon. See here: https://www.flaticon.com/free-icons/umbrella" src="https://github.com/julemai/nrcan-hfe/blob/main/doc/logo/HFE_logo.png" width="65%" />
 </p>
 
 ## Python environment
