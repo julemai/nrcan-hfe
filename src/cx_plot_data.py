@@ -497,13 +497,20 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,gif=False,legend=Fal
                         lat_1=lat_1, lat_2=lat_2, lat_0=lat_0, lon_0=lon_0,
                         resolution='l') # Lambert conformal (lcc), Mercator (merc)
 
+                # plot topo map
+                # bmap.etopo()
+                bmap.shadedrelief
 
                 # plot coastlines
-                #bmap.drawcoastlines(linewidth=0.3)
+                bmap.drawcoastlines(linewidth=0.3)
+
+                # plot rivers
+                bmap.drawrivers(linewidth=0.3)
 
                 #bmap.drawmapboundary(color='black', fill_color=ocean_color, linewidth=0.3)
                 #bmap.drawcountries(color='black', linewidth=0.3)
-                bmap.fillcontinents(color='white', lake_color=ocean_color)
+                # bmap.fillcontinents(color='white', lake_color=ocean_color)
+                bmap.fillcontinents(lake_color=ocean_color)
 
                 # latitudes - draw 3 parallels, labels = [left, right, top, bottom]
                 nparallels = 3.
