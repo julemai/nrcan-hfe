@@ -127,6 +127,8 @@ python gx_identify_precipitation_event.py
 
 Analyse two single-point occurrences listed in `data/hfe/historical_flood.json`:
 ```python
+# Maybe load some modules on your system?! (see, for example, the ones listed for Graham under D.)
+
 # Load your Python environment.
 pyenv activate env-3.8.5-nrcan
 
@@ -138,6 +140,8 @@ python src/analyse_occurrence.py --ifeatures "873, 1092" --bbox_buffer 0.5 --dat
 
 Analyse two multi-point events listed in `data/hfe/historical_flood_event.json`:
 ```python
+# Maybe load some modules on your system?! (see, for example, the ones listed for Graham under D.)
+
 # Load your Python environment.
 pyenv activate env-3.8.5-nrcan
 
