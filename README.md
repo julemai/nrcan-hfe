@@ -145,3 +145,5 @@ pyenv activate env-3.8.5-nrcan
 python src/analyse_event.py --ifeatures "0, 1" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
 ```
 
+Please refer to the [documentation](https://github.com/julemai/nrcan-hfe/tree/main/doc), for an exaplantion of the arguments passed to these functions as well as a documentation of the entire toolkit.
+
