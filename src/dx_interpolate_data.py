@@ -373,7 +373,8 @@ def interpolate_data(var=None,lat=None,lon=None,locations=None,bbox=None,return_
 
 
 
-def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None,end_date_buffer=None,pngfile=None,highlight_dates_idx=None,start_date=None,end_date=None,label=None,silent=True):
+def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None,end_date_buffer=None,pngfile=None,
+                      highlight_dates_idx=None,start_date=None,end_date=None,label=None,language='en_CA',silent=True):
 
     """
         Plot interpolated data.
@@ -381,7 +382,7 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
         Definition
         ----------
         def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None,end_date_buffer=None,pngfile=None,
-                              highlight_dates_idx=None,start_date=None,end_date=None,label=None,silent=True)
+                              highlight_dates_idx=None,start_date=None,end_date=None,label=None,language='en_CA',silent=True)
 
 
         Input           Format         Description
@@ -427,6 +428,10 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
         label           string         Label to be added below the figure to contain, for example, station name or
                                        additional custom information.
                                        Default: None
+
+        language        string         Language used for labels in plot. Must be one of the following:
+                                       ['en_CA', 'en_US', 'en_UK', 'fr_CA', 'fr_FR'].
+                                       Default: 'en_CA'
 
         silent          Boolean        If set to True, nothing will be printed to terminal.
                                        Default: True
@@ -531,6 +536,12 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
         raise ValueError("plot_interpolated: start_date_buffer needs to be specified")
     if (end_date_buffer is None):
         raise ValueError("plot_interpolated: end_date_buffer needs to be specified")
+    if not(language.startswith('en_') or language.startswith('fr_')):
+        raise ValueError("plot_data: language specified must be one of the following: ['en_CA', 'en_US', 'en_UK', 'fr_CA', 'fr_FR']")
+
+    # set language
+    import locale
+    locale.setlocale(locale.LC_ALL, language)
 
     # initialize return
     result = {}
@@ -657,14 +668,26 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
     # -------------------------------------------------------------------------
     # Plot some vertical lines to visualize time period requested (incl. buffer) and start and end date of event
     # -------------------------------------------------------------------------
-    sub.plot([start_date_buffer,start_date_buffer],[ymin,ymax],label='Start date incl. buffer',color='0.8',linewidth=1.0*lwidth,linestyle='--',zorder=50)
 
+    if (language.startswith('en_')):
+        ilabel_start_buf = "Start date incl. buffer"
+        ilabel_start     = "Event start date"
+        ilabel_end       = "Event end date"
+        ilabel_end_buf   = "End date incl. buffer"
+    elif (language.startswith('fr_')):
+        ilabel_start_buf = "Date de début avec tampon"
+        ilabel_start     = "Date de début évén."
+        ilabel_end       = "Date de fin évén."
+        ilabel_end_buf   = "Date de fin avec tampon"
+    else:
+        raise ValueError("plot_interpolated: language not known")
+
+    sub.plot([start_date_buffer,start_date_buffer],[ymin,ymax],label=ilabel_start_buf,color='0.8',linewidth=1.0*lwidth,linestyle='--',    zorder=50)
     if not(start_date is None):
-        sub.plot([start_date,start_date],[ymin,ymax],label='Event start date',color='0.8',linewidth=1.0*lwidth,linestyle='dotted',zorder=50)
+        sub.plot([start_date,start_date],[ymin,ymax],          label=ilabel_start,    color='0.8',linewidth=1.0*lwidth,linestyle='dotted',zorder=50)
     if not(end_date is None):
-        sub.plot([end_date,end_date],[ymin,ymax],label='Event end date',color='0.8',linewidth=1.0*lwidth,linestyle='dotted',zorder=50)
-
-    sub.plot([end_date_buffer,end_date_buffer],[ymin,ymax],label='End date incl. buffer',color='0.8',linewidth=1.0*lwidth,linestyle='--',zorder=50)
+        sub.plot([end_date,end_date],[ymin,ymax],              label=ilabel_end,      color='0.8',linewidth=1.0*lwidth,linestyle='dotted',zorder=50)
+    sub.plot([end_date_buffer,end_date_buffer],[ymin,ymax],    label=ilabel_end_buf,  color='0.8',linewidth=1.0*lwidth,linestyle='--',    zorder=50)
 
     # -------------------------------------------------------------------------
     # Highlight some time steps if requested
@@ -673,7 +696,13 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
 
         for ilocation in range(nlocations):
             if ilocation == 0:
-                ilabel = "Event precip. considered"
+                if (language.startswith('en_')):
+                    ilabel = "Event precip. considered"
+                elif (language.startswith('fr_')):
+                    ilabel = "Précip. de l’événement considérée"
+                else:
+                    raise ValueError("plot_interpolated: language not known")
+
             else:
                 ilabel = ""
 
@@ -698,7 +727,13 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
     # -------------------------------------------------------------------------
     # Label on axes
     # -------------------------------------------------------------------------
-    plt.setp(sub,  ylabel="Precipitation Rate [mm h$^{-1}$]")   # [mm/6h]
+    if (language.startswith('en_')):
+        ylabel = "Precipitation Rate [mm h$^{-1}$]"
+    elif (language.startswith('fr_')):
+        ylabel = "Taux de précipitation [mm h$^{-1}$]"
+    else:
+        raise ValueError("plot_interpolated: language not known")
+    plt.setp(sub,  ylabel=ylabel)
 
     # -------------------------------------------------------------------------
     # plot legend
