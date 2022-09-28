@@ -414,7 +414,6 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
             else:
                 raise ValueError("analyse_occurrence: language not known")
 
-
             pngfile = str(Path(tmpdir+'/analyse_occurrence_'+str(ifeature)+'/occurrence_'+ilanguage+'_'+str(ifeature)+'_'+product.replace(":","-")+'.png'))
             pngfile = str(Path(tmpdir+'/analyse_occurrence_'+str(ifeature)+'/occurrence_'+ilanguage+'_'+feature['properties']['uuid']+'_'+product.replace(":","-")+'.png'))
             file_interpolated = plot_interpolated(locations=locations,
