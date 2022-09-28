@@ -75,5 +75,5 @@ cd -
 # 65632207  - redo        :: 363 events; 100 tasks --> 3 or 4 events per task --> took ~2h
 #                            (all  adjustments from Philippe implemented; expecially new basemap setting and languages (2x number of plots))
 # 65636363  - redo        :: 12 events that crashed (guessing because no PNGs were there?!)
-#           - redo        :: 363 events; 100 tasks --> 3 or 4 events per task --> took ~2h
+# 65657369  - redo        :: 363 events; 100 tasks --> 3 or 4 events per task --> took ~2h
 #                            (Philippe updated the database)

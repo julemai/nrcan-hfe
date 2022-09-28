@@ -80,5 +80,5 @@ cd -
 #                            (redo with --dates_buffer 5.0,5.0)
 # 65632250  - redo        :: 1854 occurrences; 200 tasks --> 9 or 10 occurrences per task --> took ~20h
 #                            (all  adjustments from Philippe implemented; expecially new basemap setting and languages (2x number of plots))
-#           - redo        :: 1949 occurrences; 200 tasks --> 9 or 10 occurrences per task --> took ~20h
+# 65657507  - redo        :: 1949 occurrences; 200 tasks --> 9 or 10 occurrences per task --> took ~20h
 #                            (Philippe updated the database)
