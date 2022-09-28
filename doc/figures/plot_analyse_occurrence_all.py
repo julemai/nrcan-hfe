@@ -32,6 +32,8 @@ from mpl_toolkits.basemap import Basemap
 import numpy as np
 import json as json
 import glob as glob
+import shutil
+from pathlib import Path  # Pathlib docu: https://docs.python.org/3/library/pathlib.html
 
 # -----------------------
 # add subolder scripts/lib to search path
@@ -42,31 +44,81 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path+'/../../src')
 
 
-
-
-# --------------
-# read all results files
-# --------------
-
-files = glob.glob(dir_path+'/../../data/output/analyse_occurrence_*/*.json')
-nfiles = len(files)
-print("Results for {} single-point features found.".format(nfiles))
+zipfiles = np.sort(glob.glob(str(Path(dir_path+'/../../data/output/analyse_occurrence_*.zip'))))
 
 results = {}
-for ff in files:
+nfiles = 0
+for zipfile in zipfiles:
 
-    ifeature_uuid = ff.split('/')[-1].split('_')[1]
-    ifeature_idx  = ff.split('/')[-2].split('_')[2]
+    extract_dir = Path(zipfile).parent                                          # dir_path+'/../../data/output
+    unzippedfoldername = Path(zipfile).parent.joinpath(Path(zipfile).stem)      # dir_path+'/../../data/output/analyse_occurrence_123
 
-    tmp = {}
-    tmp['uuid'] = ifeature_uuid
+    # unzip file
+    if not( unzippedfoldername.exists() ):
+        shutil.unpack_archive(zipfile, extract_dir)
 
-    with open(ff, 'r') as ifile:
-        tmp['results'] = json.load(ifile)
+    # find JSON file with results (there should be only one)
+    jsonfile = glob.glob(str(unzippedfoldername)+'/*.json')
+    # print("jsonfile = ",jsonfile)
 
-    results[int(ifeature_idx)] = tmp
+    if len(jsonfile) != 1:
+        raise ValueError("Number of JSON files found is {} which is not the expected number of 1.".format(len(jsonfile)))
+    else:
+        # collect results
+        ff = jsonfile[0]
+        ifeature_uuid = ff.split('/')[-1].split('_')[1]     # 'e76ba3f9-9d8e-40f3-9199-6da1579e00d6'
+        ifeature_idx  = ff.split('/')[-2].split('_')[2]     # '13'
+
+        tmp = {}
+        tmp['uuid'] = ifeature_uuid
+
+        with open(ff, 'r') as ifile:
+            tmp['results'] = json.load(ifile)
+
+        results[int(ifeature_idx)] = tmp
+
+        # count files evaluated
+        nfiles += 1
+
+
+    # remove unzipped files and folder
+    shutil.rmtree(unzippedfoldername)
+
+print("Results for {} single-point features found.".format(nfiles))
 
 features_idx = np.sort(list(results.keys()))
+
+
+
+
+
+# # --------------
+# # read all results files
+# # --------------
+
+# files = glob.glob(dir_path+'/../../data/output/analyse_occurrence_*/*.json')
+# nfiles = len(files)
+# print("Results for {} single-point features found.".format(nfiles))
+
+# results = {}
+# for ff in files:
+
+#     ifeature_uuid = ff.split('/')[-1].split('_')[1]
+#     ifeature_idx  = ff.split('/')[-2].split('_')[2]
+
+#     tmp = {}
+#     tmp['uuid'] = ifeature_uuid
+
+#     with open(ff, 'r') as ifile:
+#         tmp['results'] = json.load(ifile)
+
+#     results[int(ifeature_idx)] = tmp
+
+# features_idx = np.sort(list(results.keys()))
+
+
+
+
 
 
 # --------------
