@@ -578,15 +578,14 @@ Table~\ref{tab:HFE_JSON_feautues} shows the number of features available in the 
 	&&  \texttt{filtering=False} & \texttt{filtering=True} & \texttt{filtering=True} \\
 	&&                           & \texttt{polygon=None}   & \texttt{polygon=polygon} \\
 	\hline
-	\multicolumn{2}{l}{historical\_flood.json} & 1904 & 1854$^\mathrm{a}$ & 1854$^\mathrm{c}$ \\
-	\multicolumn{2}{l}{historical\_flood\_event.json} & 487 & 363$^\mathrm{b}$ & 363$^\mathrm{c}$\\
+	\multicolumn{2}{l}{historical\_flood.json} & 1999 & 1949$^\mathrm{a}$ & 1854$^\mathrm{c}$ \\
+	\multicolumn{2}{l}{historical\_flood\_event.json} & 376 & 363$^\mathrm{b}$ & 363$^\mathrm{c}$\\
 	\hline
 	\multicolumn{1}{r}{$^\mathrm{a}$ $\ldots$} & \multicolumn{4}{l}{in total, n=50 features are flagged;}\\
 	& \multicolumn{4}{l}{$\curvearrowright$ n=11 due to check \#2 (only year but not date specified)}\\
 	& \multicolumn{4}{l}{$\curvearrowright$ n=39 due to check \#4 (start-date after end-date)}\\
-	\multicolumn{1}{r}{$^\mathrm{b}$ $\ldots$} & \multicolumn{4}{l}{in total, n=124 features are flagged; }\\
+	\multicolumn{1}{r}{$^\mathrm{b}$ $\ldots$} & \multicolumn{4}{l}{in total, n=14 features are flagged; }\\
 	& \multicolumn{4}{l}{$\curvearrowright$ n=9 due to check \#2 (only year but not date specified)}\\
-	& \multicolumn{4}{l}{$\curvearrowright$ n=110 due to check \#3 (event being before Jan 1, 1980)}\\
 	& \multicolumn{4}{l}{$\curvearrowright$ n=5 due to check \#4 (start-date after end-date)}\\
 	\multicolumn{1}{r}{$^\mathrm{c}$ $\ldots$} & \multicolumn{4}{l}{in total, n=0 features are flagged due to check \#4}\\
 	& \multicolumn{4}{l}{$\curvearrowright$ i.e., all features are inside polygon}\\

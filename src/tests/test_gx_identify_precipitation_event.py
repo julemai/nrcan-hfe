@@ -58,7 +58,7 @@ def test_identify_precipitation_event():
 
     data_hfe = read_hfe_json(filename=filename,filtering=filtering,polygon=polygon,return_filtered=return_filtered,silent=silent)
 
-    ifeature = 1277
+    ifeature = 1345    # uuid = e4440f9a-2c04-4735-840c-d2ba065d3e30    # was 1277 in "HFE_data_v1"
     feature = data_hfe['data']['features'][ifeature]
 
     # --------------------------------------

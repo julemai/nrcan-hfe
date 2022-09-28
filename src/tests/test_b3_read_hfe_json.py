@@ -53,7 +53,7 @@ def test_read_hfe_events():
 
     # no filtering; just reading
     data_hfe = read_hfe_json(filename=filename,filtering=False,polygon=None,silent=True)
-    np.testing.assert_almost_equal( len(data_hfe['data']['features']) , 487 )
+    np.testing.assert_almost_equal( len(data_hfe['data']['features']) , 376 )
 
     # filtering w/o checking if points are in polygon
     data_hfe = read_hfe_json(filename=filename,filtering=True,polygon=None,silent=True)
@@ -74,12 +74,12 @@ def test_read_hfe_occurrences():
 
     # no filtering; just reading
     data_hfe = read_hfe_json(filename=filename,filtering=False,polygon=None,silent=True)
-    np.testing.assert_almost_equal( len(data_hfe['data']['features']) , 1904 )
+    np.testing.assert_almost_equal( len(data_hfe['data']['features']) , 1999 )
 
     # filtering w/o checking if points are in polygon
     data_hfe = read_hfe_json(filename=filename,filtering=True,polygon=None,silent=True)
-    np.testing.assert_almost_equal( len(data_hfe['data']['features']) , 1854 )
+    np.testing.assert_almost_equal( len(data_hfe['data']['features']) , 1949 )
 
     # filtering w/  checking if points are in polygon
     data_hfe = read_hfe_json(filename=filename,filtering=True,polygon=polygon,silent=True)
-    np.testing.assert_almost_equal( len(data_hfe['data']['features']) , 1852 )
+    np.testing.assert_almost_equal( len(data_hfe['data']['features']) , 1947 )
