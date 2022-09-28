@@ -50,19 +50,29 @@ results = {}
 nfiles = 0
 for zipfile in zipfiles:
 
+    unpacked = False
+
     extract_dir = Path(zipfile).parent                                          # dir_path+'/../../data/output
     unzippedfoldername = Path(zipfile).parent.joinpath(Path(zipfile).stem)      # dir_path+'/../../data/output/analyse_occurrence_123
 
     # unzip file
     if not( unzippedfoldername.exists() ):
         shutil.unpack_archive(zipfile, extract_dir)
+        unpacked = True
 
     # find JSON file with results (there should be only one)
     jsonfile = glob.glob(str(unzippedfoldername)+'/*.json')
     # print("jsonfile = ",jsonfile)
 
     if len(jsonfile) != 1:
-        raise ValueError("Number of JSON files found is {} which is not the expected number of 1.".format(len(jsonfile)))
+        if len(jsonfile) == 0:
+            print("Event {} probably still processing. Skip for now.".format(str(unzippedfoldername)))
+            # remove unzipped files and folder if they were created here
+            if unpacked:
+                shutil.rmtree(unzippedfoldername)
+            continue
+        else:
+            raise ValueError("Number of JSON files found is {} which is not the expected number of 1.".format(len(jsonfile)))
     else:
         # collect results
         ff = jsonfile[0]
@@ -81,10 +91,11 @@ for zipfile in zipfiles:
         nfiles += 1
 
 
-    # remove unzipped files and folder
-    shutil.rmtree(unzippedfoldername)
+    # remove unzipped files and folder if they were created here
+    if unpacked:
+        shutil.rmtree(unzippedfoldername)
 
-print("Results for {} single-point features found.".format(nfiles))
+print("Results for {} single-point occurrence zip-files found and processed.".format(nfiles))
 
 features_idx = np.sort(list(results.keys()))
 

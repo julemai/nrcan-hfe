@@ -66,7 +66,13 @@ for zipfile in zipfiles:
 
     if len(jsonfile) != 1:
         exceptionfile = glob.glob(str(unzippedfoldername)+'/exception.token')
-        if len(exceptionfile) == 1:
+        if len(jsonfile) == 0:
+            print("Event {} probably still processing. Skip for now.".format(str(unzippedfoldername)))
+            # remove unzipped files and folder if they were created here
+            if unpacked:
+                shutil.rmtree(unzippedfoldername)
+            continue
+        elif len(exceptionfile) == 1:
             print("Event {} not analysed because too long.".format(str(unzippedfoldername)))
             # remove unzipped files and folder if they were created here
             if unpacked:
@@ -78,7 +84,7 @@ for zipfile in zipfiles:
         # collect results
         ff = jsonfile[0]
         ifeature_event_id = ff.split('/')[-1].split('_')[1]     # 'e76ba3f9-9d8e-40f3-9199-6da1579e00d6'
-        ifeature_idx  = ff.split('/')[-2].split('_')[2]     # '13'
+        ifeature_idx  = ff.split('/')[-2].split('_')[2]         # '13'
 
         tmp = {}
         tmp['event_id'] = ifeature_event_id
@@ -95,7 +101,7 @@ for zipfile in zipfiles:
     if unpacked:
         shutil.rmtree(unzippedfoldername)
 
-print("Results for {} multi-point features found.".format(nfiles))
+print("Results for {} multi-point event zip-files found and processed.".format(nfiles))
 
 features_idx = np.sort(list(results.keys()))
 
