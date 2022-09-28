@@ -693,26 +693,29 @@ def plot_data(var=None,lat=None,lon=None,date=None,png=True,pngsum=False,gif=Fal
         if not(silent): print('Create GIF ')
         giffile = "{0}.gif".format(basefilename)
 
-        if overwrite or not( Path(giffile).is_file() ):
+        pngs = np.sort(result["png"])   # makes sure files are sorted
 
-            ifig += 1
-            if not(silent): print('     Plot - Fig ', ifig, ' ::  ',giffile)
+        if len(pngs) > 0: # create GIF only if there is at least one PNG
 
-            # Create frames
-            frames = []
-            pngs = np.sort(result["png"])   # makes sure files are sorted
-            for png in pngs:
-                frame = Image.open(png)
-                frames.append(frame)
+            if overwrite or not( Path(giffile).is_file() ):
 
-            # Save into GIF file that loops forever
-            frames[0].save(giffile, format='GIF',
-                           append_images=frames[1:],
-                           save_all=True,
-                           duration=300, loop=0)
+                ifig += 1
+                if not(silent): print('     Plot - Fig ', ifig, ' ::  ',giffile)
 
-        # add file to return
-        result["gif"].append(giffile)
+                # Create frames
+                frames = []
+                for png in pngs:
+                    frame = Image.open(png)
+                    frames.append(frame)
+
+                # Save into GIF file that loops forever
+                frames[0].save(giffile, format='GIF',
+                               append_images=frames[1:],
+                               save_all=True,
+                               duration=300, loop=0)
+
+            # add file to return
+            result["gif"].append(giffile)
 
     # ----------------------------------------------------
     # Create PNG with sum of precip (needs to be after GIF)
