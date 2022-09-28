@@ -45,7 +45,7 @@ cd /project/6070465/julemai/nrcan-hfe/src/
 # ---------------------
 # run the ones that had an error
 # ---------------------
-features=( 28, 128, 228, 328, 30, 130, 230, 330, 34, 134, 234, 334  )  # 12 total
+features=( 28 128 228 328 30 130 230 330 34 134 234 334  )  # 12 total
 ifeatures=$( echo ${features[$(( ${SLURM_ARRAY_TASK_ID} - 1 ))]} )   # This will give you one basin after the other
 
 # runs the script with the ith feature
@@ -74,3 +74,4 @@ cd -
 #                            (fixed that for some stations no event found; memory now set to 16GB)
 # 65632207  - redo        :: 363 events; 100 tasks --> 3 or 4 events per task --> took ~2h
 #                            (all  adjustments from Philippe implemented; expecially new basemap setting and languages (2x number of plots))
+# 65636363  - redo        :: 12 events that crashed (guessing because no PNGs were there?!)
