@@ -562,9 +562,9 @@ def plot_interpolated(locations=None,dates=None,data=None,start_date_buffer=None
     dates = np.array(dates)
 
     # make sure missing time steps are masked
-    timedelta = (
-        ((dates[1]-dates[0]).days)*24+
-        ((dates[1]-dates[0]).seconds)/60/60)
+    timedelta = np.min( [(
+        ((dates[ii+1]-dates[ii]).days)*24+
+        ((dates[ii+1]-dates[ii]).seconds)/60/60) for ii in range(len(dates)-1)])
 
     ntime = int(((end_date_buffer-start_date_buffer).days*24+(end_date_buffer-start_date_buffer).seconds/60/60)/timedelta)+1
     dates_all = np.array([start_date_buffer + datetime.timedelta(hours=timedelta*ii) for ii in range(ntime)])
