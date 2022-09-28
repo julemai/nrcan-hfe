@@ -30,7 +30,7 @@ cd /project/6070465/julemai/nrcan-hfe/src/
 # ---------------------
 # run all
 # ---------------------
-nfeatures=1854
+nfeatures=1949 #1854
 ntasks=200         # make sure this is the number of tasks set for array-job
 
 features=( $( seq $(( ${SLURM_ARRAY_TASK_ID} - 1 )) ${ntasks} $(( ${nfeatures} -1 )) ) )  # (2,12,22,...)
@@ -80,15 +80,5 @@ cd -
 #                            (redo with --dates_buffer 5.0,5.0)
 # 65632250  - redo        :: 1854 occurrences; 200 tasks --> 9 or 10 occurrences per task --> took ~20h
 #                            (all  adjustments from Philippe implemented; expecially new basemap setting and languages (2x number of plots))
-
-
-
-# post-analyse results
-#
-# -------------------------
-# get results sorted by accumulated_mm
-# ---> some are really large --> occurrence longer than >>1 year
-# ---> some are really small --> there is just no event shortly before and after (you might want to post-process them again)
-# -------------------------
-# files=$( \ls ../data/output/analyse_occurrence_*/*.json )
-# for ff in $files ; do mm=$( jq . $ff | grep "accumulated_mm" | cut -d : -f 2 | cut -d ',' -f 1 ) ; echo ${mm} ${ff} ; done | sort -n
+#           - redo        :: 1949 occurrences; 200 tasks --> 9 or 10 occurrences per task --> took ~20h
+#                            (Philippe updated the database)
