@@ -9,7 +9,7 @@
 #SBATCH --mail-type=FAIL                           # email send only in case of failure
 #SBATCH --time=0-06:00:00                          # time (DD-HH:MM:SS);
 #SBATCH --job-name=analyse_event                   # name of job in queque
-#SBATCH --array=1-100
+#SBATCH --array=1-12
 
 
 # job-id  :: ${SLURM_ARRAY_JOB_ID}
@@ -27,30 +27,29 @@ source /project/6070465/julemai/nrcan-hfe/env-3.8/bin/activate
 cd /project/6070465/julemai/nrcan-hfe/src/
 
 
-# ---------------------
-# run all
-# ---------------------
-nfeatures=363
-ntasks=100         # make sure this is the number of tasks set for array-job
-
-features=( $( seq $(( ${SLURM_ARRAY_TASK_ID} - 1 )) ${ntasks} $(( ${nfeatures} -1 )) ) )  # (2,12,22,...)
-features=$( printf "%s," "${features[@]}" )   # "2,12,22,"
-ifeatures=$( echo ${features::-1} )            # "2,12,22"
-
-# runs the script with set of features
-python analyse_event.py -i "${ifeatures}" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
-
-
-
 # # ---------------------
-# # run the ones that had an error
+# # run all
 # # ---------------------
-# features=( 95 195 295 112 212 312 123 223 323 129 229 329 130 230 330 133 233 333 179 279 188 288 227 327  )  # 24 total
-# features=( 133  )  # 1 total
-# ifeatures=$( echo ${features[$(( ${SLURM_ARRAY_TASK_ID} - 1 ))]} )   # This will give you one basin after the other
+# nfeatures=363
+# ntasks=100         # make sure this is the number of tasks set for array-job
 
-# # runs the script with the ith feature
-# python analyse_event.py --ifeatures "${ifeatures}" --bbox_buffer 0.5 --dates_buffer 5.0,5.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
+# features=( $( seq $(( ${SLURM_ARRAY_TASK_ID} - 1 )) ${ntasks} $(( ${nfeatures} -1 )) ) )  # (2,12,22,...)
+# features=$( printf "%s," "${features[@]}" )   # "2,12,22,"
+# ifeatures=$( echo ${features::-1} )            # "2,12,22"
+
+# # runs the script with set of features
+# python analyse_event.py -i "${ifeatures}" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
+
+
+
+# ---------------------
+# run the ones that had an error
+# ---------------------
+features=( 28, 128, 228, 328, 30, 130, 230, 330, 34, 134, 234, 334  )  # 12 total
+ifeatures=$( echo ${features[$(( ${SLURM_ARRAY_TASK_ID} - 1 ))]} )   # This will give you one basin after the other
+
+# runs the script with the ith feature
+python analyse_event.py --ifeatures "${ifeatures}" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
 
 
 

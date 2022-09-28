@@ -35,10 +35,10 @@ ntasks=200         # make sure this is the number of tasks set for array-job
 
 features=( $( seq $(( ${SLURM_ARRAY_TASK_ID} - 1 )) ${ntasks} $(( ${nfeatures} -1 )) ) )  # (2,12,22,...)
 features=$( printf "%s," "${features[@]}" )   # "2,12,22,"
-features=$( echo ${features::-1} )            # "2,12,22"
+ifeatures=$( echo ${features::-1} )            # "2,12,22"
 
 # runs the script with set of features
-python analyse_occurrence.py -i "${features}" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
+python analyse_occurrence.py -i "${ifeatures}" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
 
 
 
@@ -46,10 +46,10 @@ python analyse_occurrence.py -i "${features}" --bbox_buffer 0.5 --dates_buffer 5
 # # run the ones that had an error
 # # ---------------------
 # features=( 261 461 484 561 661 684 687 732 761 861 884 887 932 961 1061 1084 1087 1132 1161 1261 1284 1287 1332 1339 1340 1361 1374 1461 1484 1487 1532 1539 1540 1561 1574 1661 1684 1687 1712 1732 1739 1740 1758 1761 1764 1774 )  # 46 total
-# ifeature=$( echo ${features[$(( ${SLURM_ARRAY_TASK_ID} - 1 ))]} )   # This will give you one basin after the other
+# ifeatures=$( echo ${features[$(( ${SLURM_ARRAY_TASK_ID} - 1 ))]} )   # This will give you one basin after the other
 
 # # runs the script with the ith feature
-# python analyse_occurrence.py -i "${ifeature}" --bbox_buffer 0.5 --dates_buffer 5.0,5.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
+# python analyse_occurrence.py -i "${ifeatures}" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
 
 
 
