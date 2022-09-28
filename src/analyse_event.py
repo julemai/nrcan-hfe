@@ -599,8 +599,6 @@ def find_names_of_occurrences(event_feature,data_hfe_occur,locations):
         found = False
         for ilocation in range(nlocations):
 
-            print("ilocation = ",ilocation)
-
             ilon = locations["lon"][ilocation]
             ilat = locations["lat"][ilocation]
 
@@ -614,7 +612,6 @@ def find_names_of_occurrences(event_feature,data_hfe_occur,locations):
                     iname = occurrences_of_event[ioccur]["properties"]["locality"]
                     break
 
-            print("found = ",found)
             if found:
                 names_occur.append( iname )
             else:
