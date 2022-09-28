@@ -48,6 +48,7 @@ zipfiles = np.sort(glob.glob(str(Path(dir_path+'/../../data/output/analyse_event
 
 results = {}
 nfiles = 0
+too_long = []
 for zipfile in zipfiles:
 
     print("Read data from {}".format(zipfile))
@@ -70,6 +71,14 @@ for zipfile in zipfiles:
         exceptionfile = glob.glob(str(unzippedfoldername)+'/exception.token')
         if len(exceptionfile) == 1:
             print("Event {} not analysed because too long.".format(str(unzippedfoldername)))
+            ff = open(str(exceptionfile[0]), "r")
+            content = ff.read()
+            ff.close()
+            # analyse_event: Event 2c42d6b6-ae77-47c3-9fb5-0e4dde8e6719 (idx=212) not processed because it is too long (1151.0 days)
+            event_id = content.split(' ')[2]
+            idx = int(content.split('=')[1].split(')')[0])
+            length_event = float(content.split('(')[2].split(' ')[0])
+            too_long.append({'event_id':event_id,'idx':idx,'length':length_event})
             # remove unzipped files and folder if they were created here
             if unpacked:
                 shutil.rmtree(unzippedfoldername)
@@ -179,22 +188,22 @@ for ifeature_idx in features_idx:
 
 miss="??"
 
-no_precip_event_found = [ np.where((np.array(available_timesteps_n[iloc]) == 0) & (np.array(missing_timesteps_n[iloc]) == 0))[0] for iloc in range(nlocations) ]
-precip_small = [ np.where((np.array(accumulated_mm[iloc]) < 10.0))[0] for iloc in range(nlocations) ]
-precip_large = [ np.where((np.array(accumulated_mm[iloc]) > 1000.0))[0] for iloc in range(nlocations) ]
-nlocations_all = np.sum([ len(missing_timesteps_n[iloc]) for iloc in range(nlocations) ])
+no_precip_event_found = [ np.where((np.array(available_timesteps_n[iloc]) == 0) & (np.array(missing_timesteps_n[iloc]) == 0))[0] for iloc in range(nfiles) ]
+precip_small = [ np.where((np.array(accumulated_mm[iloc]) < 10.0))[0] for iloc in range(nfiles) ]
+precip_large = [ np.where((np.array(accumulated_mm[iloc]) > 1000.0))[0] for iloc in range(nfiles) ]
+nlocations_all = np.sum([ len(missing_timesteps_n[iloc]) for iloc in range(nfiles) ])
 
 print("")
 print("\\item number of available time steps: {} of {} ({:.4f} \%)".format(
-    np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nlocations) ]),
-    np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nlocations) ])+np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nlocations) ]),
-    np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nlocations) ])/(np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nlocations) ])+np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nlocations) ]))*100.))
+    np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nfiles) ]),
+    np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nfiles) ])+np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nfiles) ]),
+    np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nfiles) ])/(np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nfiles) ])+np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nfiles) ]))*100.))
 print("\\item number of missing time steps: {} of {} ({:.4f} \%)".format(
-    np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nlocations) ]),
-    np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nlocations) ])+np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nlocations) ]),
-    np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nlocations) ])/(np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nlocations) ])+np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nlocations) ]))*100.))
-print("\\item precipitation sum below 10~mm for {} of {} locations across {} features".format(np.sum([len(precip_small[iloc]) for iloc in range(nlocations)]),nlocations_all,len(features_idx)))
-print("\\item precipitation sum above 1000~mm for {} of {} locations across {} features \\\\(all have multi-year period specified in HFE database)\\\\".format(np.sum([len(precip_large[iloc]) for iloc in range(nlocations)]),nlocations_all,len(features_idx)))
+    np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nfiles) ]),
+    np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nfiles) ])+np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nfiles) ]),
+    np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nfiles) ])/(np.sum([ np.sum(available_timesteps_n[iloc]) for iloc in range(nfiles) ])+np.sum([ np.sum(missing_timesteps_n[iloc]) for iloc in range(nfiles) ]))*100.))
+print("\\item precipitation sum below 10~mm for {} of {} locations across {} events".format(np.sum([len(precip_small[iloc]) for iloc in range(nfiles)]),nlocations_all,len(features_idx)))
+print("\\item precipitation sum above 1000~mm for {} of {} locations across {} events \\\\".format(np.sum([len(precip_large[iloc]) for iloc in range(nfiles)]),nlocations_all,len(features_idx)))
 for iii,ii in enumerate(precip_large):
     if len(precip_large[iii]) > 1:
         print("   {{\\scriptsize Event ID: {} $\curvearrowright$ Start and end date = [{},{}]}}\\\\[-4pt]".format(
@@ -202,7 +211,12 @@ for iii,ii in enumerate(precip_large):
             results[features_idx[iii]]['event_id'],
             results[features_idx[iii]]['results']['start_date_w_buffer'],
             results[features_idx[iii]]['results']['end_date_w_buffer']))
-print("\\item no precipitation event found for {} of {} locations across {} features\\\\".format(np.sum([len(no_precip_event_found[iloc]) for iloc in range(nlocations)]),nlocations_all,len(features_idx)))
+print("\\item in total {} events not analysed because too long\\\\".format(len(too_long)))
+for itoo_long in too_long:
+    print("   {{\\scriptsize Event ID: {} $\curvearrowright$ Length = {} [days]}}\\\\[-4pt]".format(
+        itoo_long['event_id'],
+        itoo_long['length']))
+print("\\item no precipitation event found for {} of {} locations across {} events\\\\".format(np.sum([len(no_precip_event_found[iloc]) for iloc in range(nfiles)]),nlocations_all,len(features_idx)))
 for iii,ii in enumerate(no_precip_event_found):
     if len(no_precip_event_found[iii]) > 1:
         print("   {{\\scriptsize Event ID: {} $\curvearrowright$ Start and end date = [{},{}]}}\\\\[-4pt]".format(
@@ -210,6 +224,7 @@ for iii,ii in enumerate(no_precip_event_found):
             results[features_idx[iii]]['event_id'],
             results[features_idx[iii]]['results']['start_date_w_buffer'],
             results[features_idx[iii]]['results']['end_date_w_buffer']))
+
 print("")
 print("")
 
