@@ -50,6 +50,8 @@ results = {}
 nfiles = 0
 for zipfile in zipfiles:
 
+    print("Read data from {}".format(zipfile))
+
     unpacked = False
 
     extract_dir = Path(zipfile).parent                                          # dir_path+'/../../data/output

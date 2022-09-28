@@ -50,6 +50,8 @@ results = {}
 nfiles = 0
 for zipfile in zipfiles:
 
+    print("Read data from {}".format(zipfile))
+
     unpacked = False
 
     extract_dir = Path(zipfile).parent                                          # dir_path+'/../../data/output
@@ -66,14 +68,14 @@ for zipfile in zipfiles:
 
     if len(jsonfile) != 1:
         exceptionfile = glob.glob(str(unzippedfoldername)+'/exception.token')
-        if len(jsonfile) == 0:
-            print("Event {} probably still processing. Skip for now.".format(str(unzippedfoldername)))
+        if len(exceptionfile) == 1:
+            print("Event {} not analysed because too long.".format(str(unzippedfoldername)))
             # remove unzipped files and folder if they were created here
             if unpacked:
                 shutil.rmtree(unzippedfoldername)
             continue
-        elif len(exceptionfile) == 1:
-            print("Event {} not analysed because too long.".format(str(unzippedfoldername)))
+        elif len(jsonfile) == 0:
+            print("Event {} probably still processing. Skip for now.".format(str(unzippedfoldername)))
             # remove unzipped files and folder if they were created here
             if unpacked:
                 shutil.rmtree(unzippedfoldername)
