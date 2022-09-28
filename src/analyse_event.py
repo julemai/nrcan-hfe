@@ -296,6 +296,7 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
         else:
             product  = 'rdpa:10km:6f'
             # if not(silent): print(">>>> GEOMET: ",ifeature)
+            print(">>>> GEOMET: ",ifeature)
 
         if feature['properties']['end_date'] is None:
             # if there is no end-date make end buffer a bit larger
@@ -303,6 +304,8 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
         else:
             date = determine_dates(feature=feature,product=product,dates_buffer=dates_buffer,silent=True)
         if not(silent): print("   date : [ {}, {}, ..., {}, {} ] (in total {} time steps)".format(date[0], date[1],date[-2],date[-1],len(date)))
+
+        continue
 
         # --------------------
         # Request data

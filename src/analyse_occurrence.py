@@ -166,29 +166,11 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
     result['json'] = []
     result['gif'] = []
 
-    # # --------------------
-    # # SPECIFICS OF WHAT TO ANALYSE
-    # # --------------------
-    # ifeatures    = [     873, 1092, 1098, 1139, 1140, 1174, 1200, 1211, 1247, 1248,
-    #                     1249, 1270, 1277, 1278, 1293, 1298, 1434, 1446, 1457, 1465,
-    #                     1512, 1558, 1564, 1646, 1647, 1648, 1651, 1658, 1759, 1794  ] # starting after 2018-01-01 (using Geomet data)
-    # #ifeatures    = [    1794  ]
-    # #ifeatures    = [    1140  ]
-    # #ifeatures    = [     875  ]   # needs addition of time step one before
-    # #ifeatures    = [    1200  ]   # has missing time steps (2019-07-03T06 and 2019-07-06T12) but not in highlighted domain
-    # #ifeatures    = [    1277  ]   # has missing time steps (2019-07-03T06 and 2019-07-06T12) but     in highlighted domain
-    # #ifeatures    = [    1512  ]   # has missing time steps (2019-07-03T06 and 2019-07-06T12) but all at the end
-    # #ifeatures    = [    1759  ]   # has missing time steps in highlighted period; has start and end date set in HFE
+    # # all features
+    # ifeatures    = range(1949) #range(1854)
 
-    # # ifeatures    = [     794, 883, 932, 936, 963, 965, 1008, 1009, 1036, 1043, 1054,
-    # #                     1057, 1058, 1059, 1157, 1303, 1362, 1464, 1478, 1534, 1686,
-    # #                     1737, 1756 ]   # 2017 features
-
-    # #ifeatures    = range(1854)
-    # ifeatures    = range(3)
-
-    # bbox_buffer  = 0.5
-    # dates_buffer = [5.0,0.0]
+    # # all GEOMET
+    # ifeatures = [2, 3, 4, 6, 38, 119, 123, 127, 137, 138, 139, 141, 142, 152, 220, 229, 367, 389, 405, 490, 510, 515, 516, 553, 560, 643, 838, 872, 876, 877, 882, 884, 894, 899, 902, 903, 909, 911, 916, 917, 942, 956, 964, 970, 972, 974, 980, 981, 1032, 1037, 1039, 1046, 1085, 1106, 1116, 1117, 1118, 1141, 1149, 1155, 1159, 1170, 1173, 1180, 1184, 1201, 1202, 1236, 1243, 1263, 1274, 1310, 1311, 1312, 1313, 1314, 1315, 1317, 1332, 1338, 1345, 1346, 1361, 1366, 1445, 1455, 1481, 1493, 1506, 1518, 1529, 1536, 1538, 1547, 1548, 1549, 1550, 1555, 1562, 1591, 1613, 1625, 1639, 1645, 1662, 1680, 1682, 1730, 1731, 1732, 1735, 1742, 1763, 1765, 1778, 1780, 1781, 1797, 1800, 1841, 1843, 1846, 1853, 1864, 1889]
 
     # --------------------
     # Load HFE database (occurrences)
@@ -276,7 +258,6 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
         else:
             date = determine_dates(feature=feature,product=product,dates_buffer=dates_buffer,silent=True)
         if not(silent): print("   date : [ {}, {}, ..., {}, {} ] (in total {} time steps)".format(date[0], date[1],date[-2],date[-1],len(date)))
-
 
         # # --------------------------------------
         # # Collect files that will be needed from CaSPAr
@@ -704,4 +685,4 @@ if __name__ == '__main__':
 
 
     # for example, run for all Geomet features:
-    # python analyse_occurrence.py --ifeatures "873, 1092, 1098, 1139, 1140, 1174, 1200, 1211, 1247, 1248, 1249, 1270, 1277, 1278, 1293, 1298, 1434, 1446, 1457, 1465, 1512, 1558, 1564, 1646, 1647, 1648, 1651, 1658, 1759, 1794" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
+    # python analyse_occurrence.py --ifeatures "2, 3, 4, 6, 38, 119, 123, 127, 137, 138, 139, 141, 142, 152, 220, 229, 367, 389, 405, 490, 510, 515, 516, 553, 560, 643, 838, 872, 876, 877, 882, 884, 894, 899, 902, 903, 909, 911, 916, 917, 942, 956, 964, 970, 972, 974, 980, 981, 1032, 1037, 1039, 1046, 1085, 1106, 1116, 1117, 1118, 1141, 1149, 1155, 1159, 1170, 1173, 1180, 1184, 1201, 1202, 1236, 1243, 1263, 1274, 1310, 1311, 1312, 1313, 1314, 1315, 1317, 1332, 1338, 1345, 1346, 1361, 1366, 1445, 1455, 1481, 1493, 1506, 1518, 1529, 1536, 1538, 1547, 1548, 1549, 1550, 1555, 1562, 1591, 1613, 1625, 1639, 1645, 1662, 1680, 1682, 1730, 1731, 1732, 1735, 1742, 1763, 1765, 1778, 1780, 1781, 1797, 1800, 1841, 1843, 1846, 1853, 1864, 1889" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
