@@ -11,6 +11,8 @@ doc/*.synctex.gz
 #doc/*.pdf
 doc/*_timesheet.tex
 doc/*_timesheet.pdf
+doc/*_monthly_progress_report.tex
+doc/*_monthly_progress_report.pdf
 doc/presentation_nrcan/*
 doc/figures/slides/*
 doc/figures/*.zip
