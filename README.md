@@ -6,6 +6,16 @@ This library is a collection of tools helpful to analyse flood events of the His
    <img alt="Umbrella icons created by Freepik - Flaticon. See here: https://www.flaticon.com/free-icons/umbrella" src="https://github.com/julemai/nrcan-hfe/blob/main/doc/logo/HFE_logo.png" width="65%" />
 </p>
 
+## Citation
+<a href="https://doi.org/10.5281/zenodo.7121539"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.7121539.svg" alt="DOI"></a><br>
+The code is published under [Zenodo](https://doi.org/10.5281/zenodo.7121538). Please cite the following if you are using it:
+
+Mai, Juliane. (2022). <br>
+Historical Flood Event Python Toolkit (v1.0). <br>
+Zenodo. <br>
+https://doi.org/10.5281/zenodo.7121539
+
+
 ## Python environment
 
 It is recommended to use `pyenv` to setup a Python environment. An installation guide can be found [here](https://realpython.com/lessons/installing-pyenv/). Additionally, the GDAL library needs to be installed before setting up the Python environment. Please use, for example, `brew install gdal` or your native package installer to get GDAL. Test if it is installed by checking the version number using `gdal-config --version`. Then proceed to setup the Python environment.
