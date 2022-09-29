@@ -145,7 +145,7 @@ pyenv activate env-3.8.5-nrcan
 # Analyse occurrences.
 # Note: These two feaures have been selected because they require data from Geomet.
 #       If you pick other ones, you might need to request RDRS v2.1 from CaSPAr first.
-python src/analyse_occurrence.py --ifeatures "873, 1092" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
+python src/analyse_occurrence.py --ifeatures "2,3" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
 ```
 
 Analyse two multi-point events listed in `data/hfe/historical_flood_event.json`:
@@ -158,7 +158,7 @@ pyenv activate env-3.8.5-nrcan
 # Analyse events.
 # Note: These two feaures have been selected because they require data from Geomet.
 #       If you pick other ones, you might need to request RDRS v2.1 from CaSPAr first.
-python src/analyse_event.py --ifeatures "0, 178" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
+python src/analyse_event.py --ifeatures "0,178" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
 ```
 
 Please refer to the [documentation](https://github.com/julemai/nrcan-hfe/blob/main/doc/HFE_database_2022Q03_documentation.pdf), for an explanation of the arguments passed to these functions as well as a documentation of the entire toolkit.
