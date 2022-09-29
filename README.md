@@ -76,7 +76,7 @@ conda install -n env-conda-3.8 -c conda-forge pytest
 conda install -n env-conda-3.8 -c conda-forge ipython 
 ```
 
-### D. Setting up a Pythin environment on Compute Canada systems (tested on Graham)
+### D. Setting up a Python environment on Compute Canada systems (tested on Graham)
 
 ```bash
 cd nrcan-hfe
@@ -161,5 +161,5 @@ pyenv activate env-3.8.5-nrcan
 python src/analyse_event.py --ifeatures "0, 178" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/tmp/"
 ```
 
-Please refer to the [documentation](https://github.com/julemai/nrcan-hfe/blob/main/doc/HFE_database_2022Q03_documentation.pdf), for an exaplantion of the arguments passed to these functions as well as a documentation of the entire toolkit.
+Please refer to the [documentation](https://github.com/julemai/nrcan-hfe/blob/main/doc/HFE_database_2022Q03_documentation.pdf), for an explanation of the arguments passed to these functions as well as a documentation of the entire toolkit.
 
