@@ -172,6 +172,9 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
     # # all GEOMET
     # ifeatures = [2, 3, 4, 6, 38, 119, 123, 127, 137, 138, 139, 141, 142, 152, 220, 229, 367, 389, 405, 490, 510, 515, 516, 553, 560, 643, 838, 872, 876, 877, 882, 884, 894, 899, 902, 903, 909, 911, 916, 917, 942, 956, 964, 970, 972, 974, 980, 981, 1032, 1037, 1039, 1046, 1085, 1106, 1116, 1117, 1118, 1141, 1149, 1155, 1159, 1170, 1173, 1180, 1184, 1201, 1202, 1236, 1243, 1263, 1274, 1310, 1311, 1312, 1313, 1314, 1315, 1317, 1332, 1338, 1345, 1346, 1361, 1366, 1445, 1455, 1481, 1493, 1506, 1518, 1529, 1536, 1538, 1547, 1548, 1549, 1550, 1555, 1562, 1591, 1613, 1625, 1639, 1645, 1662, 1680, 1682, 1730, 1731, 1732, 1735, 1742, 1763, 1765, 1778, 1780, 1781, 1797, 1800, 1841, 1843, 1846, 1853, 1864, 1889]
 
+    # # all too long
+    # ifeatures = [921, 926, 927, 931, 1083, 1869]
+
     # --------------------
     # Load HFE database (occurrences)
     # --------------------
@@ -229,6 +232,39 @@ def analyse_occurrence(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffe
                 feature['properties']['end_date'],
                 feature['properties']['flood_cause'],
                 ))
+
+        # --------------------
+        # Make sure occurrence is not super long (> 90. days) which would take a very long time to process
+        # --------------------
+        if not(feature['properties']['end_date'] is None):
+            length_occurrence = (end_date-start_date).days+(end_date-start_date).seconds/60./60./24.
+            if (length_occurrence > 90.):
+                print("analyse_occurrence: Occurrence will NOT be analysed because it is TOO LONG:")
+                print("                    >>> Length occurrence {} (idx={}): {} [days]".format(
+                    feature['properties']['uuid'],
+                    ifeature,
+                    length_occurrence))
+                result['png-ts'].append( [] )
+                result['png'].append( [] )
+                result['gif'].append( [] )
+                result['legend'].append( [] )
+                result['json'].append( [] )
+
+                # save a token file to note that this wont be processed
+                tokenfile = str(Path(tmpdir+'/analyse_occurrence_'+str(ifeature)+'/exception.token'))
+
+                # make sure folder to store file exists; otherwise create
+                Path(tokenfile).parent.mkdir(parents=True, exist_ok=True)
+
+                # save something
+                ff = open(tokenfile, "w")
+                ff.write("analyse_occurrence: Occurrence {} (idx={}) not processed because it is too long ({} days)".format(
+                    feature['properties']['uuid'],
+                    ifeature,
+                    length_occurrence))
+                ff.close()
+
+                continue
 
         # --------------------
         # Determine bounding box
@@ -685,3 +721,6 @@ if __name__ == '__main__':
 
     # for example, run for all Geomet features:
     # python analyse_occurrence.py --ifeatures "2, 3, 4, 6, 38, 119, 123, 127, 137, 138, 139, 141, 142, 152, 220, 229, 367, 389, 405, 490, 510, 515, 516, 553, 560, 643, 838, 872, 876, 877, 882, 884, 894, 899, 902, 903, 909, 911, 916, 917, 942, 956, 964, 970, 972, 974, 980, 981, 1032, 1037, 1039, 1046, 1085, 1106, 1116, 1117, 1118, 1141, 1149, 1155, 1159, 1170, 1173, 1180, 1184, 1201, 1202, 1236, 1243, 1263, 1274, 1310, 1311, 1312, 1313, 1314, 1315, 1317, 1332, 1338, 1345, 1346, 1361, 1366, 1445, 1455, 1481, 1493, 1506, 1518, 1529, 1536, 1538, 1547, 1548, 1549, 1550, 1555, 1562, 1591, 1613, 1625, 1639, 1645, 1662, 1680, 1682, 1730, 1731, 1732, 1735, 1742, 1763, 1765, 1778, 1780, 1781, 1797, 1800, 1841, 1843, 1846, 1853, 1864, 1889" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"
+
+    # for example, run for all features that are too long:
+    # python analyse_occurrence.py --ifeatures "921, 926, 927, 931, 1083, 1869" --bbox_buffer 0.5 --dates_buffer 5.0,0.0 --tmpdir "/project/6070465/julemai/nrcan-hfe/data/output/"

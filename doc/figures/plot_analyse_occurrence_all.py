@@ -48,6 +48,7 @@ zipfiles = np.sort(glob.glob(str(Path(dir_path+'/../../data/output/analyse_occur
 
 results = {}
 nfiles = 0
+too_long = []
 for zipfile in zipfiles:
 
     print("Read data from {}".format(zipfile))
@@ -67,8 +68,23 @@ for zipfile in zipfiles:
     # print("jsonfile = ",jsonfile)
 
     if len(jsonfile) != 1:
-        if len(jsonfile) == 0:
-            print("Event {} probably still processing. Skip for now.".format(str(unzippedfoldername)))
+        exceptionfile = glob.glob(str(unzippedfoldername)+'/exception.token')
+        if len(exceptionfile) == 1:
+            print("Occurrence {} not analysed because too long.".format(str(unzippedfoldername)))
+            ff = open(str(exceptionfile[0]), "r")
+            content = ff.read()
+            ff.close()
+            # analyse_occurrence: Occurrence 2c42d6b6-ae77-47c3-9fb5-0e4dde8e6719 (idx=212) not processed because it is too long (1151.0 days)
+            uuid = content.split(' ')[2]
+            idx = int(content.split('=')[1].split(')')[0])
+            length_occurrence = float(content.split('(')[2].split(' ')[0])
+            too_long.append({'uuid':uuid,'idx':idx,'length':length_occurrence})
+            # remove unzipped files and folder if they were created here
+            if unpacked:
+                shutil.rmtree(unzippedfoldername)
+            continue
+        elif len(jsonfile) == 0:
+            print("Occurrence {} probably still processing. Skip for now.".format(str(unzippedfoldername)))
             # remove unzipped files and folder if they were created here
             if unpacked:
                 shutil.rmtree(unzippedfoldername)
@@ -182,13 +198,18 @@ print("\\item number of missing time steps: {} of {} ({:.4f} \%)".format(
     np.sum(available_timesteps_n)+np.sum(missing_timesteps_n),
     np.sum(missing_timesteps_n)/(np.sum(available_timesteps_n)+np.sum(missing_timesteps_n))*100.))
 print("\\item precipitation sum below 10~mm for {} of {} features".format(len(precip_small),len(features_idx)))
-print("\\item precipitation sum above 1000~mm for {} of {} features \\\\(all have multi-year period specified in HFE database)\\\\".format(len(precip_large),len(features_idx)))
+print("\\item precipitation sum above 1000~mm for {} of {} features \\\\".format(len(precip_large),len(features_idx)))
 for ii in precip_large:
     print("   {{\\scriptsize UUID: {} $\curvearrowright$ Start and end date = [{},{}]}}\\\\[-4pt]".format(
         #features_idx[ii],
         results[features_idx[ii]]['uuid'],
         results[features_idx[ii]]['results']['start_date_w_buffer'],
         results[features_idx[ii]]['results']['end_date_w_buffer']))
+print("\\item in total {} occurrences not analysed because too long\\\\".format(len(too_long)))
+for itoo_long in too_long:
+    print("   {{\\scriptsize UUID: {} $\curvearrowright$ Length = {} [days]}}\\\\[-4pt]".format(
+        itoo_long['uuid'],
+        itoo_long['length']))
 print("\\item no precipitation event found for {} of {} features\\\\".format(len(no_precip_event_found),len(features_idx)))
 for ii in no_precip_event_found:
     print("   {{\\scriptsize UUID: {} $\curvearrowright$ Start and end date = [{},{}]}}\\\\[-4pt]".format(
