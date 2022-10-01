@@ -136,7 +136,7 @@ def identify_precipitation_event(feature=None,product=None,dates=None,data=None,
 
         >>> data_hfe = read_hfe_json(filename=filename,filtering=filtering,polygon=polygon,return_filtered=return_filtered,silent=silent)
 
-        >>> ifeature = 1277
+        >>> ifeature = 1345    # uuid = e4440f9a-2c04-4735-840c-d2ba065d3e30    # was 1277 in "HFE_data_v1"
         >>> feature = data_hfe['data']['features'][ifeature]
 
         >>> # --------------------------------------
@@ -187,7 +187,7 @@ def identify_precipitation_event(feature=None,product=None,dates=None,data=None,
         >>> # --------------------------------------
         >>> idx_event = identify_precipitation_event(feature=feature,product=product,dates=dates,data=interpolate_geomet,length_window_d=2,min_prec_window=3.0,min_prec=0.001,silent=True)
         >>> print("Indexes of dates identified to be considered for thie event: {} (len = {})".format(idx_event,len(idx_event[0])))
-        Indexes of dates identified to be considered for thie event: [[9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]] (len = 20)
+        Indexes of dates identified to be considered for thie event: [[15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]] (len = 14)
 
         >>> ilocation = 0
         >>> nlocations = 1
@@ -202,7 +202,7 @@ def identify_precipitation_event(feature=None,product=None,dates=None,data=None,
         >>> label = 'no label'
         >>> file_interpolated = plot_interpolated(locations=locations,dates=dates,data=interpolate_geomet,highlight_dates_idx=idx_event,pngfile=pngfile,start_date_buffer=dates[0],end_date_buffer=dates[-1],label=label)
         >>> print("Plot created: {}".format(file_interpolated['png']))
-        Plot created: ['/tmp/pytest_rdpa_10km_6f_interpolated_at_stations_occurrence_1277_identified-timesteps_rdpa:10km:6f.png']
+        Plot created: ['/tmp/pytest_rdpa_10km_6f_interpolated_at_stations_occurrence_1345_identified-timesteps_rdpa:10km:6f.png']
 
 
 

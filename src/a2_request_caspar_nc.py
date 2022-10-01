@@ -115,14 +115,30 @@ def request_caspar_nc(product=None,variable=None,date=None,foldername='/tmp/test
 
         Request data
 
+        >>> import sys
+        >>> import os
+        >>> dir_path = os.path.dirname(os.path.realpath(__file__))
+
         >>> product='RDRS_v2.1'
         >>> variable='RDRS_v2.1_A_PR0_SFC'
         >>> date=[ datetime.datetime(2018,8,9,7,0), datetime.datetime(2018,8,9,8,0), datetime.datetime(2018,8,10,7,0), datetime.datetime(2018,8,10,13,0) ]
-        >>> foldername='test-data/'
+        >>>
+        >>> # foldername looks like this to make sure it is the same as for pytest
+        >>> foldername=dir_path+'/tests/../test-data/'
 
         >>> file_caspar = request_caspar_nc(product=product,variable=variable,date=date,foldername=foldername,silent=False)
-        >>> print('file_caspar = '+str(file_caspar))
-        file_caspar = {datetime.datetime(2018, 8, 9, 7, 0): ['test-data/2018080812.nc'], datetime.datetime(2018, 8, 9, 8, 0): ['test-data/2018080812.nc'], datetime.datetime(2018, 8, 10, 7, 0): ['test-data/2018080912.nc'], datetime.datetime(2018, 8, 10, 13, 0): []}
+        >>> idate = date[0]
+        >>> print('file_caspar['+str(idate)+'] = '+str(file_caspar[idate][0].split('/')[-1]))
+        file_caspar[2018-08-09 07:00:00] = 2018080812.nc
+        >>> idate = date[1]
+        >>> print('file_caspar['+str(idate)+'] = '+str(file_caspar[idate][0].split('/')[-1]))
+        file_caspar[2018-08-09 08:00:00] = 2018080812.nc
+        >>> idate = date[2]
+        >>> print('file_caspar['+str(idate)+'] = '+str(file_caspar[idate][0].split('/')[-1]))
+        file_caspar[2018-08-10 07:00:00] = 2018080912.nc
+        >>> idate = date[3]
+        >>> print('file_caspar['+str(idate)+'] = '+str(file_caspar[idate]))
+        file_caspar[2018-08-10 13:00:00] = []
 
 
         License

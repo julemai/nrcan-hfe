@@ -124,7 +124,7 @@ def read_hfe_json(filename=None,filtering=False,polygon=None,return_filtered=Fal
         >>> # no filtering; just reading
         >>> data_hfe = read_hfe_json(filename=filename,filtering=False,polygon=None,silent=True)
         >>> print("Number of flood occurrences/events found: {}".format(len(data_hfe['data']['features'])))
-        Number of flood occurrences/events found: 487
+        Number of flood occurrences/events found: 376
 
         >>> # filtering w/o checking if points are in polygon
         >>> data_hfe = read_hfe_json(filename=filename,filtering=True,polygon=None,silent=True)
@@ -145,17 +145,17 @@ def read_hfe_json(filename=None,filtering=False,polygon=None,return_filtered=Fal
         >>> # no filtering; just reading
         >>> data_hfe = read_hfe_json(filename=filename,filtering=False,polygon=None,silent=True)
         >>> print("Number of flood occurrences/events found: {}".format(len(data_hfe['data']['features'])))
-        Number of flood occurrences/events found: 1904
+        Number of flood occurrences/events found: 1999
 
         >>> # filtering w/o checking if points are in polygon
         >>> data_hfe = read_hfe_json(filename=filename,filtering=True,polygon=None,silent=True)
         >>> print("Number of flood occurrences/events found: {}".format(len(data_hfe['data']['features'])))
-        Number of flood occurrences/events found: 1854
+        Number of flood occurrences/events found: 1949
 
         >>> # filtering w/  checking if points are in polygon
         >>> data_hfe = read_hfe_json(filename=filename,filtering=True,polygon=polygon,silent=True)
         >>> print("Number of flood occurrences/events found: {}".format(len(data_hfe['data']['features'])))
-        Number of flood occurrences/events found: 1852
+        Number of flood occurrences/events found: 1947
 
 
         License
