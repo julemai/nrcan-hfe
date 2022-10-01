@@ -245,6 +245,9 @@ def analyse_event(ifeatures=None,tmpdir='/tmp/',bbox_buffer=0.5,dates_buffer=[5.
                 feature['properties']['flood_cause'],
                 ))
 
+        # --------------------
+        # Make sure event is not super long (> 90. days) which would take a very long time to process
+        # --------------------
         if not(feature['properties']['end_date'] is None):
             length_event = (end_date-start_date).days+(end_date-start_date).seconds/60./60./24.
             if (length_event > 90.):
