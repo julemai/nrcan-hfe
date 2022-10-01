@@ -7,13 +7,13 @@ This library is a collection of tools helpful to analyse flood events of the His
 </p>
 
 ## Citation
-<a href="https://doi.org/10.5281/zenodo.7121539"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.7121539.svg" alt="DOI"></a><br>
+<a href="https://doi.org/10.5281/zenodo.7121538"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.7121538.svg" alt="DOI"></a><br>
 The code is published under [Zenodo](https://doi.org/10.5281/zenodo.7121538). Please cite the following if you are using it:
 
 Mai, Juliane. (2022). <br>
 Historical Flood Event Python Toolkit (v1.0). <br>
 Zenodo. <br>
-https://doi.org/10.5281/zenodo.7121539
+https://doi.org/10.5281/zenodo.7121538
 
 
 ## Python environment
