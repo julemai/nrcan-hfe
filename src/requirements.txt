@@ -17,7 +17,7 @@ fonttools==4.37.1
 GDAL==3.2.1
 geopandas==0.11.1
 iniconfig==1.1.1
-ipython==8.4.0
+ipython==8.10.0
 jedi==0.18.1
 kiwisolver==1.4.4
 matplotlib==3.5.3
